@@ -10,12 +10,12 @@
 
 typedef enum token_type
 {
-    COMMAND,
-    ARGUMENT,
-    PIPE,
-    SIGNAL,
-    REDIRECTION,
-    VARIABLE,
+    COMMAND, //echo cat ls
+    ARGUMENT, //-n file.c
+    PIPE, 
+    SIGNAL, 
+    REDIRECTION, //< > << >>
+    VARIABLE, //&
 } t_token_type;
 
 typedef struct s_token
@@ -25,7 +25,7 @@ typedef struct s_token
 } t_token;
 
 char *readline (const char *prompt);
-t_token *tokenizer(char *input);
+t_token *tokenizer(char *input, t_token *token);
 
 
-#endif
+# endif
