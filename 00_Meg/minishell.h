@@ -22,10 +22,11 @@ typedef struct s_token
 {
     t_token_type type;
     char    *value;
+    int     pos;
 } t_token;
 
 char *readline (const char *prompt);
-t_token *tokenizer(char *input, t_token *token);
+t_token **tokenizer(char *input);
 
 
 # endif
