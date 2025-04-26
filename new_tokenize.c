@@ -1,62 +1,5 @@
 #include "minishell.h"
 
-char *get_token_type(char *str)
-{
-
-	if (*str == '&')
-		return ("VARIABLE");
-	
-
-}
-
-// Funtion to create the token strcture
-// assign value and token_type
-t_token *create_token(char *start, char *end)
-{
-	t_token *t;
-	char *str;
-	int i;
-	
-	i = 0;
-	t = malloc(sizeof(t_token));
-	if (!t)
-		return (NULL);
-	if (*end < *start)
-		return (free(t), NULL);
-	while (*end - *start)
-	{
-		str[i] = *start;
-		start++;
-	}
-	if (*end == *start && i == 0)
-		str[i] = *start;
-	str[i++] = '\0';
-	t->value = str;
-	t->type = get_token_type(*str);
-	return (t);
-}
-
-// Function to find the end of the token
-// return char * pointer
-
-char *token_end(char* str, char ch)
-{
-	char *temp;
-
-	if (!str || *str == '\0')
-		return (NULL);
-	temp = str;
-	while (temp)
-	{
-		if (*temp == ch)
-			return (&*temp); //need check
-		temp++;
-	}
-	if (*str == '\0')
-		return (NULL);
-	return (NULL);
-}
-
 bool ch_is_space(char ch)
 {
 	return (ch == ' ' || ch == '\t' || ch == '\n');
@@ -76,23 +19,31 @@ int	count_token(char *input)
 	int double_quote;
 	char *temp;
     int token_started;
+	int arr[1024]; // an array of intergers to track the start and end of the token
+	int i;
 	
 	count = 0;
 	single_quote = 0;
 	double_quote = 0;
     token_started = 0;
 	temp = input;
+	ft_bzero(arr, 1024);
+	i = 0;
 	while (*temp)
 	{
 		if (*temp == '\'' && !double_quote)
         {
 			single_quote = !single_quote;
             token_started = 1;
+			arr[i] = *temp - *input;
+			i++;
         }
 		else if (*temp == '"' && !single_quote)
         {
 			double_quote = double_quote;
             token_started = 1;
+			arr[i] = *temp - *input;
+			i++;
         }
 		else if (!single_quote && !double_quote && (ch_is_space(*temp) || ch_is_special(*temp)))
 		{
@@ -100,19 +51,35 @@ int	count_token(char *input)
 			{
                 count++;
                 token_started = 0;
+				arr[i] = *temp - *input;
+				i++;
             }
             if (ch_is_special(*temp))
             {
                 if (*(temp + 1) ==  *temp)
                 {
+					arr[i] = *temp - *input;
+					arr[i++] = arr[i] + 1;
                     count++;
                     temp += 2;
+					i++;
                     continue ;
                 }
+				else if(*temp == '$')
+				{
+					if (*(temp + 1) == '{')
+					{
+						token_started = 1;
+						
+					}
+				}
                 else
                 {
+					arr[i] = *temp - *input;
+					arr[i++] = arr[i];
                     count++;
                     temp++;
+					i++;
                     continue ;
                 }
             }

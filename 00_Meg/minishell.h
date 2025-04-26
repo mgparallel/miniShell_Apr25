@@ -15,14 +15,13 @@ typedef enum token_type
     PIPE, 
     SIGNAL, 
     REDIRECTION, //< > << >>
-    VARIABLE, //&
+    ENV_VARIABLE, //&
 } t_token_type;
 
 typedef struct s_token
 {
     t_token_type type;
     char    *value;
-    int     pos;
 } t_token;
 
 char *readline (const char *prompt);

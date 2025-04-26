@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -Werror
 LDFLAGS = -Llibft -L/opt/homebrew/opt/readline/lib -lreadline -lncurses
 # LDFLAGS use for Linux
 # LDFLAGS = -Llibft -lreadline
-INCLUDES = -Ilibft -I/opt/homebrew/opt/readline/include #last argument fro MacOS
+INCLUDES = -Ilibft -I/opt/homebrew/opt/readline/include #last argument for MacOS
 LIBS = libft/libft.a
 HEADER = minishell.h
 RM = rm -rf
@@ -33,6 +33,6 @@ fclean: clean
 	$(RM) $(NAME)
 	$(MAKE) -C libft fclean
 
-re: fclean all #make re does not compile again the .c files!!
+re: fclean all #make re does not compile again the .c files!! need to check
 
 .PHONY: all clean fclean re
