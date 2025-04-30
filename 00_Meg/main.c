@@ -24,7 +24,7 @@ char *print_out_type(t_token_type type)
 void print_token(t_token *token)
 {
 	if (!token)
-	{	printf("mal\n");
+	{	printf("No token\n");
 		return ;
 	}
 	while (token)
@@ -39,16 +39,15 @@ int main(void)
 	char *input;
 	t_token *token;
 
-	// while (1)
-	// {
+	while (1)
+	{
 		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
 		if (!ft_strncmp(input, "exit", 4))
-			// break;
-			return 1;
+			break;
 		token = tokenizer(input);
 		print_token(token);
-		//parsear()
-		//execution()
-	// }
+		// parsear()
+		// execution()
+	}
 	return 0;
 }

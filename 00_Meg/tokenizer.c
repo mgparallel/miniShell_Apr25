@@ -1,206 +1,150 @@
-// #include "minishell.h"
+#include "minishell.h"
 
-// char *get_token_type(char *str)
-// {
+bool ch_is_space(char ch)
+{
+	return (ch == ' ' || ch == '\t' || ch == '\n');
+}
 
-// 	if (*str == '&')
-// 		return ("VARIABLE");
-	
+bool ch_is_special(char ch)
+{
+    return (ch == '>' || ch == '<' || ch == '|' || ch == '&' || ch == '$');
+}
 
-// }
+t_token *tokenizer(char *input)
+{
+    int in_token;
+    int single_quote;
+    int dollar_flag;
+    int double_quote;
+    char *token_start;
+    t_token *head;
 
-// // Funtion to create the token strcture
-// // assign value and token_type
-// t_token *create_token(char *start, char *end)
-// {
-// 	t_token *t;
-// 	char *str;
-// 	int i;
-	
-// 	i = 0;
-// 	t = malloc(sizeof(t_token));
-// 	if (!t)
-// 		return (NULL);
-// 	if (*end < *start)
-// 		return (free(t), NULL);
-// 	while (*end - *start)
-// 	{
-// 		str[i] = *start;
-// 		start++;
-// 	}
-// 	if (*end == *start && i == 0)
-// 		str[i] = *start;
-// 	str[i++] = '\0';
-// 	t->value = str;
-// 	t->type = get_token_type(*str);
-// 	return (t);
-// }
-
-// // Function to find the end of the token
-// // return char * pointer
-
-// char *token_end(char* str, char ch)
-// {
-// 	char *temp;
-
-// 	if (!str || *str == '\0')
-// 		return (NULL);
-// 	temp = str;
-// 	while (temp)
-// 	{
-// 		if (*temp == ch)
-// 			return (&*temp); //need check
-// 		temp++;
-// 	}
-// 	if (*str == '\0')
-// 		return (NULL);
-// 	return (NULL);
-// }
-
-// bool ch_is_space(char ch)
-// {
-// 	return (ch == ' ' || ch == '\t' || ch == '\n');
-// }
-
-// bool ch_is_special(char ch)
-// {
-//     return (ch == '>' || ch == '<' || ch == '|' || ch == '&' || ch == '$');
-// }
-
-// // Function to count how many tokens are there
-// // delimiters: ' ', '\t', '\n', '<', '<<', '>', '>>', '|', '||', '&', '&&'
-// int	count_token(char *input)
-// {
-// 	int count;
-// 	int single_quote;
-// 	int double_quote;
-// 	char *temp;
-//     int token_started;
-	
-// 	count = 0;
-// 	single_quote = 0;
-// 	double_quote = 0;
-//     token_started = 0;
-// 	temp = input;
-// 	while (*temp)
-// 	{
-// 		if (*temp == '\'' && !double_quote)
-//         {
-// 			single_quote = !single_quote;
-//             token_started = 1;
-//         }
-// 		else if (*temp == '"' && !single_quote)
-//         {
-// 			double_quote = double_quote;
-//             token_started = 1;
-//         }
-// 		else if (!single_quote && !double_quote && (ch_is_space(*temp) || ch_is_special(*temp)))
-// 		{
-//             if (token_started)
-// 			{
-//                 count++;
-//                 token_started = 0;
-//             }
-//             if (ch_is_special(*temp))
-//             {
-//                 if (*(temp + 1) ==  *temp)
-//                 {
-//                     count++;
-//                     temp += 2;
-//                     continue ;
-//                 }
-//                 else
-//                 {
-//                     count++;
-//                     temp++;
-//                     continue ;
-//                 }
-//             }
-//         }
-//         else
-//             token_started = 1;
-// 		temp++;
-//     }
-// 	if (token_started)
-// 		count++;
-// 	return (count);
-// }
-
-// // Funtion receive the user input and put them into tokens
-// // Not finished!
-// t_token **tokenizer(char *input)
-// {
-// 	char *token_start;
-// 	int single_quote;
-// 	int	double_quote;
-// 	t_token **token;
-// 	int i;
-
-// 	token_start = NULL;
-// 	single_quote = 0;
-// 	double_quote = 0;
-// 	i = 0;
-// 	token = malloc(sizeof(t_token *) * (count_token(input) + 1));
-// 	if (!token)
-// 		return (NULL);
-// 	while (*input)
-// 	{
-// 		if (*input == '\'' && !double_quote)
-// 		{
-// 			single_quote = !single_quote;
-// 			if (token_start)
-// 			{
-// 				token[i] = create_token(token_start, *input);
-// 				token_start = NULL;
-// 				i++;
-// 			}
-// 			else
-// 				token_start = *input;
-// 		}
-// 		else if (*input == '"' && !single_quote)
-// 		{
-// 			double_quote = !double_quote;
-// 			if (token_start)
-// 			{
-// 				token[i] = create_token(token_start, *input);
-// 				token_start = NULL;
-// 				i++;
-// 			}
-// 			else
-// 				token_start = *input;
-// 		}
-// 		else if (!single_quote && !double_quote && ch_is_space(*input))
-// 		{
-// 			if (!token_start)
-// 			{
-// 				input++;
-// 				continue ;
-// 			}
-// 			else
-// 			{
-// 				token[i] = create_token(token_start, *input);
-// 				token_start = NULL;
-// 				i++;
-// 			}
-// 		}
-// 		else if (!single_quote && !double_quote && ch_is_special(*input))
-// 		{
-// 			if (!token_start)
-// 			{
-// 				if (ch_is_special(*(input + 1) == *input))
-// 				{
-// 					input++;
-// 					token[i] = create_token(*(input - 1), *input);
-// 				}
-// 				else
-// 					token[i] = create_token(*input, *input);
-// 				i++;
-// 			}
-// 		}
-// 		else
-// 			if (!token_start)
-// 				token_start = *input;
-// 		input++;
-// 	}
-// 	return (token);
-// }
+    in_token = 0;
+    single_quote = 0;
+    double_quote = 0;
+    dollar_flag = 0;
+    token_start = NULL;
+    head = NULL;
+    while (*input)
+    {
+        if (*input == '\'' && !double_quote)
+        {
+            if (in_token)
+            {
+                if (single_quote)
+                {
+                    create_token(&token_start, input, SINGLE_QUOTE, &head);
+                    in_token = !in_token;
+                }
+                else
+                {
+                    single_quote = !single_quote;
+                    input++;
+                    continue ;
+                }
+            }
+            single_quote = !single_quote;
+        }
+        else if (*input == '"' && !single_quote)
+        {
+            if (in_token)
+            {
+                if (double_quote)
+                {
+                    create_token(&token_start, input, DOUBLE_QUOTE, &head);
+                    in_token = !in_token;
+                }
+                else
+                {
+                    double_quote = !double_quote;
+                    input++;
+                    continue ;
+                }
+            }
+            double_quote = !double_quote;
+        }
+        else if (!single_quote && !double_quote && (ch_is_space(*input) || ch_is_special(*input)))
+        {
+            if (in_token)
+            {
+                if (ch_is_space(*input))
+                {
+                    if (dollar_flag)
+                    {
+                        dollar_flag = 0;
+                        create_token(&token_start, input, ENV_VARIABLE, &head);
+                    }
+                    else
+                        create_token(&token_start, input, WORD, &head);
+                    in_token = !in_token;
+                }
+                if (*input == '$')
+                {
+                    if (dollar_flag)
+                        create_token(&token_start, input, ENV_VARIABLE, &head);
+                    else
+                    {
+                        dollar_flag = 1;
+                        create_token(&token_start, input, WORD, &head);
+                    }
+                    token_start = input;
+                }
+            }
+            else //not in_token
+            {
+                if (ch_is_special(*input))
+                {
+                    if (*(input + 1) == *input)
+                    {
+                        token_start = input;
+                        if (*input == '|')
+                            create_token(&token_start, input + 2, LOGICAL_OR, &head);
+                        else if (*input == '&')
+                            create_token(&token_start, input + 2, LOGICAL_AND, &head);
+                        else if (*input == '$')
+                            create_token(&token_start, input + 2, PID, &head);
+                        else
+                            create_token(&token_start, input + 2, REDIRECTION, &head);
+                        input += 2;
+                        continue ;
+                    }
+                    else
+                    {
+                        token_start = input;
+                        if (*input == '|')
+                            create_token(&token_start, input + 1, PIPE, &head);
+                        else if (*input == '$')
+                        {
+                            if (!dollar_flag)
+                            {
+                                in_token = 1;
+                                dollar_flag = 1;
+                            }
+                        }
+                        else
+                            create_token(&token_start, input + 1, REDIRECTION, &head);
+                        input++;
+                        continue ;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (!in_token)
+            {
+                token_start = input;
+                in_token = 1;
+            }
+        }
+        input++;
+    }
+    if (in_token)
+    {
+        if (dollar_flag)
+            create_token(&token_start, input, ENV_VARIABLE, &head);
+        else
+            create_token(&token_start, input, WORD, &head);
+    }
+    return (head);
+}
