@@ -14,6 +14,7 @@ t_token *tokenizer(char *input)
 {
     int in_token;
     int single_quote;
+    int dollar_flag;
     int double_quote;
     char *token_start;
     t_token *head;
@@ -21,6 +22,7 @@ t_token *tokenizer(char *input)
     in_token = 0;
     single_quote = 0;
     double_quote = 0;
+    dollar_flag = 0;
     token_start = NULL;
     head = NULL;
     while (*input)
@@ -67,7 +69,13 @@ t_token *tokenizer(char *input)
             {
                 if (ch_is_space(*input))
                 {
-                    create_token(&token_start, input, WORD, &head);
+                    if (dollar_flag)
+                    {
+                        dollar_flag = 0;
+                        create_token(&token_start, input, ENV_VARIABLE, &head);
+                    }
+                    else
+                        create_token(&token_start, input, WORD, &head);
                     in_token = !in_token;
                 }
             }
@@ -83,7 +91,7 @@ t_token *tokenizer(char *input)
                         else if (*input == '&')
                             create_token(&token_start, input + 2, LOGICAL_AND, &head);
                         else if (*input == '$')
-                            create_token(&token_start, input + 2, SPECIAL, &head);
+                            create_token(&token_start, input + 2, PID, &head);
                         else
                             create_token(&token_start, input + 2, REDIRECTION, &head);
                         input += 2;
@@ -94,8 +102,11 @@ t_token *tokenizer(char *input)
                         token_start = input;
                         if (*input == '|')
                             create_token(&token_start, input + 1, PIPE, &head);
-                        else if (*input == '$')
-                            create_token(&token_start, input + 1, SPECIAL, &head);
+                        else if (*input == '$' && !dollar_flag)
+                        {
+                            in_token = 1;
+                            dollar_flag = 1;
+                        }
                         else
                             create_token(&token_start, input + 1, REDIRECTION, &head);
                         input++;

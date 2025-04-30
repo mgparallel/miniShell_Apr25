@@ -19,8 +19,8 @@ typedef enum token_type
     REDIRECTION, //< > << >>
     LOGICAL_OR, // ||
     LOGICAL_AND, // &&
-    SPECIAL, //$, $$
     ENV_VARIABLE, //$
+    PID, //$$
 } t_token_type;
 
 // typedef struct s_index

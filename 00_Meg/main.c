@@ -14,8 +14,8 @@ char *print_out_type(t_token_type type)
         case REDIRECTION: return "REDIRECTION";
         case LOGICAL_OR: return "LOGICAL_OR";
         case LOGICAL_AND: return "LOGICAL_AND";
-        case SPECIAL: return "SPECIAL";
         case ENV_VARIABLE: return "ENV_VARIABLE";
+		case PID: return "PID";
         default: return "UNKNOWN";
     }
 }
