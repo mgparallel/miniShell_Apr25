@@ -33,7 +33,13 @@ t_token *tokenizer(char *input)
             {
                 if (single_quote)
                 {
-                    create_token(&token_start, input, SINGLE_QUOTE, &head);
+                    if (dollar_flag || *token_start != '\'')
+                    {
+                        create_token(&token_start, input + 1, WORD, &head);
+                        dollar_flag = 0;
+                    }
+                    else
+                        create_token(&token_start, input + 1, SINGLE_QUOTE, &head);
                     in_token = !in_token;
                 }
                 else
@@ -42,6 +48,11 @@ t_token *tokenizer(char *input)
                     input++;
                     continue ;
                 }
+            } 
+            else
+            {
+                token_start = input;
+                in_token = !in_token;
             }
             single_quote = !single_quote;
         }
@@ -51,7 +62,13 @@ t_token *tokenizer(char *input)
             {
                 if (double_quote)
                 {
-                    create_token(&token_start, input, DOUBLE_QUOTE, &head);
+                    if (dollar_flag || *token_start != '"')
+                    {
+                        create_token(&token_start, input + 1, WORD, &head);
+                        dollar_flag = 0;
+                    }
+                    else
+                        create_token(&token_start, input + 1, DOUBLE_QUOTE, &head);
                     in_token = !in_token;
                 }
                 else
@@ -60,6 +77,11 @@ t_token *tokenizer(char *input)
                     input++;
                     continue ;
                 }
+            }
+            else
+            {
+                token_start = input;
+                in_token = !in_token;
             }
             double_quote = !double_quote;
         }
@@ -78,7 +100,7 @@ t_token *tokenizer(char *input)
                         create_token(&token_start, input, WORD, &head);
                     in_token = !in_token;
                 }
-                if (*input == '$')
+                else if (*input == '$')
                 {
                     if (dollar_flag)
                         create_token(&token_start, input, ENV_VARIABLE, &head);
@@ -89,14 +111,20 @@ t_token *tokenizer(char *input)
                     }
                     token_start = input;
                 }
+                else
+                {
+                    create_token(&token_start, input, WORD, &head);
+                    in_token = !in_token;
+                    continue ;
+                }
             }
             else //not in_token
             {
+                token_start = input;
                 if (ch_is_special(*input))
                 {
                     if (*(input + 1) == *input)
                     {
-                        token_start = input;
                         if (*input == '|')
                             create_token(&token_start, input + 2, LOGICAL_OR, &head);
                         else if (*input == '&')
@@ -110,7 +138,6 @@ t_token *tokenizer(char *input)
                     }
                     else
                     {
-                        token_start = input;
                         if (*input == '|')
                             create_token(&token_start, input + 1, PIPE, &head);
                         else if (*input == '$')

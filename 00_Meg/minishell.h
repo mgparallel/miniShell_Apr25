@@ -33,10 +33,12 @@ typedef struct s_token
 {
     t_token_type    type;
     char            *value;
+    int             has_leading_space;
     struct s_token *next;
 } t_token;
 
 char *readline (const char *prompt);
+bool ch_is_space(char ch);
 t_token *tokenizer(char *input);
 void create_token(char **start, char *end, t_token_type type, t_token **lst);
 

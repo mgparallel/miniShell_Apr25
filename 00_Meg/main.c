@@ -29,7 +29,7 @@ void print_token(t_token *token)
 	}
 	while (token)
 	{
-		printf("\nvalue: %s, type: %s\n", token->value, print_out_type(token->type));
+		printf("\nVALUE: %s, TYPE: %s, SPACE? %d \n", token->value, print_out_type(token->type), token->has_leading_space);
 		token = token->next;
 	}
 }
