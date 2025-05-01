@@ -5,18 +5,18 @@ char *print_out_type(t_token_type type)
 {
     switch (type)
     {
-        case WORD: return "WORD";
-        case SINGLE_QUOTE: return "SINGLE_QUOTE";
-        case DOUBLE_QUOTE: return "DOUBLE_QUOTE";
-        case COMMAND: return "COMMAND";
-        case ARGUMENT: return "ARGUMENT";
-        case PIPE: return "PIPE";
-        case REDIRECTION: return "REDIRECTION";
-        case LOGICAL_OR: return "LOGICAL_OR";
-        case LOGICAL_AND: return "LOGICAL_AND";
-        case ENV_VARIABLE: return "ENV_VARIABLE";
-		case PID: return "PID";
-        default: return "UNKNOWN";
+        case WORD: return "WORD";  //0
+        case SINGLE_QUOTE: return "SINGLE_QUOTE"; //1
+        case DOUBLE_QUOTE: return "DOUBLE_QUOTE"; //2
+        case COMMAND: return "COMMAND"; //3
+        case ARGUMENT: return "ARGUMENT"; //4
+        case PIPE: return "PIPE"; //5
+        case REDIRECTION: return "REDIRECTION"; //6
+        case LOGICAL_OR: return "LOGICAL_OR"; //7
+        case LOGICAL_AND: return "LOGICAL_AND"; //8
+        case ENV_VARIABLE: return "ENV_VARIABLE"; //9
+		case PID: return "PID"; //10
+        default: return "UNKNOWN"; //11
     }
 }
 
@@ -29,6 +29,7 @@ void print_token(t_token *token)
 	}
 	while (token)
 	{
+		// printf("\nVALUE: %s, TYPE: %d, SPACE? %d \n", token->value, token->type, token->has_leading_space);
 		printf("\nVALUE: %s, TYPE: %s, SPACE? %d \n", token->value, print_out_type(token->type), token->has_leading_space);
 		token = token->next;
 	}
