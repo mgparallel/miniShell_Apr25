@@ -17,6 +17,7 @@ typedef enum token_type
     ARGUMENT, //-n file.c
     PIPE,
     REDIRECTION, //< > << >>
+    RE_TARGET,
     LOGICAL_OR, // ||
     LOGICAL_AND, // &&
     ENV_VARIABLE, //$
@@ -42,6 +43,8 @@ bool ch_is_space(char ch);
 char *ft_strcpy(char *start, char *end);
 t_token *tokenizer(char *input);
 void create_token(char **start, char *end, t_token_type type, t_token **lst);
+
+void parsing(t_token **lst);
 
 void	lstadd_back(t_token **lst, t_token *new);
 

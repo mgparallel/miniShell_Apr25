@@ -19,13 +19,14 @@ all: $(NAME)
 $(NAME): $(OBJS) $(LIBS) 
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBS) $(LDFLAGS) -o $(NAME) -fsanitize=address
 
-%.o: %.c 
+%.o: %.c
+	@echo "compiling $<"
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 libft/libft.a:
 	$(MAKE) -C libft
 
-clean: $(OBJS)
+clean:
 	$(RM) $(OBJS)
 	$(MAKE) -C libft clean
 

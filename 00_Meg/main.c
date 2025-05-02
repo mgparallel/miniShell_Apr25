@@ -12,11 +12,12 @@ char *print_out_type(t_token_type type)
         case ARGUMENT: return "ARGUMENT"; //4
         case PIPE: return "PIPE"; //5
         case REDIRECTION: return "REDIRECTION"; //6
-        case LOGICAL_OR: return "LOGICAL_OR"; //7
-        case LOGICAL_AND: return "LOGICAL_AND"; //8
-        case ENV_VARIABLE: return "ENV_VARIABLE"; //9
-		case PID: return "PID"; //10
-        default: return "UNKNOWN"; //11
+		case RE_TARGET: return "RE_TARGET"; //7
+        case LOGICAL_OR: return "LOGICAL_OR"; //8
+        case LOGICAL_AND: return "LOGICAL_AND"; //9
+        case ENV_VARIABLE: return "ENV_VARIABLE"; //10
+		case PID: return "PID"; //11
+        default: return "UNKNOWN"; //12
     }
 }
 
@@ -46,6 +47,7 @@ int main(void)
 		if (!ft_strncmp(input, "exit", 4))
 			break;
 		token = tokenizer(input);
+		parsing(&token);
 		print_token(token);
 		// parsear()
 		// execution()
