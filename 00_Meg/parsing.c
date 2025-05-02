@@ -85,9 +85,69 @@ void parse_type_word(t_token **lst)
 // function to check if ENV_VARIABLE are valid
 
 
-// funtion to check if single quote/double quote contains $
-// remove quotes and deceide if expand
+// funtion to expand the variable
+void expand_var(t_token **lst, char *pos)
+{
+    char *original;
+    char *end_of_str;
+    char *start; //string before $
+    char *var; //str to pass to getenv()
 
+
+    original = (*lst)->value;
+    start = ft_strcpy(original + 1, pos);
+    if (!start)
+        return ;
+    end_of_str = original;
+    while (*(end_of_str + 1))
+        end_of_str++; // where the quote is
+    var = ft_strcpy(pos + 1, end_of_str);
+    if (!var)
+        return (free(start));
+    if (!getenv(var))
+    {
+        printf("Varilable not valid");
+        return ;
+    }
+    free(original);
+    original = ft_strjoin(start, getenv(var));
+    (*lst)->value = original;
+    //if_cmd(lst, lst);
+}
+
+// funtion to remove quotes outside of literal value
+void remove_outer_quote(t_token **lst)
+{
+    t_token *cur_token;
+    char *original;
+    char *new_value;
+
+    cur_token = *lst;
+    original = cur_token->value;
+    new_value = malloc(ft_strlen(original - 1));
+    if (!new_value)
+        return ;
+    ft_strlcpy(new_value, original + 1, ft_strlen(original) - 1);
+    if (!new_value)
+        return ;
+    cur_token->value = new_value;
+    //if_cmd(lst, &cur_token);
+    free(original);
+}
+
+// funtion to check if single quote/double quote contains $
+// remove outer quotes and deceide if expand
+void parse_type_quote(t_token **lst)
+{
+    char *dollar_pos;
+
+    dollar_pos = ft_strchr((*lst)->value, '$');
+    if (dollar_pos && (*lst)->type == DOUBLE_QUOTE)
+        expand_var(lst, dollar_pos);
+    remove_outer_quote(lst);
+}
+
+// funtion to parse ARGUMENT to see if * find
 
 
 // main function of parsing to refine the tokens
@@ -103,17 +163,16 @@ void parsing(t_token **lst)
     {
         if (head->type == WORD)
         {
-            // printf("check token: value=%s, type=%i\n", head->value, head->type);
             parse_type_word(&head);
             if (head == *lst)
                 head->type = COMMAND;
             else
                 if_cmd(lst, &head);
         }
-    //     else if (head->type == 1)
-    //         parse_single_quote();
-    //     else if (head->type == 2)
-    //         parse_double_quote();
+        if (head->type == SINGLE_QUOTE || head->type == DOUBLE_QUOTE)
+            parse_type_quote(&head);
+        // if (head->type == ARGUMENT)
+        //     parse_type_arg();
     //     else if (head->type == 9)
     //         parse_variable();
         head = head->next;

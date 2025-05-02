@@ -15,9 +15,10 @@ char *print_out_type(t_token_type type)
 		case RE_TARGET: return "RE_TARGET"; //7
         case LOGICAL_OR: return "LOGICAL_OR"; //8
         case LOGICAL_AND: return "LOGICAL_AND"; //9
-        case ENV_VARIABLE: return "ENV_VARIABLE"; //10
-		case PID: return "PID"; //11
-        default: return "UNKNOWN"; //12
+		case WILDCARD: return "WILDCARD"; //10
+        case ENV_VARIABLE: return "ENV_VARIABLE"; //11
+		case PID: return "PID"; //12
+        default: return "UNKNOWN"; //13
     }
 }
 

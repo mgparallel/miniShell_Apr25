@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "libft/libft.h"
@@ -20,15 +21,16 @@ typedef enum token_type
     RE_TARGET,
     LOGICAL_OR, // ||
     LOGICAL_AND, // &&
+    WILDCARD, //*
     ENV_VARIABLE, //$
     PID, //$$
 } t_token_type;
 
-// typedef struct s_index
-// {
-//     char *start;
-//     char *end;
-// } t_index;
+typedef struct s_cmd
+{
+    char *path;
+    char **argv;
+} t_cmd;
 
 typedef struct s_token
 {
