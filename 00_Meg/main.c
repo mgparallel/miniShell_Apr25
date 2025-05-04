@@ -10,15 +10,16 @@ char *print_out_type(t_token_type type)
         case DOUBLE_QUOTE: return "DOUBLE_QUOTE"; //2
         case COMMAND: return "COMMAND"; //3
         case ARGUMENT: return "ARGUMENT"; //4
-        case PIPE: return "PIPE"; //5
-        case REDIRECTION: return "REDIRECTION"; //6
-		case RE_TARGET: return "RE_TARGET"; //7
-        case LOGICAL_OR: return "LOGICAL_OR"; //8
-        case LOGICAL_AND: return "LOGICAL_AND"; //9
-		case WILDCARD: return "WILDCARD"; //10
-        case ENV_VARIABLE: return "ENV_VARIABLE"; //11
-		case PID: return "PID"; //12
-        default: return "UNKNOWN"; //13
+		case EXIT_CODE: return "EXIT_CODE"; //5
+        case PIPE: return "PIPE"; //6
+        case REDIRECTION: return "REDIRECTION"; //7
+		case RE_TARGET: return "RE_TARGET"; //8
+        case LOGICAL_OR: return "LOGICAL_OR"; //9
+        case LOGICAL_AND: return "LOGICAL_AND"; //10
+		case WILDCARD: return "WILDCARD"; //11
+        case ENV_VARIABLE: return "ENV_VARIABLE"; //12
+		case PID: return "PID"; //13
+        default: return "UNKNOWN"; //14
     }
 }
 
