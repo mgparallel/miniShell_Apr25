@@ -5,9 +5,16 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <dirent.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "libft/libft.h"
+
+typedef struct s_files_indir
+{
+    char *value;
+    struct s_files_indir *next;
+} t_files_indir;
 
 typedef enum token_type
 {
@@ -49,7 +56,11 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst);
 
 void parsing(t_token **lst);
 int if_alnum_underscore(int arg);
+void fetch_wildcard(t_files_indir **fn);
+bool if_wildcard(t_token **cur_token);
 
 void	lstadd_back(t_token **lst, t_token *new);
+
+
 
 # endif

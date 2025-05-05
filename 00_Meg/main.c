@@ -46,13 +46,19 @@ int main(void)
 	while (1)
 	{
 		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
+		if (!input)
+		{
+			printf("No input");
+			return (1);
+		}
+		add_history(input);
 		if (!ft_strncmp(input, "exit", 4))
 			break;
 		token = tokenizer(input);
 		parsing(&token);
 		print_token(token);
-		// parsear()
 		// execution()
 	}
+	rl_clear_history();
 	return 0;
 }

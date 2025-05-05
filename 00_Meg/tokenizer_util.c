@@ -64,5 +64,5 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 	else
 		new_token->has_leading_space = 0;
 	lstadd_back(lst, new_token);
-	*start = NULL; //rest the start point, need to check
+	*start = NULL; //rest the start point
 }

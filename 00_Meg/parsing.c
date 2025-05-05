@@ -61,6 +61,8 @@ void parse_type_word(t_token **lst, t_token **cur_token)
     char *d_quote_pos;
 
     original = (*cur_token)->value;
+    if (if_wildcard(cur_token))
+        return ;
     s_quote_pos = ft_strchr(original, '\'');
     d_quote_pos = ft_strchr(original, '"');
     if (!s_quote_pos && !d_quote_pos)
@@ -89,14 +91,15 @@ void parse_type_word(t_token **lst, t_token **cur_token)
     if_cmd(lst, cur_token);
 }
 
-// function to chck if env_var is $?
+// function to check if env_var is $?
 // so it should update the type to EXIT_CODE and create new token if applicable
 int if_exit_code(t_token **cur_token)
 {
     if (!ft_strncmp((*cur_token)->value, "$?", 2))
     {
         (*cur_token)->type = EXIT_CODE;
-        update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, ARGUMENT);
+        if (ft_strlen((*cur_token)->value) > 2)
+            update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, ARGUMENT);
         return (1);
     }
     return (0);
