@@ -36,14 +36,18 @@ void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
         return ;
     cmd_value = ft_strcpy(str, quote_pos);
     if (!cmd_value)
+    {
+        free(quote_token);
         return ;
+    }
     quote_token->value = ft_strdup(quote_pos);
     if (!quote_token->value)
+    {
+        free(quote_token);
+        free(cmd_value);
         return ;
+    }
     current_token->value = cmd_value;
-    quote_token->value = ft_strdup(quote_pos);
-    if (!quote_token->value)
-        return (free(cmd_value));
     quote_token->type = type;
     quote_token->has_leading_space = 0;
     quote_token->next = current_token->next;
@@ -61,8 +65,8 @@ void parse_type_word(t_token **lst, t_token **cur_token)
     char *d_quote_pos;
 
     original = (*cur_token)->value;
-    if (if_wildcard(cur_token))
-        return ;
+    if (if_wildcard(cur_token)) //funtion return true/false
+        return ; 
     s_quote_pos = ft_strchr(original, '\'');
     d_quote_pos = ft_strchr(original, '"');
     if (!s_quote_pos && !d_quote_pos)
@@ -193,11 +197,7 @@ void parse_type_quote(t_token **lst, t_token **cur_token)
         remove_outer_quote(lst, cur_token);
 }
 
-// funtion to parse ARGUMENT to see if * find
-
-
-// main function of parsing to refine the tokens
-
+// main function of PARSING to refine the tokens
 void parsing(t_token **lst)
 {
     t_token *head;
