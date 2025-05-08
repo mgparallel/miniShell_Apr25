@@ -219,5 +219,5 @@ void parsing(t_token **lst)
     //         parse_variable();
         head = head->next;
     }
-
+    
 }
