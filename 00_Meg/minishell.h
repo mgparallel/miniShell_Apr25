@@ -34,21 +34,6 @@ typedef enum token_type
     PID, //$$
 } t_token_type;
 
-// typedef struct s_cmd
-// {
-//     char *path;
-//     char **argv;
-// } t_cmd;
-
-// typedef struct 
-// {
-// 	int infile;
-// 	int outfile;
-// 	int pipe_in[2];
-// 	int pipe_out[2];
-// 	char *cmd;
-// };
-
 typedef struct s_token
 {
     t_token_type    type;
@@ -56,6 +41,14 @@ typedef struct s_token
     int             has_leading_space;
     struct s_token *next;
 } t_token;
+
+typedef struct s_cmd
+{
+	int		fd_in;
+	int		fd_out;
+	t_token *tokens;
+    struct s_cmd    *next;
+} t_cmd;
 
 char *readline(const char *prompt);
 bool ch_is_space(char ch);
