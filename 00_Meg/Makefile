@@ -10,7 +10,7 @@ HEADER = minishell.h
 RM = rm -rf
 NAME = minishell
 
-SRCS = $(wildcard *.c)
+SRCS = $(wildcard *.c) $(wildcard 04_bonus_wildcard/*.c)
 
 OBJS = $(SRCS:.c=.o)
 
@@ -34,6 +34,6 @@ fclean: clean
 	$(RM) $(NAME)
 	$(MAKE) -C libft fclean
 
-re: fclean all #make re does not compile again the .c files!! need to check
+re: fclean all
 
 .PHONY: all clean fclean re

@@ -1,5 +1,4 @@
-#include "minishell.h"
-void fn_match_util(char **arr, t_files_indir **fn_lst, t_files_indir **result);
+#include "../minishell.h"
 
 void free_arr(char **arr)
 {

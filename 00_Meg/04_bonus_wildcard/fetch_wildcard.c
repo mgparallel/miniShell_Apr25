@@ -1,14 +1,4 @@
-#include "minishell.h"
-#include <unistd.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <dirent.h>
-
-void fn_match(t_files_indir *fn_lst, char *value, t_files_indir **result);
-char **append_arr(char **arr, char *str);
-char **prepend_arr(char **arr, char *str);
-void free_arr(char **arr);
+#include "../minishell.h"
 
 // funtion to free the prev tokens until the failing
 void free_fn(t_files_indir **fn)

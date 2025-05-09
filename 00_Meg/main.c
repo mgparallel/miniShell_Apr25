@@ -38,6 +38,27 @@ void print_token(t_token *token)
 	}
 }
 
+void clear_token(t_token **token)
+{
+	while (*token)
+	{
+		free(*token);
+		*token = (*token)->next;
+	}
+	*token = NULL;
+}
+
+void clean_exit(t_token **token)
+{
+	while (*token)
+	{
+		free((*token)->value);
+		free(*token);
+		*token = (*token)->next;
+	}
+	//free(token);
+}
+
 int main(void)
 {
 	char *input;
@@ -52,11 +73,16 @@ int main(void)
 			return (1);
 		}
 		add_history(input);
+		//copy_env()
 		if (!ft_strncmp(input, "exit", 4))
+		{
+			clean_exit(&token);
 			break;
+		}
 		token = tokenizer(input);
 		parsing(&token);
 		print_token(token);
+		clear_token(&token);
 		// execution()
 	}
 	rl_clear_history();

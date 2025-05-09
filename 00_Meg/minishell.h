@@ -18,13 +18,13 @@ typedef struct s_files_indir
 
 typedef enum token_type
 {
-    WORD, //general, can be COMMAND 
+    WORD, //general, being replaced after parsing
     SINGLE_QUOTE,
     DOUBLE_QUOTE,
     COMMAND, //echo cat ls
     ARGUMENT, //-n file.c
-    EXIT_CODE,
-    PIPE,
+    EXIT_CODE, //$?
+    PIPE, //  |
     REDIRECTION, //< > << >>
     RE_TARGET,
     LOGICAL_OR, // ||
@@ -34,11 +34,20 @@ typedef enum token_type
     PID, //$$
 } t_token_type;
 
-typedef struct s_cmd
-{
-    char *path;
-    char **argv;
-} t_cmd;
+// typedef struct s_cmd
+// {
+//     char *path;
+//     char **argv;
+// } t_cmd;
+
+// typedef struct 
+// {
+// 	int infile;
+// 	int outfile;
+// 	int pipe_in[2];
+// 	int pipe_out[2];
+// 	char *cmd;
+// };
 
 typedef struct s_token
 {
@@ -61,6 +70,13 @@ bool if_wildcard(t_token **cur_token);
 
 void	lstadd_back(t_token **lst, t_token *new);
 
+void clean_exit(t_token **token);
 
+
+void fn_match_util(char **arr, t_files_indir **fn_lst, t_files_indir **result);
+void fn_match(t_files_indir *fn_lst, char *value, t_files_indir **result);
+char **append_arr(char **arr, char *str);
+char **prepend_arr(char **arr, char *str);
+void free_arr(char **arr);
 
 # endif

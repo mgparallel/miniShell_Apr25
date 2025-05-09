@@ -49,10 +49,7 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 
 	str = ft_strcpy(*start, end);
 	if (!str)
-	{
-		printf("no string created!\n");
-		return ; //need an error code TO_DO
-	}
+		return ;
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
 		return ;
@@ -64,5 +61,5 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 	else
 		new_token->has_leading_space = 0;
 	lstadd_back(lst, new_token);
-	*start = NULL; //rest the start point
+	*start = NULL; //reset the start point
 }
