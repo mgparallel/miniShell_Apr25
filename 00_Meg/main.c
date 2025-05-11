@@ -17,7 +17,7 @@ char *print_out_type(t_token_type type)
         case LOGICAL_OR: return "LOGICAL_OR"; //9
         case LOGICAL_AND: return "LOGICAL_AND"; //10
 		case WILDCARD: return "WILDCARD"; //11
-        case ENV_VARIABLE: return "ENV_VARIABLE"; //12
+        case ENV_VAR: return "ENV_VAR"; //12
 		case PID: return "PID"; //13
         default: return "UNKNOWN"; //14
     }
@@ -36,6 +36,7 @@ void print_token(t_token *token)
 		printf("\nVALUE: %s, TYPE: %s, SPACE? %d \n", token->value, print_out_type(token->type), token->has_leading_space);
 		token = token->next;
 	}
+	printf("\n");
 }
 
 void clear_token(t_token **token)

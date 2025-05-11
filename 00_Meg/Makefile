@@ -16,7 +16,7 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBS) 
+$(NAME): $(OBJS) $(LIBS) Makefile
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBS) $(LDFLAGS) -o $(NAME) -fsanitize=address
 
 %.o: %.c

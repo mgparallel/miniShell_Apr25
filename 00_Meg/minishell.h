@@ -30,7 +30,7 @@ typedef enum token_type
     LOGICAL_OR, // ||
     LOGICAL_AND, // &&
     WILDCARD, //*
-    ENV_VARIABLE, //$
+    ENV_VAR, //$
     PID, //$$
 } t_token_type;
 
@@ -57,10 +57,12 @@ t_token *tokenizer(char *input);
 void create_token(char **start, char *end, t_token_type type, t_token **lst);
 
 void parsing(t_token **lst);
-int if_alnum_underscore(int arg);
+void parse_type_word(t_token **lst, t_token **cur_token);
+void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
+int if_alnum_underscore_braces(int arg);
 void fetch_wildcard(t_files_indir **fn);
 bool if_wildcard(t_token **cur_token);
-
+void if_cmd(t_token **lst, t_token **cur_token);
 void	lstadd_back(t_token **lst, t_token *new);
 
 void clean_exit(t_token **token);
