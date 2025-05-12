@@ -21,14 +21,14 @@ typedef enum token_type
     WORD, //general, being replaced after parsing
     SINGLE_QUOTE,
     DOUBLE_QUOTE,
-    COMMAND, //echo cat ls
-    ARGUMENT, //-n file.c
+    CMD, //echo cat ls
+    ARG, //-n file.c
     EXIT_CODE, //$?
     PIPE, //  |
-    REDIRECTION, //< > << >>
+    REDIRECT, //< > << >>
     RE_TARGET,
-    LOGICAL_OR, // ||
-    LOGICAL_AND, // &&
+    OR, // ||
+    AND, // &&
     WILDCARD, //*
     ENV_VAR, //$
     PID, //$$
@@ -58,11 +58,15 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst);
 
 void parsing(t_token **lst);
 void parse_type_word(t_token **lst, t_token **cur_token);
+void    parse_type_arg(t_token **lst, t_token **cur_token);
+void parse_type_var(t_token **cur_token);
+void expand_var(t_token **cur_token, char *pos);
 void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
 int if_alnum_underscore_braces(int arg);
 void fetch_wildcard(t_files_indir **fn);
 bool if_wildcard(t_token **cur_token);
 void if_cmd(t_token **lst, t_token **cur_token);
+void var_found(t_token **cur_token);
 void	lstadd_back(t_token **lst, t_token *new);
 
 void clean_exit(t_token **token);

@@ -36,7 +36,6 @@ t_token *tokenizer(char *input)
                 }
                 else
                 {
-                    single_quote = !single_quote;
                     input++;
                     continue ;
                 }
@@ -59,7 +58,6 @@ t_token *tokenizer(char *input)
                 }
                 else
                 {
-                    double_quote = !double_quote;
                     input++;
                     continue ;
                 }
@@ -95,13 +93,13 @@ t_token *tokenizer(char *input)
                     if (*(input + 1) == *input)
                     {
                         if (*input == '|')
-                            create_token(&token_start, input + 2, LOGICAL_OR, &head);
+                            create_token(&token_start, input + 2, OR, &head);
                         else if (*input == '&')
-                            create_token(&token_start, input + 2, LOGICAL_AND, &head);
+                            create_token(&token_start, input + 2, AND, &head);
                         else if (*input == '$')
                             create_token(&token_start, input + 2, PID, &head);
                         else
-                            create_token(&token_start, input + 2, REDIRECTION, &head);
+                            create_token(&token_start, input + 2, REDIRECT, &head);
                         input += 2;
                         continue ;
                     }
@@ -110,7 +108,7 @@ t_token *tokenizer(char *input)
                         if (*input == '|')
                             create_token(&token_start, input + 1, PIPE, &head);
                         else if (*input == '<' || *input == '>')
-                            create_token(&token_start, input + 1, REDIRECTION, &head);
+                            create_token(&token_start, input + 1, REDIRECT, &head);
                         else
                             in_token = !in_token;
                         input++;

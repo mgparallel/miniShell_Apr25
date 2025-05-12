@@ -8,14 +8,14 @@ char *print_out_type(t_token_type type)
         case WORD: return "WORD";  //0
         case SINGLE_QUOTE: return "SINGLE_QUOTE"; //1
         case DOUBLE_QUOTE: return "DOUBLE_QUOTE"; //2
-        case COMMAND: return "COMMAND"; //3
-        case ARGUMENT: return "ARGUMENT"; //4
+        case CMD: return "CMD"; //3
+        case ARG: return "ARG"; //4
 		case EXIT_CODE: return "EXIT_CODE"; //5
         case PIPE: return "PIPE"; //6
-        case REDIRECTION: return "REDIRECTION"; //7
+        case REDIRECT: return "REDIRECT"; //7
 		case RE_TARGET: return "RE_TARGET"; //8
-        case LOGICAL_OR: return "LOGICAL_OR"; //9
-        case LOGICAL_AND: return "LOGICAL_AND"; //10
+        case OR: return "OR"; //9
+        case AND: return "AND"; //10
 		case WILDCARD: return "WILDCARD"; //11
         case ENV_VAR: return "ENV_VAR"; //12
 		case PID: return "PID"; //13
