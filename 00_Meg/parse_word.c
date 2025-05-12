@@ -22,7 +22,7 @@ void var_found(t_token **cur_token)
 
 // funton to parse the token with type="WORD"
 // if find quotes, remove and update token value
-void parse_type_word(t_token **lst, t_token **cur_token)
+void parse_type_word(t_token **cur_token)
 {
     char *original;
     char *s_quote_pos;
@@ -35,7 +35,7 @@ void parse_type_word(t_token **lst, t_token **cur_token)
     d_quote_pos = ft_strchr(original, '"');
     if (!s_quote_pos && !d_quote_pos)
     {
-        if_cmd(lst, cur_token);
+        //if_cmd(lst, cur_token);
         return ;
     }
     if (s_quote_pos && (!d_quote_pos || s_quote_pos < d_quote_pos))
@@ -48,5 +48,5 @@ void parse_type_word(t_token **lst, t_token **cur_token)
         if (*(ft_strrchr(original, '"') + 1) == '\0')
             update_token(cur_token, original, d_quote_pos, DOUBLE_QUOTE);
     }
-    if_cmd(lst, cur_token);
+    //if_cmd(lst, cur_token);
 }

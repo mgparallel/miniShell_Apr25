@@ -50,28 +50,47 @@ typedef struct s_cmd
     struct s_cmd    *next;
 } t_cmd;
 
+//main.c
 char *readline(const char *prompt);
-bool ch_is_space(char ch);
-char *ft_strcpy(char *start, char *end);
-t_token *tokenizer(char *input);
-void create_token(char **start, char *end, t_token_type type, t_token **lst);
-
-void parsing(t_token **lst);
-void parse_type_word(t_token **lst, t_token **cur_token);
-void    parse_type_arg(t_token **lst, t_token **cur_token);
-void parse_type_var(t_token **cur_token);
-void expand_var(t_token **cur_token, char *pos);
-void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
-int if_alnum_underscore_braces(int arg);
-void fetch_wildcard(t_files_indir **fn);
-bool if_wildcard(t_token **cur_token);
-void if_cmd(t_token **lst, t_token **cur_token);
-void var_found(t_token **cur_token);
-void	lstadd_back(t_token **lst, t_token *new);
-
 void clean_exit(t_token **token);
 
+//tokenizer.c
+t_token *tokenizer(char *input);
+int	delimiter_found(int *in_token, char **input, char **token_start, t_token **head);
 
+//tokenizer_input.c
+int parse_input(char **input, t_token **head, int *in_token, char **token_start);
+
+//tokenizer_util.c
+void create_token(char **start, char *end, t_token_type type, t_token **lst);
+char *ft_strcpy(char *start, char *end);
+void	lstadd_back(t_token **lst, t_token *new);
+bool ch_is_space(char ch);
+bool ch_is_special(char ch);
+
+// parsing
+void parsing(t_token **lst);
+void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
+void if_cmd(t_token **lst);
+int if_alnum_underscore_braces(int arg);
+
+//parse_var.c
+void parse_type_var(t_token **cur_token);
+void expand_var(t_token **cur_token, char *pos);
+
+//parse_word.c
+void parse_type_word(t_token **cur_token);
+void var_found(t_token **cur_token);
+
+//parse_quote.c
+void parse_type_quote(t_token **cur_token);
+
+//parse_arg.c
+void parse_type_arg(t_token **lst, t_token **cur_token);
+
+//04_bonus_wildcard
+void fetch_wildcard(t_files_indir **fn);
+bool if_wildcard(t_token **cur_token);
 void fn_match_util(char **arr, t_files_indir **fn_lst, t_files_indir **result);
 void fn_match(t_files_indir *fn_lst, char *value, t_files_indir **result);
 char **append_arr(char **arr, char *str);

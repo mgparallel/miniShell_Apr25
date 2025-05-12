@@ -92,7 +92,7 @@ void parse_type_var(t_token **cur_token)
     if_braces(&var);
     expand_value = getenv(var);
     if (!expand_value)
-        (*cur_token)->value = "(null)";
+        (*cur_token)->value = "";
     else
         (*cur_token)->value = expand_value;
     (*cur_token)->type = ARG;

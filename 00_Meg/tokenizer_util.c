@@ -1,5 +1,15 @@
 #include "minishell.h"
 
+bool ch_is_space(char ch)
+{
+	return (ch == ' ' || ch == '\t' || ch == '\n');
+}
+
+bool ch_is_special(char ch)
+{
+    return (ch == '>' || ch == '<' || ch == '|' || ch == '&');
+}
+
 void	lstadd_back(t_token **lst, t_token *new)
 {
 	t_token	*ref;

@@ -1,7 +1,7 @@
 #include "minishell.h"
 
 // funtion to remove quotes outside of literal value
-void remove_outer_quote(t_token **lst, t_token **cur_token)
+void remove_outer_quote(t_token **cur_token)
 {
     char *original;
     char *new_value;
@@ -13,19 +13,27 @@ void remove_outer_quote(t_token **lst, t_token **cur_token)
     if (!new_value)
         return ;
     (*cur_token)->value = new_value;
-    if_cmd(lst, cur_token);
+    //if_cmd(lst, cur_token);
     free(original);
 }
 
 // funtion to check if single quote/double quote contains $
 // remove outer quotes and deceide if expand
-void parse_type_quote(t_token **lst, t_token **cur_token)
+void parse_type_quote(t_token **cur_token)
 {
     char *dollar_pos;
 
     dollar_pos = ft_strchr((*cur_token)->value, '$');
     if (dollar_pos && (*cur_token)->type == DOUBLE_QUOTE)
-        expand_var(cur_token, dollar_pos);
+    {
+        if (dollar_pos[1] && dollar_pos[1] == '{')
+        {
+            remove_outer_quote(cur_token);
+            (*cur_token)->type = ENV_VAR;
+        }
+        else
+            expand_var(cur_token, dollar_pos);
+    }
     else
-        remove_outer_quote(lst, cur_token);
+        remove_outer_quote(cur_token);
 }
