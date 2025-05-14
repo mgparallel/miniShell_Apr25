@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+void free_lst(t_files **lst);
+
 // funtion to print the str of the type -> remove later 
 char *print_out_type(t_token_type type)
 {
@@ -60,11 +62,14 @@ void clean_exit(t_token **token)
 	//free(token);
 }
 
-int main(int argc, char **argv, char **env)
+int main(int argc, char **argv, char **envp)
 {
 	char *input;
 	t_token *token;
+	t_files *env;
 
+	(void)argc;
+	(void)argv;
 	while (1)
 	{
 		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
@@ -74,17 +79,17 @@ int main(int argc, char **argv, char **env)
 			return (1);
 		}
 		add_history(input);
-		//copy_env()
+		env = cp_env(envp);
 		if (!ft_strncmp(input, "exit", 4))
 		{
 			clean_exit(&token);
 			break;
 		}
 		token = tokenizer(input);
-		parsing(&token);
+		parsing(&token, env);
 		print_token(token);
 		clear_token(&token);
-		// execution()
+		// execution(token, env);
 	}
 	rl_clear_history();
 	return 0;

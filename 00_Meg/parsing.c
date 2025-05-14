@@ -10,13 +10,32 @@ int if_alnum_underscore_braces(int arg)
         return (1);
 }
 
+void if_cmd_util(t_token **lst)
+{
+	t_token *cur_token;
+	int	cmd_flag;
+
+	cur_token = *lst;
+	cmd_flag = 0;
+	while (cur_token)
+	{
+		if (cur_token->type == CMD && !cmd_flag)
+			cmd_flag = 1;
+		else if (cur_token->type == CMD)
+			cur_token->type = ARG;
+		else if (cur_token->type == PIPE)
+			cmd_flag = 0;
+		cur_token = cur_token->next;
+	}
+}
+
 void if_cmd(t_token **lst)
 {
     t_token *cur_token;
     t_token *prev;
 
     cur_token = *lst; // the begining of the list, used to parse until the one before cur_token
-    if (cur_token->type != PIPE)
+    if (cur_token->type != PIPE && cur_token->type != REDIRECT)
         cur_token->type = CMD;
     prev = cur_token;
     cur_token = cur_token->next;
@@ -27,11 +46,12 @@ void if_cmd(t_token **lst)
         else if (prev->type == REDIRECT)
             cur_token->type = RE_TARGET;
         else if (cur_token->type != ENV_VAR && cur_token->type != PIPE && 
-                                        cur_token->type != REDIRECT)
+                                cur_token->type != REDIRECT && cur_token->type != AND && cur_token->type != OR)
             cur_token->type = ARG;
         prev = cur_token;
         cur_token = cur_token->next;
     }
+	if_cmd_util(lst);
 }
 
 void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
@@ -68,7 +88,7 @@ void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
 }
 
 // main function of PARSING to refine the tokens
-void parsing(t_token **lst)
+void parsing(t_token **lst, t_files *env)
 {
     t_token *head;
 
@@ -83,9 +103,9 @@ void parsing(t_token **lst)
             var_found(&head);
         }
         if (head->type == SINGLE_QUOTE || head->type == DOUBLE_QUOTE)
-                parse_type_quote(&head);
+                parse_type_quote(&head, env);
         if (head->type == ENV_VAR)
-                parse_type_var(&head);
+                parse_type_var(&head, env);
         if (head->type == ARG)
             parse_type_arg(lst, &head);
         head = head->next;
