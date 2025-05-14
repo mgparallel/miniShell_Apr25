@@ -17,7 +17,6 @@ typedef struct s_files
     struct s_files *next;
 } t_files;
 
-
 typedef enum token_type
 {
     WORD, //general, being replaced after parsing
