@@ -35,7 +35,7 @@ void parse_type_word(t_token **cur_token)
     d_quote_pos = ft_strchr(original, '"');
     if (!s_quote_pos && !d_quote_pos)
 	{
-		//(*cur_token)->type = ARG;
+		(*cur_token)->type = ARG;
         return ;
 	}
     if (s_quote_pos && (!d_quote_pos || s_quote_pos < d_quote_pos))

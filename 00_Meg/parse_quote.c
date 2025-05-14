@@ -13,7 +13,7 @@ void remove_outer_quote(t_token **cur_token)
     if (!new_value)
         return ;
     (*cur_token)->value = new_value;
-    (*cur_token)->type = ARG;
+    //(*cur_token)->type = ARG;
     free(original);
 }
 

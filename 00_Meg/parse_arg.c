@@ -18,6 +18,8 @@ void    parse_type_arg(t_token **lst, t_token **cur_token)
 {
     t_token *prev;
 
+    if (*lst == *cur_token)
+        return ;
     prev = *lst;
     while (prev->next != *cur_token)
         prev = prev->next;
