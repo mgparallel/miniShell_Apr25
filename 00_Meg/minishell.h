@@ -21,7 +21,7 @@ typedef struct s_env
 {
     char *var;
     char *value;
-    struct s_list *next;
+    struct s_env *next;
 } t_env;
 
 typedef enum token_type
@@ -54,19 +54,21 @@ typedef struct s_token
 
 typedef struct s_cmd
 {
-	int		fd_in;
-	int		fd_out;
-	t_token *tokens;
+	char	**argv;
+	char	*infile;
+	char	*outfile;
+	int		argc;
+	int		append;
+	int		heredoc;
+	t_token_type	connector;
     struct s_cmd    *next;
 } t_cmd;
 
-typedef struct s_data
+typedef struct s_cmd_list
 {
-	t_token	*tokens;
-	t_cmd	*cmds;
-	t_env	*env;
-	t_files	*files;
-} t_data;
+	t_cmd	*head;
+	t_cmd	*curr;
+} t_cmd_list;
 
 //main.c
 char *readline(const char *prompt);
