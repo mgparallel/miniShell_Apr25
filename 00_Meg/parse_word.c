@@ -34,10 +34,7 @@ void parse_type_word(t_token **cur_token)
     s_quote_pos = ft_strchr(original, '\'');
     d_quote_pos = ft_strchr(original, '"');
     if (!s_quote_pos && !d_quote_pos)
-    {
-        //if_cmd(lst, cur_token);
         return ;
-    }
     if (s_quote_pos && (!d_quote_pos || s_quote_pos < d_quote_pos))
     {
         if (*(ft_strrchr(original, '\'') + 1)  == '\0')
@@ -48,5 +45,4 @@ void parse_type_word(t_token **cur_token)
         if (*(ft_strrchr(original, '"') + 1) == '\0')
             update_token(cur_token, original, d_quote_pos, DOUBLE_QUOTE);
     }
-    //if_cmd(lst, cur_token);
 }

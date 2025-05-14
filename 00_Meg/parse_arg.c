@@ -23,5 +23,4 @@ void    parse_type_arg(t_token **lst, t_token **cur_token)
         prev = prev->next;
     if (!(*cur_token)->has_leading_space && prev->type != PIPE && prev->type != REDIRECT)
         join_token(&prev, cur_token);
-    //if_cmd(lst, cur_token);
 }

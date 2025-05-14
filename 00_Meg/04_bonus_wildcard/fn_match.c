@@ -80,7 +80,7 @@ char **append_arr(char **arr, char *str) //probelm here still
 
 //funtion to parse the fn_lst and token value
 //update result if the wildcard token if valid
-void fn_match(t_files_indir *fn_lst, char *value, t_files_indir **result)
+void fn_match(t_files *fn_lst, char *value, t_files **result)
 {
     char **arr; //to store str after splitting
     char **updated_arr;

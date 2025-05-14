@@ -1,9 +1,9 @@
 #include "../minishell.h"
 
 // funtion to free the prev tokens until the failing
-void free_fn(t_files_indir **fn)
+void free_fn(t_files **fn)
 {
-    t_files_indir *temp;
+    t_files *temp;
 
     while (*fn)
     {
@@ -13,9 +13,9 @@ void free_fn(t_files_indir **fn)
     }
 }
 
-void    indir_lst_addback(t_files_indir **lst, t_files_indir *new)
+void    indir_lst_addback(t_files **lst, t_files *new)
 {
-	t_files_indir	*ref;
+	t_files	*ref;
 
 	// if (lst == NULL || new == NULL)
 	// 	return ;
@@ -31,11 +31,11 @@ void    indir_lst_addback(t_files_indir **lst, t_files_indir *new)
 }
 
 //funtion to update the fn_lst stucture by adding new nodes.
-void create_fn_lst(struct dirent *dp, t_files_indir **fn_lst)
+void create_fn_lst(struct dirent *dp, t_files **fn_lst)
 {
-    t_files_indir *new_token;
+    t_files *new_token;
 
-    new_token = malloc(sizeof(t_files_indir));
+    new_token = malloc(sizeof(t_files));
     if (!new_token)
         return ;
     new_token->value = ft_strdup(dp->d_name);
@@ -46,7 +46,7 @@ void create_fn_lst(struct dirent *dp, t_files_indir **fn_lst)
 }
 
 // funtion to create the filename_list by opendir()
-void fetch_wildcard(t_files_indir **fn_lst)
+void fetch_wildcard(t_files **fn_lst)
 {
     struct dirent *dp;
     DIR *dir;
@@ -92,11 +92,11 @@ char *strmatch(const char *big, const char *little)
     return (NULL);
 }
 
-void update_result(char *value, t_files_indir **result, int *flag)
+void update_result(char *value, t_files **result, int *flag)
 {
-    t_files_indir *new;
+    t_files *new;
 
-    new = malloc(sizeof(t_files_indir));
+    new = malloc(sizeof(t_files));
     if (!new)
         return ;
     if (*flag == 0)
@@ -109,7 +109,7 @@ void update_result(char *value, t_files_indir **result, int *flag)
     indir_lst_addback(result, new);
 }
 
-void fn_match_util(char **arr, t_files_indir **fn_lst, t_files_indir **result)
+void fn_match_util(char **arr, t_files **fn_lst, t_files **result)
 {
     char *trimmed;
     char **temp;
@@ -167,10 +167,10 @@ bool if_wildcard(t_token **cur_token)
     return (true);
 }
 
-t_files_indir *expand_wildcard(char *value)
+t_files *expand_wildcard(char *value)
 {
-    t_files_indir *fn_lst;
-    t_files_indir *result;
+    t_files *fn_lst;
+    t_files *result;
 
     fn_lst = NULL;
     result = NULL;
@@ -185,7 +185,7 @@ t_files_indir *expand_wildcard(char *value)
 // {
 //     char *value = "mini*";
 
-//     t_files_indir *result = expand_wildcard(value);
+//     t_files *result = expand_wildcard(value);
 //     if (!result)
 //     {
 //         printf("no result\n");

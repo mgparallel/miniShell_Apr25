@@ -6,15 +6,23 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <sys/types.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "libft/libft.h"
 
-typedef struct s_files_indir
+typedef struct s_files
 {
     char *value;
-    struct s_files_indir *next;
-} t_files_indir;
+    struct s_list *next;
+} t_files;
+
+typedef struct s_env
+{
+    char *var;
+    char *value;
+    struct s_list *next;
+} t_env;
 
 typedef enum token_type
 {
@@ -38,6 +46,8 @@ typedef struct s_token
 {
     t_token_type    type;
     char            *value;
+    t_files         *lst;
+    t_env           *env;
     int             has_leading_space;
     struct s_token *next;
 } t_token;
@@ -89,10 +99,10 @@ void parse_type_quote(t_token **cur_token);
 void parse_type_arg(t_token **lst, t_token **cur_token);
 
 //04_bonus_wildcard
-void fetch_wildcard(t_files_indir **fn);
+void fetch_wildcard(t_files **fn);
 bool if_wildcard(t_token **cur_token);
-void fn_match_util(char **arr, t_files_indir **fn_lst, t_files_indir **result);
-void fn_match(t_files_indir *fn_lst, char *value, t_files_indir **result);
+void fn_match_util(char **arr, t_files **fn_lst, t_files **result);
+void fn_match(t_files *fn_lst, char *value, t_files **result);
 char **append_arr(char **arr, char *str);
 char **prepend_arr(char **arr, char *str);
 void free_arr(char **arr);

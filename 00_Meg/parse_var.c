@@ -13,7 +13,6 @@ void if_braces(char **var)
         else if (*(pos + 1) == '\0')
         {
             *var = ft_strcpy(*var + 1, pos);
-            printf("var: %s\n", *var);
             if (!*var)
                 return ;
         }
