@@ -19,7 +19,7 @@ void remove_outer_quote(t_token **cur_token)
 
 // funtion to check if single quote/double quote contains $
 // remove outer quotes and deceide if expand
-void parse_type_quote(t_token **cur_token)
+void parse_type_quote(t_token **cur_token, t_files *env)
 {
     char *dollar_pos;
 
@@ -32,7 +32,7 @@ void parse_type_quote(t_token **cur_token)
             (*cur_token)->type = ENV_VAR;
         }
         else
-            expand_var(cur_token, dollar_pos);
+            expand_var(cur_token, dollar_pos, env);
     }
     else
         remove_outer_quote(cur_token);

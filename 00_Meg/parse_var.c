@@ -19,8 +19,34 @@ void if_braces(char **var)
     }
 }
 
+char *get_var_value(char *var, t_files *env)
+{
+	size_t len;
+	char *value;
+
+	len = ft_strlen(var);
+	while (env)
+	{
+		if (!ft_strncmp(env->value, var, len))
+		{
+			if (env->value[len] == '=')
+			{	
+				value = ft_strdup(env->value + (int)len + 1);
+				//printf("value: %s\n", value);
+				if (!value)
+					return (NULL);
+				break ;
+			}
+		}
+		env = env->next;
+	}
+	if (!env)
+		return (NULL);
+	return (value);
+}
+
 // funtion to expand the variable in case is valid
-void expand_var(t_token **cur_token, char *pos)
+void expand_var(t_token **cur_token, char *pos, t_files *env)
 {
     char *original;
     char *end_of_str;
@@ -36,10 +62,10 @@ void expand_var(t_token **cur_token, char *pos)
     if (!var)
         return (free(first_part));
     free(original);
-    if (!getenv(var))
+    if (!get_var_value(var, env))
         original = first_part;
     else
-        original = ft_strjoin(first_part, getenv(var));
+        original = ft_strjoin(first_part, get_var_value(var, env));
     if (!original)
         return ;
     (*cur_token)->value = original;
@@ -61,7 +87,7 @@ int if_exit_code(t_token **cur_token)
 }
 
 // function to check if ENV_VAR are valid
-void parse_type_var(t_token **cur_token)
+void parse_type_var(t_token **cur_token, t_files *env)
 {
     char *var;
     char *expand_value;
@@ -85,11 +111,14 @@ void parse_type_var(t_token **cur_token)
         var = (*cur_token)->value + 1;
     }
     else
-        var = ft_strdup((*cur_token)->value + 1);
-    if (!var)
-        return ;
+    {
+		var = ft_strdup((*cur_token)->value + 1);
+		if (!var)
+        	return ;
+	}
     if_braces(&var);
-    expand_value = getenv(var);
+	// printf("var: %s\n", var);
+    expand_value = get_var_value(var, env);
     if (!expand_value)
         (*cur_token)->value = "";
     else
