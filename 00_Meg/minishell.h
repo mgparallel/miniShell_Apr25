@@ -60,6 +60,14 @@ typedef struct s_cmd
     struct s_cmd    *next;
 } t_cmd;
 
+typedef struct s_data
+{
+	t_token	*tokens;
+	t_cmd	*cmds;
+	t_env	*env;
+	t_files	*files;
+} t_data;
+
 //main.c
 char *readline(const char *prompt);
 void clean_exit(t_token **token);

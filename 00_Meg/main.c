@@ -60,7 +60,7 @@ void clean_exit(t_token **token)
 	//free(token);
 }
 
-int main(void)
+int main(int argc, char **argv, char **env)
 {
 	char *input;
 	t_token *token;
