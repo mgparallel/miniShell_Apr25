@@ -24,7 +24,6 @@ typedef enum token_type
     DOUBLE_QUOTE,
     CMD, //echo cat ls
     ARG, //-n file.c
-    EXIT_CODE, //$?
     PIPE, //  |
     REDIRECT, //< > << >>
     RE_TARGET,
@@ -90,8 +89,8 @@ void if_cmd(t_token **lst);
 int if_alnum_underscore_braces(int arg);
 
 //parse_var.c
-void parse_type_var(t_token **cur_token, t_files *env);
-void expand_var(t_token **cur_token, char *pos, t_files *env);
+void parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
+void expand_var(t_token **lst, t_token **cur_token, t_files *env);
 
 //parse_word.c
 void parse_type_word(t_token **cur_token);
@@ -102,6 +101,9 @@ void parse_type_quote(t_token **cur_token, t_files *env);
 
 //parse_arg.c
 void parse_type_arg(t_token **lst, t_token **cur_token);
+
+//lst_remove_token.c
+void    lst_rm_token(t_token **lst, t_token **cur_token);
 
 //04_bonus_wildcard
 void fetch_wildcard(t_files **fn);
