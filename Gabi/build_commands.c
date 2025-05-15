@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_commands.c                                   :+:      :+:    :+:   */
+/*   build_commands.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: gapujol- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -11,6 +11,57 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void print_cmd_list(t_cmd_list *list)
+{
+    if (!list || !list->head)
+    {
+        printf("Lista de comandos vacía.\n");
+        return;
+    }
+
+    int cmd_num = 0;
+    t_cmd *cmd = list->head;
+
+    while (cmd)
+    {
+        printf("=== Comando #%d ===\n", cmd_num++);
+        
+        // argv
+        printf("argv (%d args):", cmd->argc);
+        for (int i = 0; i < cmd->argc; i++)
+        {
+            printf(" [%s]", cmd->argv[i]);
+        }
+        printf("\n");
+
+        // redirecciones
+        printf("infile:   %s\n", cmd->infile ? cmd->infile : "(none)");
+        printf("outfile:  %s\n", cmd->outfile ? cmd->outfile : "(none)");
+        printf("append:   %s\n", cmd->append ? "yes" : "no");
+        printf("heredoc:  %s\n", cmd->heredoc ? "yes" : "no");
+
+        // conector lógico o pipe
+        switch (cmd->connector)
+        {
+            case PIPE:
+                printf("connector: PIPE\n");
+                break;
+            case AND:
+                printf("connector: &&\n");
+                break;
+            case OR:
+                printf("connector: ||\n");
+                break;
+            default:
+                printf("connector: (none)\n");
+                break;
+        }
+
+        printf("\n");
+        cmd = cmd->next;
+    }
+}
 
 void	free_cmd(t_cmd *cmd)
 {
@@ -31,11 +82,10 @@ void	free_cmd(t_cmd *cmd)
 void	free_cmd_list(t_cmd_list *cmd_list)
 {
 	t_cmd	*next;
-	int		i;
 
 	while (cmd_list->head)
 	{
-		next = cmd->head->next;
+		next = cmd_list->head->next;
 		free_cmd(cmd_list->head);
 		cmd_list->head = next;
 	}
@@ -47,29 +97,32 @@ static int	is_connector(t_token_type type)
 	return (type == PIPE || type == AND || type == OR);
 }
 
-int	manage_redirect(t_token *tokens, t_cmd *cmd)
+int	manage_redirect(t_token **tokens, t_cmd *cmd)
 {
-	if (!tokens->next || tokens->next->type != RE_TARGET)
+	if (!(*tokens)->next || (*tokens)->next->type != RE_TARGET)
 		return (1);
-	if (ft_strcmp(tokens->value, "<") == 0)
+	if (ft_strcmp((*tokens)->value, "<") == 0)
 	{
 		free(cmd->infile);
-		cmd->infile = strdup(tokens->next->value);
+		cmd->infile = strdup((*tokens)->next->value);
 		if (!cmd->infile)
 			return (1);
 	}
-	else if (ft_strcmp(tokens->value, "<<") == 0)
+	else if (ft_strcmp((*tokens)->value, "<<") == 0)
+	{
 		free(cmd->infile);
+		cmd->infile = NULL;
+	}
 	else
 	{
 		free(cmd->outfile);
-		cmd->outfile = strdup(tokens->next->value);
+		cmd->outfile = strdup((*tokens)->next->value);
 		if (!cmd->outfile)
 			return (1);
 	}
-	cmd->heredoc = !ft_strcmp(tokens->next->value, "<<");
-	cmd->append = !ft_strcmp(tokens->next->value, ">>");
-	tokens = tokens->next;
+	cmd->heredoc = !ft_strcmp((*tokens)->value, "<<");
+	cmd->append = !ft_strcmp((*tokens)->value, ">>");
+	*tokens = (*tokens)->next;
 	return (0);
 }
 
@@ -97,7 +150,7 @@ int	build_arg_array(t_token *cmd_token, t_cmd *cmd)
 	return (0);
 }
 
-t_cmd	*build_cmd(t_token *tokens)
+t_cmd	*build_cmd(t_token **tokens)
 {
 	t_cmd	*cmd;
 	t_token	*cmd_token;
@@ -106,25 +159,25 @@ t_cmd	*build_cmd(t_token *tokens)
 	if (!cmd)
 		return (NULL);
 	cmd_token = NULL;
-	while (tokens && !is_connector(tokens->type))
+	while (*tokens && !is_connector((*tokens)->type))
 	{
-		if (tokens->type == CMD)
-			cmd_token = tokens;
-		else if (tokens->type == ARG)
+		if ((*tokens)->type == CMD)
+			cmd_token = *tokens;
+		else if ((*tokens)->type == ARG)
 			cmd->argc++;
-		else if (tokens->type == REDIRECT)
+		else if ((*tokens)->type == REDIRECT)
 			if (manage_redirect(tokens, cmd))
 				return (free_cmd(cmd), NULL);
-		tokens = tokens->next;
+		*tokens = (*tokens)->next;
 	}
 	if (build_arg_array(cmd_token, cmd))
 		return (free_cmd(cmd), NULL);
-	if (tokens)
-		cmd->connector = tokens->type;
+	if (*tokens)
+		cmd->connector = (*tokens)->type;
 	return (cmd);
 }
 
-t_cmd	*build_cmds(t_token *tokens)
+t_cmd_list	*build_cmds(t_token *tokens)
 {
 	t_cmd_list	*cmd_list;
 	t_cmd		*cmd;
@@ -134,7 +187,7 @@ t_cmd	*build_cmds(t_token *tokens)
 		return (NULL);
 	while (tokens)
 	{
-		cmd = build_cmd(tokens);
+		cmd = build_cmd(&tokens);
 		if (!cmd)
 			return (free_cmd_list(cmd_list), NULL);
 		if (!cmd_list->head)
@@ -142,6 +195,9 @@ t_cmd	*build_cmds(t_token *tokens)
 		else
 			cmd_list->curr->next = cmd;
 		cmd_list->curr = cmd;
+		if (tokens && is_connector(tokens->type))
+			tokens = tokens->next;
 	}
+	print_cmd_list(cmd_list);
 	return (cmd_list);
 }

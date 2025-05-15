@@ -27,20 +27,74 @@ int	redirect_output_to_file(char *filename)
 	return (0);
 }
 
-void close_all_pipes(int prev[2], int curr[2])
+int	redirect_stdio(t_cmd *cmd, int prev_pipe[2], int curr_pipe[2])
 {
-	if (prev[0] != -1) close(prev[0]);
-	if (prev[1] != -1) close(prev[1]);
-	if (curr[0] != -1) close(curr[0]);
-	if (curr[1] != -1) close(curr[1]);
+	if (cmd->infile)
+	{
+		if (redirect_input_from_file(cmd->infile))
+			return (1);
+	}
+	else if (prev_pipe[0] != -1)
+		if (dup2(prev_pipe[0], STDIN_FILENO) == -1)
+			return (perror("dup2:"), 1);
+	if (cmd->outfile)
+	{
+		if (redirect_output_to_file(cmd->outfile))
+			return (1);
+	}
+	else if (curr_pipe[1] != -1)
+		if (dup2(curr_pipe[1], STDOUT_FILENO) == -1)
+			return (perror("dup2:"), 1);
+	return (0);
 }
 
-void	exec_commands(t_cmd *cmds, t_files *env)
+void close_pipes(int prev[2], int curr[2])
+{
+	if (prev[0] != -1)
+		close(prev[0]);
+	if (prev[1] != -1)
+		close(prev[1]);
+	if (curr[0] != -1)
+		close(curr[0]);
+	if (curr[1] != -1)
+		close(curr[1]);
+}
+
+int	heredoc(t_cmd *cmd)
+{
+	int		pipe_hd[2];
+	char	*line;
+
+	if (pipe(pipe_hd) == -1)
+		return (1);
+	while (1)
+	{
+		line = get_next_line(0);
+		if (!line)
+		{
+			close(pipe_hd[0]);
+			close(pipe_hd[1]);
+			return (1);
+		}
+		if (ft_strcmp(line, cmd->infile) == 10)
+			break ;
+		write(pipe_hd[1], line, ft_strlen(line));
+		free(line);
+	}
+	free(line);
+	close(pipe_hd[1]);
+	free(cmd->infile);
+	cmd->infile = NULL;
+	return (pipe_hd[0]);
+}
+
+int	exec_commands(t_cmd *cmds, t_files *env)
 {
 	t_cmd	*cmd;
 	int 	last_exit;
-	int prev_pipe[2];
-	int curr_pipe[2];
+	int		prev_pipe[2];
+	int		curr_pipe[2];
+	pid_t	pid;
 	
 	cmd = cmds;
 	last_exit = 0;
@@ -53,51 +107,32 @@ void	exec_commands(t_cmd *cmds, t_files *env)
 		if (cmd->connector == PIPE)
 			if (pipe(curr_pipe) == -1)
 				return (perror("pipe:"), 1);
-		pid_t pid = fork();
+		exec_builtin();
+		if (cmd->heredoc)
+			prev_pipe[0] = heredoc(cmd);
+		pid = fork();
 		if (pid == -1)
 			return (perror("fork:"));
-		if (pid == 0) 
+		if (pid == 0)
 		{
-			if (cmd->infile)
-				redirect_input_from_file(cmd->infile);
-			else if (prev_pipe[0] != -1)
-				dup2(prev_pipe[0], STDIN_FILENO);
-			if (cmd->outfile)
-				redirect_output_to_file(cmd->outfile);
-			else if (curr_pipe[1] != -1)
-				dup2(curr_pipe[1], STDOUT_FILENO);
-
-			// Cierra fds no usados
-			close_all_pipes(prev_pipe, curr_pipe);
-
-			// Ejecuta comando
-			execvp(cmd->argv[0], cmd->argv);
-			perror("execvp");
-			exit(127);
+			if (redirect_stdio(cmd, prev_pipe, curr_pipe))
+				return (NULL);
+			close_pipes(prev_pipe, curr_pipe);
+			choose_command(cmd, env, cmds);
 		}
-
-		// Padre: cerrar extremos ya usados
-		if (prev_pipe[0] != -1)
-			close(prev_pipe[0]);
-		if (prev_pipe[1] != -1)
-			close(prev_pipe[1]);
-
+		close_pipes(prev_pipe, {-1, -1})
 		prev_pipe[0] = curr_pipe[0];
 		prev_pipe[1] = curr_pipe[1];
-
-		// Espera si NO hay pipe siguiente
-		if (cmd->next_sep != PIPE) {
+		if (cmd->connector != PIPE)
+		{
 			int status;
 			waitpid(pid, &status, 0);
 			last_exit = WEXITSTATUS(status);
-
-			// Saltar comandos si no cumple condición de AND / OR
 			while (cmd->next && (
-				(cmd->next_sep == AND && last_exit != 0) ||
-				(cmd->next_sep == OR && last_exit == 0)))
+				(cmd->connector == AND && last_exit != 0) ||
+				(cmd->connector == OR && last_exit == 0)))
 				cmd = cmd->next;
 		}
-
 		cmd = cmd->next;
 	}
 }

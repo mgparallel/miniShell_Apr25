@@ -37,6 +37,7 @@ void	*ft_memcpy(void *dest, const void *src, size_t n);
 void	*ft_memmove(void *dest, const void *src, size_t n);
 int		ft_toupper(int ch);
 int		ft_tolower(int ch);
+int		ft_strcmp(const char *s1, const char *s2);
 char	*ft_strchr(const char *str, int ch);
 char	*ft_strrchr(const char *str, int c);
 int		ft_strncmp(const char *str1, const char *str2, size_t n);
