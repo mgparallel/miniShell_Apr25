@@ -97,7 +97,7 @@ void parse_type_word(t_token **cur_token);
 void var_found(t_token **cur_token);
 
 //parse_quote.c
-void parse_type_quote(t_token **cur_token, t_files *env);
+void parse_type_quote(t_token **lst, t_token **cur_token, t_files *env);
 
 //parse_arg.c
 void parse_type_arg(t_token **lst, t_token **cur_token);

@@ -41,18 +41,46 @@ void if_cmd(t_token **lst)
     cur_token = cur_token->next;
     while (cur_token)
     {
-        if (prev->type == PIPE || prev->type == AND || prev->type == OR || prev->type == RE_TARGET)
-            cur_token->type = CMD;
-        else if (prev->type == REDIRECT)
-            cur_token->type = RE_TARGET;
-        else if (cur_token->type != ENV_VAR && cur_token->type != PIPE && 
-                                cur_token->type != REDIRECT && cur_token->type != AND && cur_token->type != OR)
-            cur_token->type = ARG;
+        if (cur_token->type == WORD || cur_token->type == ARG)
+        {
+            if (prev->type == PIPE || prev->type == AND || prev->type == OR || prev->type == RE_TARGET)
+                cur_token->type = CMD;
+            else if (prev->type == REDIRECT)
+                cur_token->type = RE_TARGET;
+            else
+                cur_token->type = ARG;
+        }
         prev = cur_token;
         cur_token = cur_token->next;
     }
 	if_cmd_util(lst);
 }
+
+// void if_cmd(t_token **lst)
+// {
+//     t_token *cur_token;
+//     t_token *prev;
+
+//     cur_token = *lst; // the begining of the list, used to parse until the one before cur_token
+//     if (cur_token->type != PIPE && cur_token->type != REDIRECT)
+//         cur_token->type = CMD;
+//     prev = cur_token;
+//     cur_token = cur_token->next;
+//     while (cur_token)
+//     {
+//         if ((prev->type == PIPE || prev->type == AND || prev->type == OR) && 
+//                                 cur_token->type != REDIRECT)
+//             cur_token->type = CMD;
+//         else if (prev->type == REDIRECT)
+//             cur_token->type = RE_TARGET;
+//         else if (cur_token->type != PIPE && cur_token->type != REDIRECT && cur_token->type != AND &&
+//                                 cur_token->type != OR)
+//             cur_token->type = ARG;
+//         prev = cur_token;
+//         cur_token = cur_token->next;
+//     }
+// 	if_cmd_util(lst);
+// }
 
 void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
 {
@@ -103,7 +131,7 @@ void parsing(t_token **lst, t_files *env)
             var_found(&head);
         }
         if (head->type == SINGLE_QUOTE || head->type == DOUBLE_QUOTE)
-                parse_type_quote(&head, env);
+                parse_type_quote(lst, &head, env);
         if (head->type == ENV_VAR)
                 parse_type_var(lst, &head, env);
         if (head->type == ARG)
