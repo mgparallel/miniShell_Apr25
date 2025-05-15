@@ -105,7 +105,7 @@ void parsing(t_token **lst, t_files *env)
         if (head->type == SINGLE_QUOTE || head->type == DOUBLE_QUOTE)
                 parse_type_quote(&head, env);
         if (head->type == ENV_VAR)
-                parse_type_var(&head, env);
+                parse_type_var(lst, &head, env);
         if (head->type == ARG)
             parse_type_arg(lst, &head);
         head = head->next;

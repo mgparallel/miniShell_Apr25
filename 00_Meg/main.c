@@ -12,7 +12,6 @@ char *print_out_type(t_token_type type)
         case DOUBLE_QUOTE: return "DOUBLE_QUOTE"; //2
         case CMD: return "CMD"; //3
         case ARG: return "ARG"; //4
-		case EXIT_CODE: return "EXIT_CODE"; //5
         case PIPE: return "PIPE"; //6
         case REDIRECT: return "REDIRECT"; //7
 		case RE_TARGET: return "RE_TARGET"; //8

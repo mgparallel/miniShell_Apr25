@@ -36,7 +36,7 @@ t_files *cp_env(char **envp)
 
 	i = 0;
 	env = NULL;
-	exit = "EXIT_CODE=0";
+	exit = "?=0";
     while (envp[i])
     {
         update_env(envp[i], &env);

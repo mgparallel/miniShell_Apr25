@@ -25,7 +25,6 @@ char *get_var_value(char *var, t_files *env)
 	char *value;
 
 	len = ft_strlen(var);
-    printf("here: %s\n", var);
 	while (env)
 	{
 		if (!ft_strncmp(env->value, var, len))
@@ -45,40 +44,46 @@ char *get_var_value(char *var, t_files *env)
 	return (value);
 }
 
-// funtion to expand the variable in case is valid
-void expand_var(t_token **cur_token, char *pos, t_files *env)
+void expand_var(t_token **lst, t_token **cur_token, t_files *env)
 {
     char *original;
-    char *end_of_str;
     char *first_part; //string before $
     char *var; //str to pass to getenv()
+    char *pos;
 
-    original = (*cur_token)->value;
-    first_part = ft_strcpy(original + 1, pos);
-    if (!first_part)
-        return ;
-    end_of_str = ft_strrchr(original, '\0');
-    var = ft_strcpy(pos + 1, end_of_str - 1);
-    if (!var)
-        return (free(first_part));
-    free(original);
-    if (!get_var_value(var, env))
-        original = first_part;
+    original = NULL;
+    if ((*cur_token)->value[0] == '$')
+        original = get_var_value((*cur_token)->value + 1, env);
     else
-        original = ft_strjoin(first_part, get_var_value(var, env));
+    {
+        pos =  ft_strchr((*cur_token)->value, '$');
+        first_part = ft_strcpy((*cur_token)->value, pos);
+        if (!first_part)
+            return ;
+        var = ft_strdup(pos + 1);
+        if (!var)
+            return (free(first_part));
+        if (!get_var_value(var, env))
+            original = first_part;
+        else
+        {
+            original = ft_strjoin(first_part, get_var_value(var, env));
+            if (!original)
+                free(var);
+        }
+    }
     if (!original)
-        return ;
+        lst_rm_token(lst, cur_token);
     (*cur_token)->value = original;
-    (*cur_token)->type = ARG;
 }
 
-void parse_type_var_util(char *var, t_files *env, t_token **cur_token)
+void parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **lst)
 {
     char *expand_value;
 
     expand_value = get_var_value(var, env);
     if (!expand_value)
-        (*cur_token)->value = "";
+        lst_rm_token(lst, cur_token);
     else
         (*cur_token)->value = expand_value;
     (*cur_token)->type = ARG;
@@ -86,7 +91,7 @@ void parse_type_var_util(char *var, t_files *env, t_token **cur_token)
 
 // function to check if env_var is $?
 // so it should update the type to EXIT_CODE and create new token if applicable
-int if_exit_code(t_token **cur_token, t_files *env)
+int if_exit_code(t_token **lst, t_token **cur_token, t_files *env)
 {
     char *var;
 
@@ -99,19 +104,19 @@ int if_exit_code(t_token **cur_token, t_files *env)
         if (ft_strlen(var) > 2)
             update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, ARG);
         else
-            parse_type_var_util("EXIT_CODE", env, cur_token);
+            parse_type_var_util("?", env, cur_token, lst);
         return (1);
     }
     return (0);
 }
 
 // function to check if ENV_VAR are valid
-void parse_type_var(t_token **cur_token, t_files *env)
+void parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
 {
     char *var;
     char *pos; //pointer where var ends as finding NOT-{0-9a-zA-Z_}
 
-    if (if_exit_code(cur_token, env))
+    if (if_exit_code(lst, cur_token, env))
         return ;
     pos = (*cur_token)->value + 1;
     while (if_alnum_underscore_braces(*pos))
@@ -135,5 +140,5 @@ void parse_type_var(t_token **cur_token, t_files *env)
         	return ;
 	}
     if_braces(&var);
-    parse_type_var_util(var, env, cur_token);
+    parse_type_var_util(var, env, cur_token, lst);
 }
