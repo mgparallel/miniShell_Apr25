@@ -25,6 +25,7 @@ char *get_var_value(char *var, t_files *env)
 	char *value;
 
 	len = ft_strlen(var);
+    printf("here: %s\n", var);
 	while (env)
 	{
 		if (!ft_strncmp(env->value, var, len))
@@ -32,7 +33,6 @@ char *get_var_value(char *var, t_files *env)
 			if (env->value[len] == '=')
 			{	
 				value = ft_strdup(env->value + (int)len + 1);
-				//printf("value: %s\n", value);
 				if (!value)
 					return (NULL);
 				break ;
@@ -72,15 +72,34 @@ void expand_var(t_token **cur_token, char *pos, t_files *env)
     (*cur_token)->type = ARG;
 }
 
+void parse_type_var_util(char *var, t_files *env, t_token **cur_token)
+{
+    char *expand_value;
+
+    expand_value = get_var_value(var, env);
+    if (!expand_value)
+        (*cur_token)->value = "";
+    else
+        (*cur_token)->value = expand_value;
+    (*cur_token)->type = ARG;
+}
+
 // function to check if env_var is $?
 // so it should update the type to EXIT_CODE and create new token if applicable
-int if_exit_code(t_token **cur_token)
+int if_exit_code(t_token **cur_token, t_files *env)
 {
-    if (!ft_strncmp((*cur_token)->value, "$?", 2))
+    char *var;
+
+    var = (*cur_token)->value + 1;
+    if_braces(&var);
+    if (!ft_strchr(var, '?'))
+        return (0);
+    if (var[0] == '?')
     {
-        (*cur_token)->type = EXIT_CODE;
-        if (ft_strlen((*cur_token)->value) > 2)
+        if (ft_strlen(var) > 2)
             update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, ARG);
+        else
+            parse_type_var_util("EXIT_CODE", env, cur_token);
         return (1);
     }
     return (0);
@@ -90,10 +109,9 @@ int if_exit_code(t_token **cur_token)
 void parse_type_var(t_token **cur_token, t_files *env)
 {
     char *var;
-    char *expand_value;
     char *pos; //pointer where var ends as finding NOT-{0-9a-zA-Z_}
 
-    if (if_exit_code(cur_token))
+    if (if_exit_code(cur_token, env))
         return ;
     pos = (*cur_token)->value + 1;
     while (if_alnum_underscore_braces(*pos))
@@ -117,11 +135,5 @@ void parse_type_var(t_token **cur_token, t_files *env)
         	return ;
 	}
     if_braces(&var);
-	// printf("var: %s\n", var);
-    expand_value = get_var_value(var, env);
-    if (!expand_value)
-        (*cur_token)->value = "";
-    else
-        (*cur_token)->value = expand_value;
-    (*cur_token)->type = ARG;
+    parse_type_var_util(var, env, cur_token);
 }
