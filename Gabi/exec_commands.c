@@ -1,3 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_commands.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
+/*   Updated: 2025/05/15 20:10:50 by gapujol-         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
 int	redirect_input_from_file(char *filename)
 {
 	int	fd;
@@ -11,11 +25,11 @@ int	redirect_input_from_file(char *filename)
 	return (0);
 }
 
-int	redirect_output_to_file(char *filename)
+int	redirect_output_to_file(char *filename, int append)
 {
 	int	fd;
 	
-	if (cmd->append)
+	if (append)
 		fd = open(filename, O_CREAT | O_WRONLY | O_APPEND, 0644);
 	else
 		fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644);
@@ -39,7 +53,7 @@ int	redirect_stdio(t_cmd *cmd, int prev_pipe[2], int curr_pipe[2])
 			return (perror("dup2:"), 1);
 	if (cmd->outfile)
 	{
-		if (redirect_output_to_file(cmd->outfile))
+		if (redirect_output_to_file(cmd->outfile, cmd->append))
 			return (1);
 	}
 	else if (curr_pipe[1] != -1)
@@ -102,17 +116,17 @@ int	exec_commands(t_cmd *cmds, t_files *env)
 	prev_pipe[1] = -1;
 	while (cmd)
 	{
+		exec_builtin();
 		curr_pipe[0] = -1;
 		curr_pipe[1] = -1;
 		if (cmd->connector == PIPE)
 			if (pipe(curr_pipe) == -1)
 				return (perror("pipe:"), 1);
-		exec_builtin();
 		if (cmd->heredoc)
 			prev_pipe[0] = heredoc(cmd);
 		pid = fork();
 		if (pid == -1)
-			return (perror("fork:"));
+			return (perror("fork:"), 1);
 		if (pid == 0)
 		{
 			if (redirect_stdio(cmd, prev_pipe, curr_pipe))
@@ -120,7 +134,7 @@ int	exec_commands(t_cmd *cmds, t_files *env)
 			close_pipes(prev_pipe, curr_pipe);
 			choose_command(cmd, env, cmds);
 		}
-		close_pipes(prev_pipe, {-1, -1})
+		close_pipes(prev_pipe, prev_pipe);
 		prev_pipe[0] = curr_pipe[0];
 		prev_pipe[1] = curr_pipe[1];
 		if (cmd->connector != PIPE)
