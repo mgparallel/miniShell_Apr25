@@ -33,8 +33,24 @@ void print_token(t_token *token)
 	}
 	while (token)
 	{
-		// printf("\nVALUE: %s, TYPE: %d, SPACE? %d \n", token->value, token->type, token->has_leading_space);
-		printf("\nVALUE: %s, TYPE: %s, SPACE? %d \n", token->value, print_out_type(token->type), token->has_leading_space);
+		if (token->type == WILDCARD)
+		{
+			if (token->lst)
+        	{
+				while ((token->lst->value)[0] == '.')
+					token->lst = token->lst->next;
+				printf("WILDCARD VALUE: %s ", token->lst->value);
+				while (token->lst)
+				{
+					printf("%s ", token->lst->value);
+					token->lst = token->lst->next;
+				}
+			}
+			else
+				printf("WILDCARD->Literal value: %s\n", token->value);
+		}
+		else
+			printf("\nVALUE: %s, TYPE: %s, SPACE? %d \n", token->value, print_out_type(token->type), token->has_leading_space);
 		token = token->next;
 	}
 	printf("\n");

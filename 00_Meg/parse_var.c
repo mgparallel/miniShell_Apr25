@@ -66,14 +66,13 @@ void expand_var(t_token **lst, t_token **cur_token, t_files *env)
         if (!get_var_value(var, env))
             original = first_part;
         else
-        {
             original = ft_strjoin(first_part, get_var_value(var, env));
-            if (!original)
-                free(var);
-        }
     }
     if (!original)
+    {
+        free(var);
         lst_rm_token(lst, cur_token);
+    }
     (*cur_token)->value = original;
 }
 
@@ -83,7 +82,10 @@ void parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token *
 
     expand_value = get_var_value(var, env);
     if (!expand_value)
+    {
         lst_rm_token(lst, cur_token);
+        return ;
+    }
     else
         (*cur_token)->value = expand_value;
     (*cur_token)->type = ARG;
@@ -118,7 +120,7 @@ void parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
 
     if (if_exit_code(lst, cur_token, env))
         return ;
-    pos = (*cur_token)->value + 1;
+    pos = (*cur_token)->value + 1; //pos = {USER}
     while (if_alnum_underscore_braces(*pos))
     {
         if (*pos == '}')

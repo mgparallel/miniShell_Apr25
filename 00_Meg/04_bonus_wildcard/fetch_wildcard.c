@@ -167,7 +167,7 @@ bool if_wildcard(t_token **cur_token)
     return (true);
 }
 
-t_files *expand_wildcard(char *value)
+void    expand_wildcard(t_token **cur_token)
 {
     t_files *fn_lst;
     t_files *result;
@@ -176,16 +176,32 @@ t_files *expand_wildcard(char *value)
     result = NULL;
     fetch_wildcard(&fn_lst);
     if (!fn_lst)
-        return (NULL);
-    fn_match(fn_lst, value, &result);
-    return (result);
+        return ;
+    fn_match(fn_lst, (*cur_token)->value, &result);
+    (*cur_token)->lst = result;
 }
+
+// t_files *expand_wildcard(char *value)
+// {
+//     t_files *fn_lst;
+//     t_files *result;
+
+//     fn_lst = NULL;
+//     result = NULL;
+//     fetch_wildcard(&fn_lst);
+//     if (!fn_lst)
+//         return (NULL);
+//     fn_match(fn_lst, value, &result);
+//     return (result);
+// }
+
 
 // int main(void)
 // {
-//     char *value = "mini*";
+//     char *value = "m*.*";
+//     t_files *result = NULL;
 
-//     t_files *result = expand_wildcard(value);
+//     result = expand_wildcard(value);
 //     if (!result)
 //     {
 //         printf("no result\n");

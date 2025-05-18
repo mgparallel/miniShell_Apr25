@@ -106,6 +106,7 @@ void parse_type_arg(t_token **lst, t_token **cur_token);
 void    lst_rm_token(t_token **lst, t_token **cur_token);
 
 //04_bonus_wildcard
+void   expand_wildcard(t_token **cur_token);
 void fetch_wildcard(t_files **fn);
 bool if_wildcard(t_token **cur_token);
 void fn_match_util(char **arr, t_files **fn_lst, t_files **result);

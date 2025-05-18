@@ -27,6 +27,7 @@ void parse_type_quote(t_token **lst, t_token **cur_token, t_files *env)
     if (dollar_pos && (*cur_token)->type == DOUBLE_QUOTE)
     {
         remove_outer_quote(cur_token);
+        dollar_pos = ft_strchr((*cur_token)->value, '$');
         if (dollar_pos[1] && dollar_pos[1] == '{')
             (*cur_token)->type = ENV_VAR;
         else

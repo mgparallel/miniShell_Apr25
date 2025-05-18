@@ -65,6 +65,7 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 		return ;
 	new_token->value = str;
 	new_token->type = type;
+	new_token->lst = NULL;
 	new_token->next = NULL;
 	if (ch_is_space(*(*start - 1)))
 		new_token->has_leading_space = 1;
