@@ -10,7 +10,7 @@ HEADER = minishell.h
 RM = rm -rf
 NAME = minishell
 
-SRCS = $(wildcard *.c) $(wildcard 04_bonus_wildcard/*.c)
+SRCS = $(wildcard *.c) $(wildcard 04_bonus_wildcard/*.c) $(wildcard 03_builtin/*.c)
 
 OBJS = $(SRCS:.c=.o)
 
