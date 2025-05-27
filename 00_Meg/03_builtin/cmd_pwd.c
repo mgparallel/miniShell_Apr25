@@ -19,7 +19,7 @@ char *cmd_pwd(t_files *env)
     return (result);
 }
 
-void    pwd_env(t_files *env)
+void    cmd_env(t_files *env)
 {
     while (env->next)
     {

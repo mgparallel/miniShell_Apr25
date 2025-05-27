@@ -117,7 +117,8 @@ void    lst_rm_token(t_token **lst, t_token **cur_token);
 //03_builtin
 char *cmd_pwd(t_files *env);
 void    cmd_export(char *str, t_files **env);
-
+void    cmd_env(t_files *env);
+void    cmd_unset(char *var, t_files **env);
 
 //04_bonus_wildcard
 void   expand_wildcard(t_token **cur_token);
