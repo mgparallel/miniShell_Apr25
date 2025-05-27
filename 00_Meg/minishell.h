@@ -61,6 +61,15 @@ typedef struct s_cmd_list
 	t_cmd	*curr;
 } t_cmd_list;
 
+typedef struct s_exec_data
+{
+    int     last_exit;
+    int		prev_pipe[2];
+	int		curr_pipe[2];
+	int		num_pids;
+	pid_t	pid[128];
+} t_exec_data;
+
 //main.c
 char *readline(const char *prompt);
 void clean_exit(t_token **token);

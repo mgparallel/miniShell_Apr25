@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	redirect_input_from_file(char *filename)
+int redirect_input_from_file(char *filename)
 {
 	int	fd;
 	
@@ -49,7 +49,7 @@ int	redirect_stdio(t_cmd *cmd, int prev_pipe[2], int curr_pipe[2])
 			return (1);
 	}
 	else if (prev_pipe[0] != -1)
-		if (dup2(prev_pipe[0], STDIN_FILENO) == -1)
+		if (dup2(prev_pipe[0], 0) == -1)
 			return (perror("dup2:"), 1);
 	if (cmd->outfile)
 	{
@@ -57,7 +57,7 @@ int	redirect_stdio(t_cmd *cmd, int prev_pipe[2], int curr_pipe[2])
 			return (1);
 	}
 	else if (curr_pipe[1] != -1)
-		if (dup2(curr_pipe[1], STDOUT_FILENO) == -1)
+		if (dup2(curr_pipe[1], 1) == -1)
 			return (perror("dup2:"), 1);
 	return (0);
 }
@@ -83,6 +83,7 @@ int	heredoc(t_cmd *cmd)
 		return (1);
 	while (1)
 	{
+		write(1, "> ", 2);
 		line = get_next_line(0);
 		if (!line)
 		{
@@ -102,51 +103,83 @@ int	heredoc(t_cmd *cmd)
 	return (pipe_hd[0]);
 }
 
+int	child_process(int prev_pipe[2], int curr_pipe[2], t_cmd *cmd, t_files *env)
+{
+	pid = fork();
+	if (pid == -1)
+		return (perror("fork:"), 1);
+	else if (pid == 0)
+	{
+		if (redirect_stdio(cmd, prev_pipe, curr_pipe))
+			return (-1);
+		close_pipes(prev_pipe, curr_pipe);
+		if (exec_command(cmd, env))
+			return (-1);
+	}
+	else
+		return (pid);
+	return (pid);
+}
+
 int	exec_commands(t_cmd *cmds, t_files *env)
 {
 	t_cmd	*cmd;
-	int 	last_exit;
-	int		prev_pipe[2];
-	int		curr_pipe[2];
-	pid_t	pid;
+	t_exec_data	data;
 	
 	cmd = cmds;
-	last_exit = 0;
-	prev_pipe[0] = -1;
-	prev_pipe[1] = -1;
+	data.last_exit = 0;
+	data.prev_pipe[0] = -1;
+	data.prev_pipe[1] = -1;
+	data.num_pids = 0;
 	while (cmd)
 	{
-		exec_builtin();
-		curr_pipe[0] = -1;
-		curr_pipe[1] = -1;
+		if (ft_strcmp(cmd->argv[0], "exit") == 0)
+			clean_exit(cmds, env, &data);
+		data.curr_pipe[0] = -1;
+		data.curr_pipe[1] = -1;
 		if (cmd->connector == PIPE)
-			if (pipe(curr_pipe) == -1)
-				return (perror("pipe:"), 1);
-		if (cmd->heredoc)
-			prev_pipe[0] = heredoc(cmd);
-		pid = fork();
-		if (pid == -1)
-			return (perror("fork:"), 1);
-		if (pid == 0)
 		{
-			if (redirect_stdio(cmd, prev_pipe, curr_pipe))
-				return (NULL);
-			close_pipes(prev_pipe, curr_pipe);
-			choose_command(cmd, env, cmds);
+			if (pipe(data.curr_pipe) == -1)
+			{
+				perror("pipe:");
+				while (cmd && cmd->connector == PIPE)
+					cmd = cmd->next;
+				cmd = cmd->next;
+				clean_data(&data, env);
+				continue ;
+			}
 		}
+		if (cmd->heredoc)
+		{
+			data.prev_pipe[0] = heredoc(cmd);
+			if (data.prev_pipe[0] == 1)
+			{
+				clean_data(&data, env);
+				continue ;
+			}
+		}
+		if (is_builtin(cmd))
+			last_exit = exec_builtin(cmd, env);
+		else
+			pid[num_pids++] = child_process(prev_pipe, curr_pipe, cmd, env);
 		close_pipes(prev_pipe, prev_pipe);
 		prev_pipe[0] = curr_pipe[0];
 		prev_pipe[1] = curr_pipe[1];
 		if (cmd->connector != PIPE)
 		{
 			int status;
-			waitpid(pid, &status, 0);
+			int	i;
+
+			i = -1;
+			while (++i < num_pids)
+				waitpid(pid[i], &status, 0);
 			last_exit = WEXITSTATUS(status);
 			while (cmd->next && (
 				(cmd->connector == AND && last_exit != 0) ||
 				(cmd->connector == OR && last_exit == 0)))
 				cmd = cmd->next;
 		}
+		update_exit_status(last_exit, env);
 		cmd = cmd->next;
 	}
 }
