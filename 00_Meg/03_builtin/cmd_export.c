@@ -14,10 +14,9 @@ void    lstadd_start(t_files **env, char *str)
     new->next = temp;
 }
 
-bool quote_found(char **pos)
+bool quote_in_var(char **pos)
 {
     char *end;
-    char result;
 
     end = *pos + (int)ft_strlen(*pos) - 1;
     if ((*pos[1] == '\'' && end[0] == '\'') || (*pos[1] == '"' && end[0] == '"'))
@@ -39,7 +38,7 @@ void    cmd_export(char *str, t_files **env)
     pos = ft_strchr(str, '=');
     if (!pos)
         return ;
-    if (!quote_found(&pos))
+    if (!quote_in_var(&pos))
     {
         lstadd_start(env, str);
         return ;

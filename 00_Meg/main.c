@@ -82,9 +82,11 @@ int main(int argc, char **argv, char **envp)
 	char *input;
 	t_token *token;
 	t_files *env;
+	char exit_status;
 
 	(void)argc;
 	(void)argv;
+	exit_status = 0;
 	while (1)
 	{
 		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
@@ -104,7 +106,7 @@ int main(int argc, char **argv, char **envp)
 		parsing(&token, env);
 		print_token(token);
 		clear_token(&token);
-		// execution(token, env);
+		// exit_status = execution(token, env);
 	}
 	rl_clear_history();
 	return 0;
