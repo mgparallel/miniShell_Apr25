@@ -3,93 +3,62 @@
 /*                                                        :::      ::::::::   */
 /*   build_commands.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/05/09 12:39:51 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/05/29 23:12:47 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void print_cmd_list(t_cmd_list *list)
+void	print_cmd_list(t_cmd *head)
 {
-    if (!list || !list->head)
-    {
-        printf("Lista de comandos vacía.\n");
-        return;
-    }
+	int i = 0;
+	t_cmd *cmd = head;
 
-    int cmd_num = 0;
-    t_cmd *cmd = list->head;
-
-    while (cmd)
-    {
-        printf("=== Comando #%d ===\n", cmd_num++);
-        
-        // argv
-        printf("argv (%d args):", cmd->argc);
-        for (int i = 0; i < cmd->argc; i++)
-        {
-            printf(" [%s]", cmd->argv[i]);
-        }
-        printf("\n");
-
-        // redirecciones
-        printf("infile:   %s\n", cmd->infile ? cmd->infile : "(none)");
-        printf("outfile:  %s\n", cmd->outfile ? cmd->outfile : "(none)");
-        printf("append:   %s\n", cmd->append ? "yes" : "no");
-        printf("heredoc:  %s\n", cmd->heredoc ? "yes" : "no");
-
-        // conector lógico o pipe
-        switch (cmd->connector)
-        {
-            case PIPE:
-                printf("connector: PIPE\n");
-                break;
-            case AND:
-                printf("connector: &&\n");
-                break;
-            case OR:
-                printf("connector: ||\n");
-                break;
-            default:
-                printf("connector: (none)\n");
-                break;
-        }
-
-        printf("\n");
-        cmd = cmd->next;
-    }
-}
-
-void	free_cmd(t_cmd *cmd)
-{
-	int	i;
-
-	if (cmd->argv)
+	if (!cmd)
 	{
-		i = -1;
-		while (++i < cmd->argc)
-			free(cmd->argv[i]);
-		free(cmd->argv);
+		printf("Lista de comandos vacía.\n");
+		return;
 	}
-	free(cmd->infile);
-	free(cmd->outfile);
-	free(cmd);
+	while (cmd)
+	{
+		printf("Comando #%d:\n", i++);
+		for (int j = 0; j < cmd->argc; j++)
+			printf("  argv[%d] = \"%s\"\n", j, cmd->argv[j]);
+
+		printf("  infile: %s\n", cmd->infile ? cmd->infile : "(null)");
+		printf("  outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
+		printf("  append: %d\n", cmd->append);
+		printf("  heredoc: %d\n", cmd->heredoc);
+		printf("  connector: %d\n", cmd->connector);
+		printf("\n");
+
+		cmd = cmd->next;
+	}
 }
 
-void	free_cmd_list(t_cmd_list *cmd_list)
+void	free_cmd_list(t_cmd *cmd)
 {
 	t_cmd	*next;
+	int		i;
 
-	while (cmd_list->head)
+	while (cmd)
 	{
-		next = cmd_list->head->next;
-		free_cmd(cmd_list->head);
-		cmd_list->head = next;
+		next = cmd->next;
+		if (cmd->argv)
+		{
+			i = -1;
+			while (++i < cmd->argc)
+				free(cmd->argv[i]);
+			free(cmd->argv);
+		}
+		free(cmd->infile);
+		free(cmd->outfile);
+		free(cmd);
+		cmd = next;
 	}
-	free(cmd_list);
 }
 
 static int	is_connector(t_token_type type)
@@ -163,7 +132,7 @@ t_cmd	*build_cmd(t_token **tokens)
 	{
 		if ((*tokens)->type == CMD)
 			cmd_token = *tokens;
-		else if ((*tokens)->type == ARG)
+		else if ((*tokens)->type == ARG || (*tokens)->type == EXIT_STATUS)
 			cmd->argc++;
 		else if ((*tokens)->type == REDIRECT)
 			if (manage_redirect(tokens, cmd))
@@ -177,27 +146,25 @@ t_cmd	*build_cmd(t_token **tokens)
 	return (cmd);
 }
 
-t_cmd_list	*build_cmds(t_token *tokens)
+t_cmd	*build_cmds(t_token *tokens)
 {
-	t_cmd_list	*cmd_list;
-	t_cmd		*cmd;
+	t_cmd	*head;
+	t_cmd	*tail;
+	t_cmd	*cmd;
 
-	cmd_list = ft_calloc(1, sizeof(t_cmd_list));
-	if (!cmd_list)
-		return (NULL);
 	while (tokens)
 	{
 		cmd = build_cmd(&tokens);
 		if (!cmd)
-			return (free_cmd_list(cmd_list), NULL);
-		if (!cmd_list->head)
-			cmd_list->head = cmd;
+			return (free_cmd_list(head), NULL);
+		if (!head)
+			head = cmd;
 		else
-			cmd_list->curr->next = cmd;
-		cmd_list->curr = cmd;
+			tail->next = cmd;
+		tail = cmd;
 		if (tokens && is_connector(tokens->type))
 			tokens = tokens->next;
 	}
-	print_cmd_list(cmd_list);
-	return (cmd_list);
+	print_cmd_list(head);
+	return (head);
 }
