@@ -80,7 +80,7 @@ int	heredoc(t_cmd *cmd)
 	char	*line;
 
 	if (pipe(pipe_hd) == -1)
-		return (1);
+		return (perror("pipe:"), 1);
 	while (1)
 	{
 		write(1, "> ", 2);
@@ -89,7 +89,7 @@ int	heredoc(t_cmd *cmd)
 		{
 			close(pipe_hd[0]);
 			close(pipe_hd[1]);
-			return (1);
+			return (1);	//imprimir error de ctrl+D
 		}
 		if (ft_strcmp(line, cmd->infile) == 10)
 			break ;
@@ -103,22 +103,26 @@ int	heredoc(t_cmd *cmd)
 	return (pipe_hd[0]);
 }
 
-int	child_process(int prev_pipe[2], int curr_pipe[2], t_cmd *cmd, t_files *env)
+int	child_process(t_exec_data *data, t_cmd *cmd, t_files *env)
 {
+	pid_t	pid;
+
 	pid = fork();
 	if (pid == -1)
 		return (perror("fork:"), 1);
-	else if (pid == 0)
+	if (pid == 0)
 	{
-		if (redirect_stdio(cmd, prev_pipe, curr_pipe))
-			return (-1);
-		close_pipes(prev_pipe, curr_pipe);
-		if (exec_command(cmd, env))
-			return (-1);
+		if (redirect_stdio(cmd, data->prev_pipe, data->curr_pipe))
+		{
+			close_pipes(data->prev_pipe, data->curr_pipe);
+			exit(1);
+		}
+		close_pipes(data->prev_pipe, data->curr_pipe);
+		exec_command(cmd, env);
+		exit(127);
 	}
-	else
-		return (pid);
-	return (pid);
+	data->pid[data->num_pids++] = pid;
+	return (0);
 }
 
 int	exec_commands(t_cmd *cmds, t_files *env)
@@ -133,7 +137,7 @@ int	exec_commands(t_cmd *cmds, t_files *env)
 	data.num_pids = 0;
 	while (cmd)
 	{
-		if (ft_strcmp(cmd->argv[0], "exit") == 0)
+		if (ft_strncmp(cmd->argv[0], "exit", 4) == 0)
 			clean_exit(cmds, env, &data);
 		data.curr_pipe[0] = -1;
 		data.curr_pipe[1] = -1;
@@ -141,11 +145,11 @@ int	exec_commands(t_cmd *cmds, t_files *env)
 		{
 			if (pipe(data.curr_pipe) == -1)
 			{
-				perror("pipe:");
 				while (cmd && cmd->connector == PIPE)
 					cmd = cmd->next;
-				cmd = cmd->next;
-				clean_data(&data, env);
+				perror("pipe:");
+				wait_for_children(&data, &cmd);
+				reset_exec_state(env, &data);
 				continue ;
 			}
 		}
@@ -154,32 +158,46 @@ int	exec_commands(t_cmd *cmds, t_files *env)
 			data.prev_pipe[0] = heredoc(cmd);
 			if (data.prev_pipe[0] == 1)
 			{
-				clean_data(&data, env);
+				while (cmd && cmd->connector == PIPE)
+					cmd = cmd->next;
+				wait_for_children(&data, &cmd);
+				reset_exec_state(env, &data);
 				continue ;
 			}
 		}
 		if (is_builtin(cmd))
-			last_exit = exec_builtin(cmd, env);
+			exec_builtin(cmd, env, &data);
 		else
-			pid[num_pids++] = child_process(prev_pipe, curr_pipe, cmd, env);
-		close_pipes(prev_pipe, prev_pipe);
-		prev_pipe[0] = curr_pipe[0];
-		prev_pipe[1] = curr_pipe[1];
+		{
+			if (child_process(&data, cmd, env))
+			{
+				while (cmd && cmd->connector == PIPE)
+					cmd = cmd->next;
+				wait_for_children(&data, &cmd);
+				reset_exec_state(env, &data);
+			}
+		}
+		close(data.prev_pipe[0]);
+		close(data.prev_pipe[1]);
+		data.prev_pipe[0] = data.curr_pipe[0];
+		data.prev_pipe[1] = data.curr_pipe[1];
 		if (cmd->connector != PIPE)
 		{
 			int status;
 			int	i;
 
 			i = -1;
-			while (++i < num_pids)
-				waitpid(pid[i], &status, 0);
-			last_exit = WEXITSTATUS(status);
+			while (++i < data.num_pids)
+				waitpid(data.pid[i], &status, 0);
+			if (data.num_pids)
+				data.last_exit = WEXITSTATUS(status);
 			while (cmd->next && (
-				(cmd->connector == AND && last_exit != 0) ||
-				(cmd->connector == OR && last_exit == 0)))
+				(cmd->connector == AND && data.last_exit != 0) ||
+				(cmd->connector == OR && data.last_exit == 0)))
 				cmd = cmd->next;
+			data.num_pids = 0;
 		}
-		update_exit_status(last_exit, env);
+		update_exit_status(env, data.last_exit);
 		cmd = cmd->next;
 	}
 }
