@@ -21,6 +21,8 @@ char *cmd_pwd(t_files *env)
 
 void    cmd_env(t_files *env)
 {
+	if (!env)
+		return ;
     while (env->next)
     {
         printf("%s\n", env->value);

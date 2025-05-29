@@ -167,7 +167,7 @@ bool if_wildcard(t_token **cur_token)
     return (true);
 }
 
-void    expand_wildcard(t_token **cur_token)
+void    expand_wildcard(t_token **lst, t_token **cur_token)
 {
     t_files *fn_lst;
     t_files *result;
@@ -178,23 +178,14 @@ void    expand_wildcard(t_token **cur_token)
     if (!fn_lst)
         return ;
     fn_match(fn_lst, (*cur_token)->value, &result);
-    (*cur_token)->lst = result;
+    // (*cur_token)->lst = result;
+	if (!result)
+	{
+		(*cur_token)->type = WORD;
+		return ;
+	}
+	add_wildcard_token(lst, *cur_token, result);
 }
-
-// t_files *expand_wildcard(char *value)
-// {
-//     t_files *fn_lst;
-//     t_files *result;
-
-//     fn_lst = NULL;
-//     result = NULL;
-//     fetch_wildcard(&fn_lst);
-//     if (!fn_lst)
-//         return (NULL);
-//     fn_match(fn_lst, value, &result);
-//     return (result);
-// }
-
 
 // int main(void)
 // {
