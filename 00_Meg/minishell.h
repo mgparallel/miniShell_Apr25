@@ -32,6 +32,7 @@ typedef enum token_type
     WILDCARD, //*
     ENV_VAR, //$
     PID, //$$
+	EXIT_CODE,
 } t_token_type;
 
 typedef struct s_token
@@ -70,6 +71,8 @@ void clean_exit(t_token **token);
 
 //copy_env.c
 t_files *cp_env(char **envp);
+void update_env(char *value, t_files **env);
+void free_lst(t_files **lst);
 
 //tokenizer.c
 t_token *tokenizer(char *input);
@@ -113,6 +116,8 @@ char *cmd_pwd(t_files *env);
 void    cmd_export(char *str, t_files **env);
 void    cmd_env(t_files *env);
 void    cmd_unset(char *var, t_files **env);
+char *ft_strndup(char *src, int len);
+void    lstadd_start(t_files **env, char *str);
 
 //04_bonus_wildcard
 void   expand_wildcard(t_token **lst, t_token **cur_token);

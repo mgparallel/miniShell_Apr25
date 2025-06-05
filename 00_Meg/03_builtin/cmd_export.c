@@ -1,57 +1,90 @@
 #include "../minishell.h"
 
-void    lstadd_start(t_files **env, char *str)
-{
-    t_files *temp;
-    t_files *new;
-
-    new = malloc(sizeof(t_files));
-    if (!new)
-        return ;
-    new->value = str;
-    temp = *env;
-    *env = new;
-    new->next = temp;
-}
-
-bool quote_in_var(char **pos)
+char *quote_in_var(char *pos)
 {
     char *end;
+	char *result;
+	int	len;
 
-    end = *pos + (int)ft_strlen(*pos) - 1;
-    if ((*pos[1] == '\'' && end[0] == '\'') || (*pos[1] == '"' && end[0] == '"'))
+    end = pos + (int)ft_strlen(pos) - 1;
+	len = ft_strlen(pos);
+	if (len < 2)
+		return (NULL);
+    if ((pos[1] == '\'' && end[0] == '\'') || (pos[1] == '"' && end[0] == '"'))
     {
-        *pos = ft_strcpy(*pos + 2, end - 1);
-        return (true);
-    }
+		result = ft_strndup(pos + 2, len - 2);
+		return (result);
+	}
     else
-        return (false);
+        return (NULL);
+}
+
+bool	if_replace(char *str, t_files **env)
+{
+		char *pos;
+		t_files *curr;
+
+		curr = *env;
+		pos = ft_strchr(str, '=');
+		if (!pos)
+			return (false);
+		while (curr)
+		{
+			if (!ft_strncmp(str, curr->value, pos - str + 1))
+			{
+				free(curr->value);
+				curr->value = ft_strdup(str);
+				if (!curr->value)
+					free_lst(env);
+				return (true);
+			}
+			curr = curr->next;
+		}
+		return (false);
+}
+
+char *cmd_export_util(char *dequote_str, char *str, char *pos)
+{
+	char *new_str;
+	char *first;
+
+	first = NULL;
+	if (!dequote_str)
+		new_str = ft_strdup(str);
+	else
+    {
+		first = ft_strcpy(str, pos - 1);
+        if (!first)
+		{
+			free(dequote_str);
+            return (NULL);
+		}
+        new_str = ft_strjoin(first, dequote_str);
+		if (!new_str)
+			free(first);
+    }
+	return (new_str);
 }
 
 void    cmd_export(char *str, t_files **env)
 {
     char *pos;
-    char *new;
-    char *first;
+    char *new_str;
+	char *dequote_str;
 
-    new = NULL;
     pos = ft_strchr(str, '=');
     if (!pos)
+		return ;
+	dequote_str = quote_in_var(pos);
+    new_str = cmd_export_util(dequote_str, str, pos);
+	if (!new_str)
+	{
+		free(dequote_str);
         return ;
-    if (!quote_in_var(&pos))
-    {
-        lstadd_start(env, str);
-        return ;
-    }
-    else
-    {
-        first = ft_strcpy(str, pos - 1);
-        if (!first)
-            return ;
-        new = ft_strjoin(first, pos);
-        free(first);
-    }
-    lstadd_start(env, new);
+	}
+	if (!if_replace(new_str, env))
+    	lstadd_start(env, new_str);
+	free(new_str);
 }
 
 // int main(int ac, char **ag, char **envp)
@@ -59,8 +92,12 @@ void    cmd_export(char *str, t_files **env)
 //     t_files *env;
 //     env = cp_env(envp);
 
+// 	if (ac > 2)
+// 		return (1);
 //     cmd_export(ag[1], &env);
+// 	// cmd_export("ppp=you", &env);
 //     printf("first: %s\n", env->value);
 //     printf("second: %s\n", env->next->value);
+// 	free_lst(&env);
 //     return 0;
 // }

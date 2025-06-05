@@ -20,7 +20,8 @@ char *print_out_type(t_token_type type)
 		case WILDCARD: return "WILDCARD"; //11
         case ENV_VAR: return "ENV_VAR"; //12
 		case PID: return "PID"; //13
-        default: return "UNKNOWN"; //14
+		case EXIT_CODE: return "EXIT_CODE"; //14
+        default: return "UNKNOWN"; //15
     }
 }
 
