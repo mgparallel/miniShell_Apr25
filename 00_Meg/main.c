@@ -97,17 +97,13 @@ int main(int argc, char **argv, char **envp)
 		}
 		add_history(input);
 		env = cp_env(envp);
-		if (!ft_strncmp(input, "exit", 4))
-		{
-			clean_exit(&token);
-			break;
-		}
 		token = tokenizer(input);
 		parsing(&token, env);
 		print_token(token);
 		clear_token(&token);
 		// exit_status = execution(token, env);
+		free(input);
 	}
 	rl_clear_history();
-	return 0;
+	return (0);
 }
