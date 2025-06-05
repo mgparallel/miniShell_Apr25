@@ -7,7 +7,8 @@ void free_lst(t_files **lst)
 	while (*lst)
 	{
 		temp = (*lst)->next;
-		free((*lst)->value);
+		if ((*lst)->value)
+			free((*lst)->value);
 		free(*lst);
 		*lst = temp;
 	}

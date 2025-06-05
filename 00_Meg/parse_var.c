@@ -88,7 +88,7 @@ void parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token *
     }
     else
         (*cur_token)->value = expand_value;
-    (*cur_token)->type = ARG;
+    (*cur_token)->type = EXIT_CODE;
 }
 
 // function to check if env_var is $?
@@ -104,7 +104,7 @@ int if_exit_code(t_token **lst, t_token **cur_token, t_files *env)
     if (var[0] == '?')
     {
         if (ft_strlen(var) > 2)
-            update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, ARG);
+            update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, EXIT_CODE);
         else
             parse_type_var_util("?", env, cur_token, lst);
         return (1);
