@@ -110,8 +110,8 @@ void parsing(t_token **lst, t_files *env)
                 parse_type_var(lst, &head, env);
         if (head->type == ARG)
             parse_type_arg(lst, &head);
-        if (head->type == WILDCARD)
-            expand_wildcard(lst, &head);
+        // if (head->type == WILDCARD)
+        //     expand_wildcard(lst, &head);
         head = head->next;
     }
     if_cmd(lst);

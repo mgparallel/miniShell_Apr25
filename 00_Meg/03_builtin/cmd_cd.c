@@ -26,7 +26,6 @@ int    cmd_cd(char *str, t_files **env)
         return (printf("error after change directory\n"), 1);
     else
         set_env_var("PWD=", new_buf, env);
-    free(new_buf);
     return (0);
 }
 

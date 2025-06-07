@@ -86,7 +86,7 @@ void fn_match(t_files *fn_lst, char *value, t_files **result)
     char **updated_arr;
     
     updated_arr = NULL;
-    arr = ft_split(value, '*');
+    arr = ft_split(value, '*'); //*
     if (!arr) 
         return ; //error with split function
     if (!*arr || *value == '*') //when the pointer is '\0' / * at the beginning of token value

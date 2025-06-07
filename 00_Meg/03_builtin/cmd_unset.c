@@ -24,6 +24,7 @@ int    cmd_unset(char *var, t_files **env)
         prev = ref;
         ref = ref->next;
     }
+    return (0);
 }
 
 // int main(int ac, char **ag,  char **envp)
