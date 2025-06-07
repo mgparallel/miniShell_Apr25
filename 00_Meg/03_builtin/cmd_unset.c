@@ -1,6 +1,6 @@
 #include "../minishell.h"
 
-void    cmd_unset(char *var, t_files **env)
+int    cmd_unset(char *var, t_files **env)
 {
     t_files *temp;
     t_files *prev;
@@ -10,16 +10,16 @@ void    cmd_unset(char *var, t_files **env)
     ref = *env;
     while (ref)
     {
-        if (!ft_strncmp(var, ref->value, ft_strlen(var)))
+        if (!ft_strncmp(var, ref->value, ft_strlen(var)) && ref->value[ft_strlen(var)] == '=')
         {
             temp = ref->next;
             if (prev == NULL)
             {
                 *env = temp;
-                return ;
+                return (0);
             }
             prev->next = temp;
-            return ;
+            return (0);
         }
         prev = ref;
         ref = ref->next;

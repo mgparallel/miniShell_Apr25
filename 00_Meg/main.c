@@ -1,7 +1,5 @@
 #include "minishell.h"
 
-void free_lst(t_files **lst);
-
 // funtion to print the str of the type -> remove later 
 char *print_out_type(t_token_type type)
 {
@@ -102,7 +100,7 @@ int main(int argc, char **argv, char **envp)
 		parsing(&token, env);
 		print_token(token);
 		clear_token(&token);
-		// exit_status = execution(token, env);
+		//exit_status = execution(token, env);
 		free(input);
 	}
 	rl_clear_history();

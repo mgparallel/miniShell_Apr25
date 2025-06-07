@@ -66,7 +66,7 @@ char *cmd_export_util(char *dequote_str, char *str, char *pos)
 	return (new_str);
 }
 
-void    cmd_export(char *str, t_files **env)
+int    cmd_export(char *str, t_files **env)
 {
     char *pos;
     char *new_str;
@@ -74,17 +74,18 @@ void    cmd_export(char *str, t_files **env)
 
     pos = ft_strchr(str, '=');
     if (!pos)
-		return ;
+		return (1); // when there is no '=', exitcode == 1
 	dequote_str = quote_in_var(pos);
     new_str = cmd_export_util(dequote_str, str, pos);
 	if (!new_str)
 	{
 		free(dequote_str);
-        return ;
+        return (1);
 	}
 	if (!if_replace(new_str, env))
     	lstadd_start(env, new_str);
 	free(new_str);
+	return (0);
 }
 
 // int main(int ac, char **ag, char **envp)

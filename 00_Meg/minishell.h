@@ -97,6 +97,7 @@ int if_alnum_underscore_braces(int arg);
 //parse_var.c
 void parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
 void expand_var(t_token **lst, t_token **cur_token, t_files *env);
+char *get_var_value(char *var, t_files *env);
 
 //parse_word.c
 void parse_type_word(t_token **cur_token);
@@ -112,12 +113,14 @@ void parse_type_arg(t_token **lst, t_token **cur_token);
 void    lst_rm_token(t_token **lst, t_token **cur_token);
 
 //03_builtin
-char *cmd_pwd(t_files *env);
-void    cmd_export(char *str, t_files **env);
-void    cmd_env(t_files *env);
-void    cmd_unset(char *var, t_files **env);
+int     cmd_pwd(t_files *env);
+int     cmd_export(char *str, t_files **env);
+int     cmd_env(t_files *env);
+int     cmd_unset(char *var, t_files **env);
 char *ft_strndup(char *src, int len);
 void    lstadd_start(t_files **env, char *str);
+int     cmd_echo(t_token *start, t_token *end);
+int     cmd_cd(char *str, t_files **env);
 
 //04_bonus_wildcard
 void   expand_wildcard(t_token **lst, t_token **cur_token);
