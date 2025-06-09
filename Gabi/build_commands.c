@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/05/29 23:12:47 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/09 18:24:23 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,24 +39,36 @@ void	print_cmd_list(t_cmd *head)
 	}
 }
 
+void	free_cmd(t_cmd *cmd)
+{
+	int		i;
+	t_redir *next;
+
+	if (cmd->argv)
+	{
+		i = -1;
+		while (++i < cmd->argc)
+			free(cmd->argv[i]);
+		free(cmd->argv);
+	}
+    while (cmd->redir_list)
+    {
+        next = cmd->redir_list->next;
+        free(cmd->redir_list->filename);
+        free(cmd->redir_list);
+        cmd->redir_list = next;
+    }
+	free(cmd);
+}
+
 void	free_cmd_list(t_cmd *cmd)
 {
 	t_cmd	*next;
-	int		i;
 
 	while (cmd)
 	{
 		next = cmd->next;
-		if (cmd->argv)
-		{
-			i = -1;
-			while (++i < cmd->argc)
-				free(cmd->argv[i]);
-			free(cmd->argv);
-		}
-		free(cmd->infile);
-		free(cmd->outfile);
-		free(cmd);
+		free_cmd(cmd);
 		cmd = next;
 	}
 }
@@ -66,32 +78,57 @@ static int	is_connector(t_token_type type)
 	return (type == PIPE || type == AND || type == OR);
 }
 
+int	add_redir(t_redir **head, t_redir_type type, char *filename)
+{
+    t_redir *new;
+	t_redir *tmp;
+
+	new = malloc(sizeof(t_redir));
+    if (!new)
+        return (1);
+    new->type = type;
+    new->filename = ft_strdup(filename);
+	if (!new->filename)
+		return (free(new), 1);
+    new->next = NULL;
+    if (!*head)
+        return (new);
+    tmp = *head;
+    while (tmp->next)
+        tmp = tmp->next;
+    tmp->next = new;
+    return (0);
+}
+
+t_redir_type token_to_redir_type(const char *op)
+{
+    if (!ft_strcmp(op, "<"))
+        return REDIR_INPUT;
+    if (!ft_strcmp(op, ">"))
+        return REDIR_OUTPUT;
+    if (!ft_strcmp(op, ">>"))
+        return REDIR_APPEND;
+    if (!ft_strcmp(op, "<<"))
+        return REDIR_HEREDOC;
+    return (-1);
+}
+
 int	manage_redirect(t_token **tokens, t_cmd *cmd)
 {
-	if (!(*tokens)->next || (*tokens)->next->type != RE_TARGET)
-		return (1);
-	if (ft_strcmp((*tokens)->value, "<") == 0)
+	t_token	*redir_token;
+	t_redir_type type;
+
+	redir_token = *tokens;
+	*tokens = (*tokens)->next;
+	if (*tokens && ((*tokens)->type == RE_TARGET || (*tokens)->type == EXIT_CODE))
 	{
-		free(cmd->infile);
-		cmd->infile = strdup((*tokens)->next->value);
-		if (!cmd->infile)
+		type = token_to_redir_type(redir_token->value);
+		if (add_redir(&(cmd->redir_list), type, (*tokens)->value))
 			return (1);
-	}
-	else if (ft_strcmp((*tokens)->value, "<<") == 0)
-	{
-		free(cmd->infile);
-		cmd->infile = NULL;
+		*tokens = (*tokens)->next;
 	}
 	else
-	{
-		free(cmd->outfile);
-		cmd->outfile = strdup((*tokens)->next->value);
-		if (!cmd->outfile)
-			return (1);
-	}
-	cmd->heredoc = !ft_strcmp((*tokens)->value, "<<");
-	cmd->append = !ft_strcmp((*tokens)->value, ">>");
-	*tokens = (*tokens)->next;
+		return (1);
 	return (0);
 }
 
@@ -106,9 +143,9 @@ int	build_arg_array(t_token *cmd_token, t_cmd *cmd)
 	i = 0;
 	while (i < cmd->argc)
 	{
-		if (cmd_token->type == CMD || cmd_token->type == ARG)
+		if (cmd_token->type == CMD || cmd_token->type == ARG || cmd_token->type == EXIT_CODE)
 		{
-			cmd->argv[i] = strdup(cmd_token->value);
+			cmd->argv[i] = ft_strdup(cmd_token->value);
 			if (!cmd->argv[i])
 				return (1);
 			i++;
@@ -132,7 +169,7 @@ t_cmd	*build_cmd(t_token **tokens)
 	{
 		if ((*tokens)->type == CMD)
 			cmd_token = *tokens;
-		else if ((*tokens)->type == ARG || (*tokens)->type == EXIT_STATUS)
+		else if ((*tokens)->type == ARG || (*tokens)->type == EXIT_CODE)
 			cmd->argc++;
 		else if ((*tokens)->type == REDIRECT)
 			if (manage_redirect(tokens, cmd))

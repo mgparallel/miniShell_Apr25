@@ -44,23 +44,34 @@ typedef struct s_token
     struct s_token *next;
 } t_token;
 
+typedef enum e_redir_type
+{
+    REDIR_INPUT,      // <
+    REDIR_OUTPUT,     // >
+    REDIR_APPEND,     // >>
+    REDIR_HEREDOC     // <<
+}   t_redir_type;
+
+typedef struct s_redir
+{
+    t_redir_type    type;
+    char            *filename;
+    struct s_redir  *next;
+}   t_redir;
+
 typedef struct s_cmd
 {
-	char	**argv;
-	char	*infile;
-	char	*outfile;
-	int		argc;
-	int		append;
-	int		heredoc;
-	t_token_type	connector;
+	char	        **argv;
+	t_redir         *redir_list;
+	int		        argc;
+	t_token_type    connector;
     struct s_cmd    *next;
 } t_cmd;
 
 typedef struct s_exec_data
 {
 	int		current_status;
-	int		prev_pipe[2];
-	int		curr_pipe[2];
+	int		*pipe_fds;
 	int		num_pids;
 	pid_t	pid[128];
 } t_exec_data;
