@@ -59,21 +59,10 @@ void clear_token(t_token **token)
 {
 	while (*token)
 	{
-		free(*token);
-		*token = (*token)->next;
-	}
-	*token = NULL;
-}
-
-void clean_exit(t_token **token)
-{
-	while (*token)
-	{
 		free((*token)->value);
 		free(*token);
 		*token = (*token)->next;
 	}
-	//free(token);
 }
 
 // int main(int argc, char **argv, char **envp)
@@ -81,7 +70,8 @@ void clean_exit(t_token **token)
 // 	char *input;
 // 	t_token *token;
 // 	t_files *env;
-// 	char exit_status;
+// 	int		exit_status;
+//	t_cmd	*cmds;
 
 // 	(void)argc;
 // 	(void)argv;
@@ -97,12 +87,15 @@ void clean_exit(t_token **token)
 // 		add_history(input);
 // 		env = cp_env(envp);
 // 		token = tokenizer(input);
+// 		free(input);
 // 		parsing(&token, env);
 // 		print_token(token);
+//		cmds = build_cmds(t_token *tokens)
 // 		clear_token(&token);
-// 		//exit_status = execution(token, env);
-// 		free(input);
+// 		exec_commands(cmds, env, &exit_status);
+//		free_cmd_list(cmds);
 // 	}
+//	free_lst(&env);
 // 	rl_clear_history();
-// 	return (0);
+// 	return (exit_status);
 // }
