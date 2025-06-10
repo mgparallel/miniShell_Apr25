@@ -33,16 +33,16 @@ t_files *cp_env(char **envp)
 {
     int i;
 	t_files *env;
-	char *exit;
+	// char *exit;
 
 	i = 0;
 	env = NULL;
-	exit = "?=0";
+	// exit = "?=0";
     while (envp[i])
     {
         update_env(envp[i], &env);
 		i++;
     }
-	update_env(exit, &env);
+	// update_env(exit, &env);
 	return (env);
 }

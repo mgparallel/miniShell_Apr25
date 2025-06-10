@@ -1,6 +1,7 @@
 #include "../minishell.h"
-
-int	cmd_echo(t_token *start, t_token *end)
+//take into account that when echo "" is print out a new line
+//when there are other cmds, it ignores.
+int	cmd_echo(t_token *start, t_token *end) //change to char **argv
 {
 	int	nl;
 

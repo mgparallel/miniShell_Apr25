@@ -65,37 +65,33 @@ void clear_token(t_token **token)
 	}
 }
 
-// int main(int argc, char **argv, char **envp)
-// {
-// 	char *input;
-// 	t_token *token;
-// 	t_files *env;
-// 	int		exit_status;
-//	t_cmd	*cmds;
+int main(int argc, char **argv, char **envp)
+{
+	char *input;
+	t_token *token;
+	t_files *env;
+	//char exit_status;
 
-// 	(void)argc;
-// 	(void)argv;
-// 	exit_status = 0;
-// 	while (1)
-// 	{
-// 		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
-// 		if (!input)
-// 		{
-// 			printf("No input");
-// 			return (1);
-// 		}
-// 		add_history(input);
-// 		env = cp_env(envp);
-// 		token = tokenizer(input);
-// 		free(input);
-// 		parsing(&token, env);
-// 		print_token(token);
-//		cmds = build_cmds(t_token *tokens)
-// 		clear_token(&token);
-// 		exec_commands(cmds, env, &exit_status);
-//		free_cmd_list(cmds);
-// 	}
-//	free_lst(&env);
-// 	rl_clear_history();
-// 	return (exit_status);
-// }
+	(void)argc;
+	(void)argv;
+	//exit_status = 0;
+	while (1)
+	{
+		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
+		if (!input)
+		{
+			printf("No input");
+			return (1);
+		}
+		add_history(input);
+		env = cp_env(envp);
+		token = tokenizer(input);
+		parsing(&token, env);
+		print_token(token);
+		clear_token(&token);
+		//exit_status = execution(token, env);
+		free(input);
+	}
+	rl_clear_history();
+	return (0);
+}

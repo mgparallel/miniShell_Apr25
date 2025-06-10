@@ -53,7 +53,10 @@ void fetch_wildcard(t_files **fn_lst)
 
     dir = opendir(".");
     if (!dir)
+    {
+        printf("error opening directory");
         return ; //error code needed
+    }
     while (1)
     {
         dp = readdir(dir);
@@ -67,7 +70,7 @@ void fetch_wildcard(t_files **fn_lst)
 
 // funtion to find if small can be found in big
 // if so, return the pointer right after smalls are found
-char *strmatch(const char *big, const char *little)
+char *strmatch(const char *big, const char *little) //main.o  h
 {
     int i;
 
@@ -99,7 +102,7 @@ void update_result(char *value, t_files **result, int *flag)
     new = malloc(sizeof(t_files));
     if (!new)
         return ;
-    if (*flag == 0)
+    if (*flag == 0 || *flag == -1)
         return (free(new));
     new->value = ft_strdup(value);
     if (!new->value)
@@ -107,6 +110,22 @@ void update_result(char *value, t_files **result, int *flag)
     new->next = NULL;
     *flag = 0;
     indir_lst_addback(result, new);
+}
+
+void    if_end_to_match(char **arr, int *flag)
+{
+    char **ref;
+    char *prev;
+
+    ref = arr;
+    prev = NULL;
+    while (*ref)
+    {
+        prev = *ref;
+        ref++;
+    }
+    if (!ft_strchr(prev, '*'))
+        *flag = -1; //flag = -1 when the end has to match leters 100%
 }
 
 void fn_match_util(char **arr, t_files **fn_lst, t_files **result)
@@ -120,6 +139,7 @@ void fn_match_util(char **arr, t_files **fn_lst, t_files **result)
     flag = 0;
     while (*fn_lst) //iterate filename by filename calling ->next
     {
+        if_end_to_match(arr, &flag);
         temp = arr;
         if (temp[0][0] != '*') //when * NOT at the begining e.g. mini*.h, ft_*
         {
@@ -132,28 +152,38 @@ void fn_match_util(char **arr, t_files **fn_lst, t_files **result)
         else
             temp++;
         trimmed = (*fn_lst)->value;
-        while (*temp)
+        while (*++temp)
         {
-            trimmed = strmatch(trimmed, *temp);
+            trimmed = strmatch(trimmed, *(temp - 1));
             if (!trimmed)
             {
-                if (temp[0][0] == '*' || !temp[1])
+                if (arr[0][0] == '*' && !temp++)
                     flag = 1;
                 break ;
             }
-            if (*trimmed == '\0')
+            else if (*trimmed == '\0')
             {
-                if (!temp[1] || temp[1][0] == '*')
+                if (!temp++)
                     flag = 1;
             }
-            temp++;
+        }
+        if (trimmed && trimmed[0] != '\0')
+        {
+            if (flag != -1)
+                flag = 1;
+            else
+            {
+                trimmed = trimmed + ft_strlen(trimmed) - ft_strlen(*(temp - 1));
+                if (!ft_strcmp(trimmed, *(temp - 1)))
+                    flag = 1;
+            }
         }
         update_result((*fn_lst)->value, result, &flag);
         *fn_lst = (*fn_lst)->next;
     }
 }
 
-//function to check if the current token is type WILDCARD
+//function to check if the refent token is type WILDCARD
 bool if_wildcard(t_token **cur_token)
 {
     char *str;
@@ -167,7 +197,7 @@ bool if_wildcard(t_token **cur_token)
     return (true);
 }
 
-void    expand_wildcard(t_token **lst, t_token **cur_token)
+void expand_wildcard(t_token **lst, t_token **cur_token)
 {
     t_files *fn_lst;
     t_files *result;
@@ -178,18 +208,17 @@ void    expand_wildcard(t_token **lst, t_token **cur_token)
     if (!fn_lst)
         return ;
     fn_match(fn_lst, (*cur_token)->value, &result);
-    // (*cur_token)->lst = result;
-	if (!result)
-	{
-		(*cur_token)->type = WORD;
-		return ;
-	}
+    if (!result)
+    {
+        (*cur_token)->type = WORD;
+        return ;
+    }
 	add_wildcard_token(lst, *cur_token, result);
 }
 
 // int main(void)
 // {
-//     char *value = "m*.*";
+//     char *value = "c*.c";
 //     t_files *result = NULL;
 
 //     result = expand_wildcard(value);
@@ -208,3 +237,87 @@ void    expand_wildcard(t_token **lst, t_token **cur_token)
 //     }
 //     return 0;
 // }
+
+// int main(void)
+// {
+//     char *str = "**";
+//     char ch = '*';
+//     char **re;
+
+//     // printf("input:%s\n", str);
+//     re = ft_split(str, ch);
+//     if (!*re)
+//         printf("null res\n");
+//     while (*re)
+//     {
+//         printf("re: %s\n", *re);
+//         re++;
+//     }
+//     // printf("result: %s\n", ft_strtrim(str, ch));
+//     return 0;
+// }
+
+// char *strmatch(const char *big, const char *little)
+// {
+//     int i;
+//     int j;
+
+//     i = 0;
+//     if (*little == '\0')
+//         return ((char *)big);
+//     while (big[i])
+//     {
+//         j = 0;
+//         while (big[i + j] != '\0' && big[i + j] == little[j])
+//             j++;
+//         if (little[j] == '\0')
+//             return ((char *)&big[i + j]);
+//         i++;
+//     }
+//     return (NULL);
+// }
+
+// char *strmatch(const char *big, const char *little)
+// {
+//     int i;
+
+//     i = 0;
+//     if (*little == '\0')
+//         return ((char *)big);
+//     while (*big)
+//     {
+//         i = 0;
+//         while (big[i] && little[i] && big[i] == little[i])
+//         {
+//             i++;
+//             if (little[i] == '\0')
+//             {
+//                 while (i--)
+//                     big++;
+//                 return ((char *)big);
+//             }
+//         }
+//         big++;
+//     }
+//     return (NULL);
+// }
+
+// int main(void)
+// {
+//     char *big = "exit_error.c";
+//     char *small = "t_";
+
+//     // big = strmatch(big, small);
+//     printf("re: %s\n", strmatch(big, small));
+//     return 0;
+// }
+
+
+/*
+big = minishell.h
+small = *ni*el*
+small = mi*shell* //yes
+small = mi*shel*l*.h //x
+small = mini*
+small = ma*
+*/

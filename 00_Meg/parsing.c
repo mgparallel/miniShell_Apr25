@@ -33,7 +33,9 @@ void if_cmd(t_token **lst)
 {
     t_token *cur_token;
     t_token *prev;
+    // int flag;
 
+    // flag = 0;
     cur_token = *lst; // the begining of the list, used to parse until the one before cur_token
     if (cur_token->type != PIPE && cur_token->type != REDIRECT)
         cur_token->type = CMD;
@@ -41,13 +43,15 @@ void if_cmd(t_token **lst)
     cur_token = cur_token->next;
     while (cur_token)
     {
-        if (cur_token->type == WORD || cur_token->type == ARG)
+        // if (cur_token->type == EXIT_CODE)
+        //     flag = 1;
+        if (cur_token->type == WORD || cur_token->type == ARG || cur_token->type == EXIT_CODE)
         {
             if (prev->type == PIPE || prev->type == AND || prev->type == OR || prev->type == RE_TARGET)
                 cur_token->type = CMD;
             else if (prev->type == REDIRECT)
                 cur_token->type = RE_TARGET;
-            else
+            else if (cur_token->type != EXIT_CODE)
                 cur_token->type = ARG;
         }
         prev = cur_token;
@@ -110,8 +114,8 @@ void parsing(t_token **lst, t_files *env)
                 parse_type_var(lst, &head, env);
         if (head->type == ARG)
             parse_type_arg(lst, &head);
-        // if (head->type == WILDCARD)
-        //     expand_wildcard(lst, &head);
+        if (head->type == WILDCARD)
+            expand_wildcard(lst, &head);
         head = head->next;
     }
     if_cmd(lst);

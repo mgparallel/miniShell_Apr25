@@ -134,14 +134,13 @@ int     cmd_echo(t_token *start, t_token *end);
 int     cmd_cd(char *str, t_files **env);
 
 //04_bonus_wildcard
-// void   expand_wildcard(t_token **lst, t_token **cur_token);
-t_files *expand_wildcard(char *value);
+void   expand_wildcard(t_token **lst, t_token **cur_token);
 void fetch_wildcard(t_files **fn);
 bool if_wildcard(t_token **cur_token);
 void fn_match_util(char **arr, t_files **fn_lst, t_files **result);
 void fn_match(t_files *fn_lst, char *value, t_files **result);
 char **append_arr(char **arr, char *str);
-char **prepend_arr(char **arr, char *str);
+char **prepend_arr(char **arr, char *value, char *str);
 void free_arr(char **arr);
 void indir_lst_addback(t_files **lst, t_files *new);
 void add_wildcard_token(t_token **lst, t_token *curr, t_files *files);

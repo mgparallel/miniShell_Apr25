@@ -13,7 +13,7 @@ void free_arr(char **arr)
     arr = NULL;
 }
 
-char **prepend_arr(char **arr, char *str)
+char **prepend_arr(char **arr, char *value, char *str)
 {
     char **new_arr;
     int len;
@@ -25,7 +25,7 @@ char **prepend_arr(char **arr, char *str)
     flag = 0;
     while (arr[len])
         len++;
-    if (str[ft_strlen(str) - 1] == '*')
+    if (value[ft_strlen(value) - 1] == '*')
     {
         new_arr = (char **)malloc(sizeof(char *) * (len + 3));
         flag = 1;
@@ -90,7 +90,7 @@ void fn_match(t_files *fn_lst, char *value, t_files **result)
     if (!arr) 
         return ; //error with split function
     if (!*arr || *value == '*') //when the pointer is '\0' / * at the beginning of token value
-        updated_arr = prepend_arr(arr, "*");
+        updated_arr = prepend_arr(arr, value, "*");
     else if (value[ft_strlen(value) - 1] == '*') //find * at the end of the token value
         updated_arr = append_arr(arr, "*");
     else
@@ -100,12 +100,5 @@ void fn_match(t_files *fn_lst, char *value, t_files **result)
         free(arr);
         return ;
     }
-    // int p = 0;
-    // while(updated_arr[p])
-    // {
-    //     printf("arr: %s\n", updated_arr[p]);
-    //     p++;
-    // }
-    // return ;
     fn_match_util(updated_arr, &fn_lst, result);
 }
