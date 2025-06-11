@@ -71,7 +71,6 @@ int main(int argc, char **argv, char **envp)
 	t_token *token;
 	t_files *env;
 	char exit_status;
-	int		exit_status;
 	t_cmd	*cmds;
 
 	(void)argc;

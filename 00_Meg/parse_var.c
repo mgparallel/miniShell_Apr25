@@ -91,29 +91,29 @@ void parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token *
     (*cur_token)->type = ARG;
 }
 
-// function to check if env_var is $?
-// so it should update the type to EXIT_CODE and create new token if applicable
-// int if_exit_code(t_token **lst, t_token **cur_token, t_files *env)
+// void if_contains_var(char *pre, char* tail, t_token **curr, t_files *env)
 // {
-//     char *var;
+//     char *new_tail;
 
-//     var = (*cur_token)->value + 1; //?USER
-//     if_braces(&var);
-//     if (!ft_strchr(var, '?'))
-//         return (0);
-//     printf("check: %s\n", var);
-//     if (var[0] == '?')
+//     new_tail = NULL;
+//     if (ft_strchr(tail, '$'))
 //     {
-//         if (ft_strlen(var) > 1)
-//             update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, EXIT_CODE);
-//         else
-//             parse_type_var_util("?", env, cur_token, lst);
-//         return (1);
+//         new_tail = get_var_value(ft_strchr(tail, '$') + 1, env);
+//         free(tail);
+//         (*curr)->value = ft_strjoin(pre, new_tail);
 //     }
-//     return (0);
+//     else
+//     {
+//         (*curr)->value = ft_strjoin(pre, tail);
+//     }
+//     (*curr)->type = EXIT_CODE;
+//     if (!(*curr)->value)
+//             return ;
 // }
 
-void    check_prev_exitcode(t_token **lst, t_token **cur_token)
+// function to check if env_var is $?
+// so it should update the type to EXIT_CODE and create new token if applicable
+void    check_prev_exitcode(t_token **lst, t_token **cur_token, t_files *env)
 {
         t_token *curr;
         char *pre_value;
@@ -121,6 +121,7 @@ void    check_prev_exitcode(t_token **lst, t_token **cur_token)
 
         pre_value = NULL;
         tail_value = NULL;
+        (void)env;
         if ((*cur_token)->has_leading_space != 0 || *cur_token == *lst)
             return ;
         curr = *lst;
@@ -132,13 +133,14 @@ void    check_prev_exitcode(t_token **lst, t_token **cur_token)
         tail_value = ft_strdup((*cur_token)->value);
         lst_rm_token(lst, cur_token);
         free(curr->value);
+        // if_contains_var(pre_value, tail_value, &curr, env);
         curr->value = ft_strjoin(pre_value, tail_value);
         curr->type = EXIT_CODE;
         if (!curr->value)
             return ;
 }
 
-int if_exit_code(t_token **lst, t_token **cur_token)//$?Uthat
+int if_exit_code(t_token **lst, t_token **cur_token, t_files *env)//$?Uthat
 {
     char *var;
 
@@ -149,7 +151,7 @@ int if_exit_code(t_token **lst, t_token **cur_token)//$?Uthat
     if (var[0] == '?') //that
     {
         (*cur_token)->type = EXIT_CODE;
-       check_prev_exitcode(lst, cur_token);
+        check_prev_exitcode(lst, cur_token, env);
         return (1);
     }
     return (0);
@@ -161,7 +163,7 @@ void parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
     char *var;
     char *pos; //pointer where var ends as finding NOT-{0-9a-zA-Z_}
 
-    if (if_exit_code(lst, cur_token))
+    if (if_exit_code(lst, cur_token, env))
         return ;
     pos = (*cur_token)->value + 1; //pos = {USER}
     while (if_alnum_underscore_braces(*pos))
