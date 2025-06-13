@@ -12,33 +12,6 @@
 
 #include "minishell.h"
 
-void	print_cmd_list(t_cmd *head)
-{
-	int i = 0;
-	t_cmd *cmd = head;
-
-	if (!cmd)
-	{
-		printf("Lista de comandos vacía.\n");
-		return;
-	}
-	while (cmd)
-	{
-		printf("Comando #%d:\n", i++);
-		for (int j = 0; j < cmd->argc; j++)
-			printf("  argv[%d] = \"%s\"\n", j, cmd->argv[j]);
-
-		printf("  infile: %s\n", cmd->infile ? cmd->infile : "(null)");
-		printf("  outfile: %s\n", cmd->outfile ? cmd->outfile : "(null)");
-		printf("  append: %d\n", cmd->append);
-		printf("  heredoc: %d\n", cmd->heredoc);
-		printf("  connector: %d\n", cmd->connector);
-		printf("\n");
-
-		cmd = cmd->next;
-	}
-}
-
 void	free_cmd(t_cmd *cmd)
 {
 	int		i;

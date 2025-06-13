@@ -10,28 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
-
-static void	free_split(char **split)
-{
-	int	i;
-
-	i = -1;
-	while (split[++i])
-		free(split[i]);
-	free(split);
-}
-
-static char	*get_env_path(char **envp)
-{
-	int	i;
-
-	i = -1;
-	while (envp[++i])
-		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			return (envp[i] + 5);
-	return (NULL);
-}
+#include "minishell.h"
 
 static char	*join_path(char *dir, char *cmd)
 {
@@ -52,8 +31,6 @@ static char	*find_command_path(char *env_path, char *cmd)
 	char	*full_path;
 	char	**paths;
 
-	if (!env_path)
-		return (NULL);
 	paths = ft_split(env_path, ':');
 	if (!paths)
 		return (NULL);
@@ -62,29 +39,88 @@ static char	*find_command_path(char *env_path, char *cmd)
 	{
 		full_path = join_path(paths[i], cmd);
 		if (!full_path || access(full_path, X_OK) == 0)
-			return (free_split(paths), full_path);
+			return (free_arr(paths), full_path);
 		free(full_path);
 	}
-	free_split(paths);
+	free_arr(paths);
 	return (NULL);
 }
 
-void	exec_command(char **cmd_args, char **envp)
+char	*get_command_path(char *cmd, char **envp)
 {
-	char	*env_path;
+	char	*path_env;
+	int		i;
+
+	if (ft_strchr(cmd, '/'))
+		return (ft_strdup(cmd));
+	i = -1;
+	path_env = NULL;
+	while (envp[++i])
+	{
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
+		{
+			path_env = envp[i] + 5;
+			break ;
+		}
+	}
+	if (!path_env)
+		return (NULL);
+	return (find_command_path(path_env, cmd));
+}
+
+char	**lst_to_envp(t_files *env)
+{
+    int		count;
+	int		i;
+    t_files	*tmp;
+    char	**envp;
+
+	tmp = env;
+	count = 0;
+    while (tmp && ++count)
+        tmp = tmp->next;
+    envp = malloc(sizeof(char *) * (count + 1));
+    if (!envp)
+        return (NULL);
+    tmp = env;
+	i = -1;
+    while (++i < count)
+    {
+        envp[i] = ft_strdup(tmp->value);
+        if (!envp[i])
+        {
+            while (--i >= 0)
+                free(envp[i]);
+            return (free(envp), NULL);
+        }
+        tmp = tmp->next;
+    }
+    envp[count] = NULL;
+    return (envp);
+}
+
+void	exec_command(char **cmd_args, t_files *env)
+{
+	char	**envp;
 	char	*cmd_path;
 
-	env_path = get_env_path(envp);
-	cmd_path = find_command_path(env_path, cmd_args[0]);
+	envp = lst_to_envp(env);
+	free_lst(env);
+	if (!envp)
+		exit(1);
+	cmd_path = get_command_path(cmd_args[0], envp);
 	if (!cmd_path)
 	{
-		ft_putstr_fd("pipex: execve: Command not found \n", 2);
-		free_split(cmd_args);
+		ft_putstr_fd(cmd_args[0], stderr);
+		ft_putstr_fd(": command not found \n", stderr);
 		exit(127);
 	}
+	signal(SIGINT, SIG_DFL);
 	execve(cmd_path, cmd_args, envp);
-	perror("pipex: execve");
+	perror("execve");
 	free(cmd_path);
-	free_split(cmd_args);
-	exit(1);
+	free_arr(envp);
+	if (errno == ENOENT)
+		exit(127);
+	exit(126);
 }

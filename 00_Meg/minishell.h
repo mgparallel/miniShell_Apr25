@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include <stdio.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <dirent.h>
@@ -70,7 +71,6 @@ typedef struct s_cmd
 
 typedef struct s_exec_data
 {
-	int		current_status;
 	int		*pipe_fds;
 	int		num_pids;
 	pid_t	pid[128];

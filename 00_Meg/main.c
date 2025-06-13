@@ -65,36 +65,50 @@ void clear_token(t_token **token)
 	}
 }
 
+void    handle_sigint(int sig)
+{
+    void(sig);
+    write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
 int main(int argc, char **argv, char **envp)
 {
-	char *input;
 	t_token *token;
 	t_files *env;
-	char exit_status;
 	t_cmd	*cmds;
+	char	*input;
+	int		exit_status;
 
 	(void)argc;
 	(void)argv;
 	exit_status = 0;
+	env = cp_env(envp);
 	while (1)
 	{
+		signal(SIGINT, handle_sigint);
+		signal(SIGQUIT, SIG_IGN);
 		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
 		if (!input)
 		{
-			printf("No input");
-			return (1);
+			printf("exit\n");
+			exit_status = 256;
+			break ;
 		}
 		add_history(input);
-		env = cp_env(envp);
 		token = tokenizer(input);
 		free(input);
 		parsing(&token, env);
 		print_token(token);
 		clear_token(&token);
 		exec_commands(cmds, env, &exit_status);
+		if (exit_status > 255)
+			break ;
 		free_cmd_list(cmds);
 	}
 	free_lst(&env);
 	rl_clear_history();
-	return (exit_status);
+	return (exit_status - 256);
 }

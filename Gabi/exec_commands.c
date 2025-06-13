@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	check_files(t_redir *list)
+int	check_files(t_redir *list, t_files *env)
 {
 	int	fd;
 
@@ -25,9 +25,7 @@ int	check_files(t_redir *list)
         else if (list->type == REDIR_APPEND)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
         else if (list->type == REDIR_HEREDOC)
-            fd = heredoc(list->filename);
-		if (list->type == REDIR_HEREDOC)
-			unlink(".heredoc");
+            fd = heredoc(list->filename, env);
         if (fd < 0)
             return (perror("open: "), 1);
         close(fd);
@@ -36,7 +34,7 @@ int	check_files(t_redir *list)
     return (0);
 }
 
-int	redirect_io(t_redir *list)
+int	redirect_io(t_redir *list, t_files *env)
 {
     int	fd;
 
@@ -49,9 +47,7 @@ int	redirect_io(t_redir *list)
         else if (list->type == REDIR_APPEND)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
         else if (list->type == REDIR_HEREDOC)
-            fd = heredoc(list->filename);
-		if (list->type == REDIR_HEREDOC)
-			unlink(".heredoc");
+            fd = heredoc(list->filename, env);
         if (fd < 0)
             return (perror("open: "), 1);
         if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
@@ -66,7 +62,7 @@ int	redirect_io(t_redir *list)
     return (0);
 }
 
-int	heredoc(char *delimiter)
+int	heredoc(char *delimiter, t_files *env)
 {
 	char	*line;
 	int		fd;
@@ -76,47 +72,47 @@ int	heredoc(char *delimiter)
 		return (-1);
 	while (1)
 	{
-		write(1, "> ", 2);
-		line = get_next_line(0);
+		line = readline("> ");
 		if (!line)
-			return (close(fd), unlink(".heredoc"), -1);
-		if (ft_strcmp(line, delimiter) == 10)
+			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", stderr);
+		else
+			line = expand_vars(line, env);
+		if (!line || ft_strcmp(line, delimiter) == 10)
 			break ;
 		write(fd, line, ft_strlen(line));
 		free(line);
 	}
-	free(line);
+	if (line)
+		free(line);
 	close(fd);
     fd = open(".heredoc", O_RDONLY);
+	unlink(".heredoc");
 	return (fd);
 }
 
-int	cmd_exit(t_cmd *cmd)
+int	cmd_exit(t_cmd *cmd, int is_child)
 {
 	char	code;
 
-	free_lst(&env);
- 	rl_clear_history();
 	if (cmd->argc == 1)
-		return (-1);
+		return (256 - is_child);
 	if (cmd->argc == 2)
 	{
 		if (is_numeric(cmd->argv[1]))
 		{
 			code = ft_atoi(cmd->argv[1]);
-			free_cmds(cmds);
-			exit(code);
+			return (code + 256 - is_child);
 		}
 		else
 		{
-			ft_putstr_fd("exit: ", 2);
-			ft_putstr_fd(cmd->argv[1], 2);
-			ft_putstr_fd(": numeric argument required", 2);
-			free_cmds(cmds);
-			exit(2);
+			ft_putstr_fd("exit: ", stderr);
+			ft_putstr_fd(cmd->argv[1], stderr);
+			ft_putstr_fd(": numeric argument required", stderr);
+			return (258 - is_child);
 		}
 	}
-	ft_putstr_fd("exit: too many arguments", 2);
+	ft_putstr_fd("exit: too many arguments", stderr);
+	return (1);
 }
 
 int	count_pipeline_cmds(t_cmd *cmd)
@@ -129,9 +125,8 @@ int	count_pipeline_cmds(t_cmd *cmd)
 		count++;
 		cmd = cmd->next;
 	}
-	return (count + 1); // Incluir el último sin PIPE
+	return (count + 1);
 }
-
 
 char	execute_pipeline(t_cmd *start_cmd, t_files **env)
 {
@@ -144,7 +139,7 @@ char	execute_pipeline(t_cmd *start_cmd, t_files **env)
 	num_cmds = count_pipeline_cmds(start_cmd);
 	cmd = start_cmd;
 	if (num_cmds == 1 && is_builtin_without_output(cmd))
-		return (exec_builtin_without_output(cmd, env));
+		return (exec_builtin(cmd, env, 0));
 	data.pipe_fds = malloc(sizeof(int) * 2 * (num_cmds - 1));
 	if (!data.pipe_fds)
 		return (perror("malloc:"), 1);
@@ -169,10 +164,13 @@ char	execute_pipeline(t_cmd *start_cmd, t_files **env)
 			while (++j < 2 * (num_cmds - 1))
 				close(data.pipe_fds[j]);
 			free(data.pipe_fds);
-			if (redirect_io(cmd->redir_list))
-				exit_child(env);
+			if (redirect_io(cmd->redir_list, *env))
+			{
+				free_lst(env);
+				exit (1);
+			}
 			if (is_builtin(cmd->argv))
-				exit(exec_builtin(cmd->argv, env));
+				exit(exec_builtin(cmd, env, 256));
 			else
 				exec_command(cmd->argv, *env);
 		}
@@ -263,7 +261,7 @@ void	expand_pipeline_exit_status(t_cmd *cmd, char exit_status)
     free(status_str);
 }
 
-void	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status)
+int	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status)
 {
     t_cmd		*cmd;
 	
@@ -275,7 +273,7 @@ void	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status)
 
         // 2. Ejecutar pipeline
         *exit_status = execute_pipeline(cmd, &env);
-		if (*exit_status == -1)
+		if (*exit_status > 255)
 			return ;
 
         // 3. Saltar al próximo grupo de comandos (después del pipeline)
