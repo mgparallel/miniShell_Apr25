@@ -17,12 +17,17 @@ void    join_token(t_token **prev, t_token **cur_token)
 void    parse_type_arg(t_token **lst, t_token **cur_token)
 {
     t_token *prev;
+    char *var;
 
     if (*lst == *cur_token)
         return ;
+    var = (*cur_token)->value;
     prev = *lst;
     while (prev->next != *cur_token)
         prev = prev->next;
+    if_braces(&var);
+    // if (ft_strchr(var, '$'))
+    //     parse_type_var_util(var + 1, env, cur_token, lst);
     if (!(*cur_token)->has_leading_space && prev->type != PIPE && prev->type != REDIRECT)
         join_token(&prev, cur_token);
 }

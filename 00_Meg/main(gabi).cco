@@ -1,5 +1,6 @@
 #include "minishell.h"
-
+int	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status);
+void	free_cmd_list(t_cmd *cmd);
 // funtion to print the str of the type -> remove later 
 char *print_out_type(t_token_type type)
 {

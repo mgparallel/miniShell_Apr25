@@ -1,10 +1,12 @@
 #include "minishell.h"
 
-void    lst_rm_token(t_token **lst, t_token **cur_token)
+int    lst_rm_token(t_token **lst, t_token **cur_token)
 {
     t_token *prev;
     t_token *temp;
+    int if_space;
 
+    if_space = (*cur_token)->has_leading_space;
     prev = *lst;
     if (*lst == *cur_token)
     {
@@ -12,11 +14,12 @@ void    lst_rm_token(t_token **lst, t_token **cur_token)
         *lst = temp->next;
         free(temp->value);
         free(temp);
-        return ;
+        return (if_space);
     }
     while (prev->next != *cur_token)
         prev = prev->next;
     prev->next = (*cur_token)->next;
     free((*cur_token)->value);
     free(*cur_token);
+    return (if_space);
 }

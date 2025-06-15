@@ -33,9 +33,7 @@ void if_cmd(t_token **lst)
 {
     t_token *cur_token;
     t_token *prev;
-    // int flag;
 
-    // flag = 0;
     cur_token = *lst; // the begining of the list, used to parse until the one before cur_token
     if (cur_token->type != PIPE && cur_token->type != REDIRECT)
         cur_token->type = CMD;
@@ -43,8 +41,6 @@ void if_cmd(t_token **lst)
     cur_token = cur_token->next;
     while (cur_token)
     {
-        // if (cur_token->type == EXIT_CODE)
-        //     flag = 1;
         if (cur_token->type == WORD || cur_token->type == ARG || cur_token->type == EXIT_CODE)
         {
             if (prev->type == PIPE || prev->type == AND || prev->type == OR || prev->type == RE_TARGET)
@@ -58,39 +54,6 @@ void if_cmd(t_token **lst)
         cur_token = cur_token->next;
     }
 	if_cmd_util(lst);
-}
-
-void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
-{
-    t_token *current_token;
-    t_token *quote_token;
-    char *first_value;
-    char *original;
-
-    current_token = *lst;
-    original = current_token->value;
-    quote_token = malloc(sizeof(t_token));
-    if (!quote_token)
-        return ;
-    first_value = ft_strcpy(str, quote_pos);
-    if (!first_value)
-    {
-        free(quote_token);
-        return ;
-    }
-    quote_token->value = ft_strdup(quote_pos);
-    if (!quote_token->value)
-    {
-        free(quote_token);
-        free(first_value);
-        return ;
-    }
-    current_token->value = first_value;
-    quote_token->type = type;
-    quote_token->has_leading_space = 0;
-    quote_token->next = current_token->next;
-    current_token->next = quote_token;
-    free(original);
 }
 
 // main function of PARSING to refine the tokens
