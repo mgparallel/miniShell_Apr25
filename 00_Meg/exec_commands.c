@@ -6,11 +6,40 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/09 22:45:28 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/18 20:51:46 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	heredoc(char *delimiter, t_files *env)
+{
+	char	*line;
+	int		fd;
+
+	(void)env;
+	fd = open(".heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (fd == -1)
+		return (-1);
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
+		// else
+		// 	line = expand_vars(line, env);
+		if (!line || ft_strcmp(line, delimiter) == 10)
+			break ;
+		write(fd, line, ft_strlen(line));
+		free(line);
+	}
+	if (line)
+		free(line);
+	close(fd);
+    fd = open(".heredoc", O_RDONLY);
+	unlink(".heredoc");
+	return (fd);
+}
 
 int	check_files(t_redir *list, t_files *env)
 {
@@ -62,32 +91,19 @@ int	redirect_io(t_redir *list, t_files *env)
     return (0);
 }
 
-int	heredoc(char *delimiter, t_files *env)
-{
-	char	*line;
-	int		fd;
+#include <ctype.h>
 
-	fd = open(".heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-		return (-1);
-	while (1)
-	{
-		line = readline("> ");
-		if (!line)
-			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", stderr);
-		else
-			line = expand_vars(line, env);
-		if (!line || ft_strcmp(line, delimiter) == 10)
-			break ;
-		write(fd, line, ft_strlen(line));
-		free(line);
-	}
-	if (line)
-		free(line);
-	close(fd);
-    fd = open(".heredoc", O_RDONLY);
-	unlink(".heredoc");
-	return (fd);
+int	is_numeric(const char *str)
+{
+    if (!str || *str == '\0')
+        return (0);
+    while (*str)
+    {
+        if (!ft_isdigit((unsigned char)*str))
+            return (0);
+        str++;
+    }
+    return (1);
 }
 
 int	cmd_exit(t_cmd *cmd, int is_child)
@@ -105,13 +121,13 @@ int	cmd_exit(t_cmd *cmd, int is_child)
 		}
 		else
 		{
-			ft_putstr_fd("exit: ", stderr);
-			ft_putstr_fd(cmd->argv[1], stderr);
-			ft_putstr_fd(": numeric argument required", stderr);
+			ft_putstr_fd("exit: ", 2);
+			ft_putstr_fd(cmd->argv[1], 2);
+			ft_putstr_fd(": numeric argument required", 2);
 			return (258 - is_child);
 		}
 	}
-	ft_putstr_fd("exit: too many arguments", stderr);
+	ft_putstr_fd("exit: too many arguments", 2);
 	return (1);
 }
 
@@ -151,7 +167,6 @@ char	execute_pipeline(t_cmd *start_cmd, t_files **env)
 	while (cmd && (++i < num_cmds))
 	{
 		pid_t pid = fork();
-		char	**environ;
 		if (pid == -1)
 			return (perror("fork"), 1);
 		if (pid == 0)
@@ -169,7 +184,7 @@ char	execute_pipeline(t_cmd *start_cmd, t_files **env)
 				free_lst(env);
 				exit (1);
 			}
-			if (is_builtin(cmd->argv))
+			if (is_builtin(cmd))
 				exit(exec_builtin(cmd, env, 256));
 			else
 				exec_command(cmd->argv, *env);
@@ -195,7 +210,7 @@ char	execute_pipeline(t_cmd *start_cmd, t_files **env)
 	return (0);
 }
 
-char *expand_exit_code(const char *str, const char *status_str)
+char *expand_exit_code(const char *str, char *status_str)
 {
     size_t  len;
     int		i;
@@ -261,7 +276,7 @@ void	expand_pipeline_exit_status(t_cmd *cmd, char exit_status)
     free(status_str);
 }
 
-int	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status)
+void	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status)
 {
     t_cmd		*cmd;
 	

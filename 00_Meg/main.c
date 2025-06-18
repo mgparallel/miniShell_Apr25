@@ -1,6 +1,4 @@
 #include "minishell.h"
-int	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status);
-void	free_cmd_list(t_cmd *cmd);
 // funtion to print the str of the type -> remove later 
 char *print_out_type(t_token_type type)
 {
@@ -68,7 +66,7 @@ void clear_token(t_token **token)
 
 void    handle_sigint(int sig)
 {
-    void(sig);
+    (void)sig;
     write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
@@ -103,6 +101,7 @@ int main(int argc, char **argv, char **envp)
 		free(input);
 		parsing(&token, env);
 		print_token(token);
+		cmds = build_cmds(token);
 		clear_token(&token);
 		exec_commands(cmds, env, &exit_status);
 		if (exit_status > 255)

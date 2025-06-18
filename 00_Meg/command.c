@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:49:56 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/03/12 16:55:29 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/18 20:05:13 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,14 +105,14 @@ void	exec_command(char **cmd_args, t_files *env)
 	char	*cmd_path;
 
 	envp = lst_to_envp(env);
-	free_lst(env);
+	free_lst(&env);
 	if (!envp)
 		exit(1);
 	cmd_path = get_command_path(cmd_args[0], envp);
 	if (!cmd_path)
 	{
-		ft_putstr_fd(cmd_args[0], stderr);
-		ft_putstr_fd(": command not found \n", stderr);
+		ft_putstr_fd(cmd_args[0], 2);
+		ft_putstr_fd(": command not found \n", 2);
 		exit(127);
 	}
 	signal(SIGINT, SIG_DFL);

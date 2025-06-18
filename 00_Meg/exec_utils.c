@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/09 22:41:01 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/18 21:26:12 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child)
 	if (ft_strcmp(cmd->argv[0], "cd") == 0)
 	{
 		if (cmd->argc > 2)
-			return (ft_putstr_fd("cd: too many arguments", stderr), 1);
+			return (ft_putstr_fd("cd: too many arguments", 2), 1);
 		return (cmd_cd(cmd->argv[1], env));
 	}
 	i = 0;
@@ -75,6 +75,6 @@ int	exec_builtin(t_cmd *cmd, t_files **env, int is_child)
 	if (ft_strcmp(cmd->argv[0], "env") == 0)
 		return (cmd_env(*env));
 	if (ft_strcmp(cmd->argv[0], "echo") == 0)
-		return (cmd_echo(cmd->argv));
+		return (cmd_echo(cmd->argc - 1, cmd->argv + 1));
 	return (exec_builtin_without_output(cmd, env, is_child));
 }

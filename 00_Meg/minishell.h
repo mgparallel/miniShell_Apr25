@@ -7,6 +7,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <sys/wait.h>
 #include <sys/types.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -135,6 +138,22 @@ void parse_type_arg(t_token **lst, t_token **cur_token);
 //lst_remove_token.c
 int    lst_rm_token(t_token **lst, t_token **cur_token);
 
+//build_cmds
+t_cmd   *build_cmds(t_token *tokens);
+void    free_cmd_list(t_cmd *cmd);
+
+//exec_commands
+void    exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status);
+int check_files(t_redir *list, t_files *env);
+int cmd_exit(t_cmd *cmd, int is_child);
+
+//exec utils
+int exec_builtin(t_cmd *cmd, t_files **env, int is_child);
+int exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child);
+int is_builtin(t_cmd *cmd);
+int is_builtin_without_output(t_cmd *cmd);;
+void    exec_command(char **cmd_args, t_files *env);
+
 //03_builtin
 int     cmd_pwd(t_files *env);
 int     cmd_export(char *str, t_files **env);
@@ -142,7 +161,7 @@ int     cmd_env(t_files *env);
 int     cmd_unset(char *var, t_files **env);
 char *ft_strndup(char *src, int len);
 void    lstadd_start(t_files **env, char *str);
-int     cmd_echo(t_token *start, t_token *end);
+int     cmd_echo(int argc, char **argv);
 int     cmd_cd(char *str, t_files **env);
 
 //04_bonus_wildcard

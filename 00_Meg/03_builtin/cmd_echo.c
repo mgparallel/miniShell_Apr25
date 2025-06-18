@@ -1,27 +1,25 @@
 #include "../minishell.h"
 //take into account that when echo "" is print out a new line
 //when there are other cmds, it ignores.
-int	cmd_echo(t_token *start, t_token *end) //change to char **argv
+int	cmd_echo(int argc, char **argv) //change to char **argv
 {
 	int	nl;
 
 	nl = 1;
-	if (!start)
+	if (argc < 1)
 		return (printf("\n"), 0);
-	if (ft_strncmp(start->value, "-n", 2) == 0)
+	if (ft_strncmp(*argv, "-n", 2) == 0)
 	{
 		nl = 0;
-		start = start->next;
+		(*argv)++;
 	}
-	while (start && start != end) //check if end is the next cmd or the last arg
+	while (*argv) //check if end is the next cmd or the last arg
 	{
-		printf("%s", start->value);
-		start = start->next;
-		if (start != end)
+		printf("%s", (*argv));
+		(*argv)++;
+		if (*argv)
 			printf(" ");
 	}
-	if (end)
-		printf("%s", start->value);
 	if (nl)
 		printf("\n");
 	return (0);

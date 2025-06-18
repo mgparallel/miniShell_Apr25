@@ -6,11 +6,73 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/09 18:24:23 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/18 21:21:39 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+const char *redir_type_to_str(t_redir_type type)
+{
+    switch (type)
+    {
+        case REDIR_INPUT:      return "<";
+        case REDIR_OUTPUT:     return ">";
+        case REDIR_APPEND:  return ">>";
+        case REDIR_HEREDOC: return "<<";
+        default:            return "UNKNOWN";
+    }
+}
+
+const char *connector_to_str(t_token_type type)
+{
+    switch (type)
+    {
+        case PIPE:       return "|";
+        case AND:return "&&";
+        case OR: return "||";
+        default:         return "END";
+    }
+}
+
+void print_cmd_list(t_cmd *cmd)
+{
+    int i, cmd_num = 1;
+
+    while (cmd)
+    {
+        printf("Comando %d:\n", cmd_num++);
+
+        // Argumentos
+        printf("  argc: %d\n", cmd->argc);
+        printf("  argv: ");
+        for (i = 0; i < cmd->argc; i++)
+            printf("[%s] ", cmd->argv[i]);
+        printf("\n");
+
+        // Redirecciones
+        if (cmd->redir_list)
+        {
+            t_redir *r = cmd->redir_list;
+            printf("  Redirecciones:\n");
+            while (r)
+            {
+                printf("    tipo: %s, archivo: %s\n", redir_type_to_str(r->type), r->filename);
+                r = r->next;
+            }
+        }
+        else
+        {
+            printf("  Redirecciones: ninguna\n");
+        }
+
+        // Conector
+        printf("  Conector: %s\n", connector_to_str(cmd->connector));
+        printf("\n");
+
+        cmd = cmd->next;
+    }
+}
 
 void	free_cmd(t_cmd *cmd)
 {
@@ -65,7 +127,10 @@ int	add_redir(t_redir **head, t_redir_type type, char *filename)
 		return (free(new), 1);
     new->next = NULL;
     if (!*head)
-        return (new);
+	{
+		*head = new;
+        return (0);
+	}
     tmp = *head;
     while (tmp->next)
         tmp = tmp->next;
@@ -98,7 +163,6 @@ int	manage_redirect(t_token **tokens, t_cmd *cmd)
 		type = token_to_redir_type(redir_token->value);
 		if (add_redir(&(cmd->redir_list), type, (*tokens)->value))
 			return (1);
-		*tokens = (*tokens)->next;
 	}
 	else
 		return (1);
@@ -162,6 +226,8 @@ t_cmd	*build_cmds(t_token *tokens)
 	t_cmd	*tail;
 	t_cmd	*cmd;
 
+	head = NULL;
+	tail = NULL;
 	while (tokens)
 	{
 		cmd = build_cmd(&tokens);
