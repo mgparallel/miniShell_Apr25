@@ -161,7 +161,7 @@ int     cmd_env(t_files *env);
 int     cmd_unset(char *var, t_files **env);
 char *ft_strndup(char *src, int len);
 void    lstadd_start(t_files **env, char *str);
-int     cmd_echo(int argc, char **argv);
+int     cmd_echo(char **argv);
 int     cmd_cd(char *str, t_files **env);
 
 //04_bonus_wildcard

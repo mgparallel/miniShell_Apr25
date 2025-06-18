@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/18 20:51:46 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/18 22:45:11 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,10 @@ int	heredoc(char *delimiter, t_files *env)
 			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
 		// else
 		// 	line = expand_vars(line, env);
-		if (!line || ft_strcmp(line, delimiter) == 10)
+		if (!line || ft_strcmp(line, delimiter) == 0)
 			break ;
 		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
 		free(line);
 	}
 	if (line)
@@ -91,46 +92,6 @@ int	redirect_io(t_redir *list, t_files *env)
     return (0);
 }
 
-#include <ctype.h>
-
-int	is_numeric(const char *str)
-{
-    if (!str || *str == '\0')
-        return (0);
-    while (*str)
-    {
-        if (!ft_isdigit((unsigned char)*str))
-            return (0);
-        str++;
-    }
-    return (1);
-}
-
-int	cmd_exit(t_cmd *cmd, int is_child)
-{
-	char	code;
-
-	if (cmd->argc == 1)
-		return (256 - is_child);
-	if (cmd->argc == 2)
-	{
-		if (is_numeric(cmd->argv[1]))
-		{
-			code = ft_atoi(cmd->argv[1]);
-			return (code + 256 - is_child);
-		}
-		else
-		{
-			ft_putstr_fd("exit: ", 2);
-			ft_putstr_fd(cmd->argv[1], 2);
-			ft_putstr_fd(": numeric argument required", 2);
-			return (258 - is_child);
-		}
-	}
-	ft_putstr_fd("exit: too many arguments", 2);
-	return (1);
-}
-
 int	count_pipeline_cmds(t_cmd *cmd)
 {
 	int	count;
@@ -144,7 +105,7 @@ int	count_pipeline_cmds(t_cmd *cmd)
 	return (count + 1);
 }
 
-char	execute_pipeline(t_cmd *start_cmd, t_files **env)
+int	execute_pipeline(t_cmd *start_cmd, t_files **env)
 {
 	t_exec_data	data;
 	t_cmd	*cmd;
