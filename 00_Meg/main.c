@@ -72,7 +72,7 @@ void    handle_sigint(int sig)
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
-
+/*
 int main(int argc, char **argv, char **envp)
 {
 	t_token *token;
@@ -112,3 +112,4 @@ int main(int argc, char **argv, char **envp)
 	rl_clear_history();
 	return (exit_status - 256);
 }
+*/

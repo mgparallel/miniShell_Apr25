@@ -17,7 +17,7 @@ void new_token(t_token **head, char *str)
 void	update_wildcard_lst(t_files *files, t_token **head)
 {
 		while (files->value[0] == '.')
-		files = files->next;
+			files = files->next;
 		while (files)
 		{
 			new_token(head, files->value);

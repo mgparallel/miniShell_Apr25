@@ -17,8 +17,8 @@ void    indir_lst_addback(t_files **lst, t_files *new)
 {
 	t_files	*ref;
 
-	// if (lst == NULL || new == NULL)
-	// 	return ;
+	if (lst == NULL || new == NULL)
+		return ;
 	if (*lst == NULL)
 	{
 		*lst = new;
