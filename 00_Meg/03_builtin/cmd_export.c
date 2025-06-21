@@ -96,7 +96,8 @@ int    cmd_export(char *str, t_files **env)
 // 	if (ac > 2)
 // 		return (1);
 //     cmd_export(ag[1], &env);
-// 	// cmd_export("ppp=you", &env);
+// 	cmd_export("ppp=you", &env);
+// 	cmd_export("third=top", &env);
 //     printf("first: %s\n", env->value);
 //     printf("second: %s\n", env->next->value);
 // 	free_lst(&env);
