@@ -24,12 +24,15 @@ int cmd_pwd(t_files *env)
 
 int cmd_env(t_files *env)
 {
-	if (!env)
+	t_files *temp;
+
+	temp = env;
+	if (!temp)
 		return (printf("no ENV data"), 1);
-    while (env->next)
+    while (temp->next)
     {
-        printf("%s\n", env->value);
-        env = env->next;
+        printf("%s\n", temp->value);
+        temp = temp->next;
     }
     return (0);
 }
