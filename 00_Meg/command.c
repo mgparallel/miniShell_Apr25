@@ -113,11 +113,11 @@ void	exec_command(char **cmd_args, t_files *env)
 	{
 		ft_putstr_fd(cmd_args[0], 2);
 		ft_putstr_fd(": command not found \n", 2);
+		free_arr(envp);
 		exit(127);
 	}
-	signal(SIGINT, SIG_DFL);
 	execve(cmd_path, cmd_args, envp);
-	perror("execve");
+	perror("execve:");
 	free(cmd_path);
 	free_arr(envp);
 	if (errno == ENOENT)

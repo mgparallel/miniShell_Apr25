@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	heredoc(char *delimiter, t_files *env)
+int	file_heredoc(char *delimiter, t_files *env, int exit_status)
 {
 	char	*line;
 	int		fd;
@@ -23,11 +23,11 @@ int	heredoc(char *delimiter, t_files *env)
 		return (-1);
 	while (1)
 	{
-		line = readline("> ");
+		line = readline("heredoc> ");
 		if (!line)
 			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-		// else
-		// 	line = expand_vars(line, env);
+		else
+			expand_var_heredoc(&line, exit_status, env);
 		if (!line || ft_strcmp(line, delimiter) == 0)
 			break ;
 		write(fd, line, ft_strlen(line));
@@ -42,7 +42,47 @@ int	heredoc(char *delimiter, t_files *env)
 	return (fd);
 }
 
-int	check_files(t_redir *list, t_files *env)
+int	fork_heredoc(char *delimiter)
+{
+	char	*line;
+    pid_t	pid;
+    int		status;
+
+	pid = fork();
+    if (pid == -1)
+        return (perror("fork: "), 1);
+	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+        signal(SIGQUIT, SIG_DFL);
+		while (1)
+		{
+			line = readline("heredoc> ");
+			if (!line)
+				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
+			if (!line || ft_strcmp(line, delimiter) == 0)
+				break ;
+			free(line);
+		}
+		if (line)
+			free(line);
+		exit(0);
+	}
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status))
+    {
+        status = WTERMSIG(status);
+		if (status == SIGINT)
+			return (130);
+		if (status == SIGQUIT)
+			return (131);
+    }
+    else if (WIFEXITED(status))
+        status = WEXITSTATUS(status);
+    return (status);
+}
+
+int	check_files(t_redir *list)
 {
 	int	fd;
 
@@ -54,17 +94,21 @@ int	check_files(t_redir *list, t_files *env)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         else if (list->type == REDIR_APPEND)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        else if (list->type == REDIR_HEREDOC)
-            fd = heredoc(list->filename, env);
-        if (fd < 0)
+		if (fd < 0)
             return (perror("open: "), 1);
+        if (list->type == REDIR_HEREDOC)
+		{
+            fd = fork_heredoc(list->filename);
+			if (fd)
+				return (fd);
+		}
         close(fd);
         list = list->next;
     }
     return (0);
 }
 
-int	redirect_io(t_redir *list, t_files *env)
+int	redirect_io(t_redir *list, t_files *env, int *exit_status)
 {
     int	fd;
 
@@ -76,10 +120,10 @@ int	redirect_io(t_redir *list, t_files *env)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
         else if (list->type == REDIR_APPEND)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        else if (list->type == REDIR_HEREDOC)
-            fd = heredoc(list->filename, env);
-        if (fd < 0)
-            return (perror("open: "), 1);
+        if (list->type == REDIR_HEREDOC)
+            fd = file_heredoc(list->filename, env, *exit_status);
+		if (fd < 0)
+            return (perror("open:"), 1);
         if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
             if (dup2(fd, STDIN_FILENO) == -1)
 				return (perror("dup2:"), 1);
@@ -105,103 +149,122 @@ int	count_pipeline_cmds(t_cmd *cmd)
 	return (count + 1);
 }
 
-int	execute_pipeline(t_cmd *start_cmd, t_files **env)
+void	close_pipes(t_exec_data *data, int i)
+{
+	while (--i >= 0)
+	{
+		close(data->pipe_fds[i * 2]);
+		close(data->pipe_fds[i * 2 + 1]);
+	}
+	free(data->pipe_fds);
+}
+
+int	wait_for_children(t_exec_data *data)
+{
+	int	status;
+	int	i;
+
+	status = 0;
+	i = -1;
+	while (++i < data.num_pids)
+		waitpid(data.pid[i], &status, 0);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+		return (128 + WTERMSIG(status));
+	return (1);
+}
+
+void	exit_child(char *msg, t_exec_data *data, int num_cmds, t_files **env)
+{
+	perror(msg);
+	close_pipes(data, num_cmds - 1);
+	free_lst(env);
+	exit (1);
+}
+
+int	execute_pipeline(t_cmd *cmd, t_files **env, int num_cmds, int *exit_status)
 {
 	t_exec_data	data;
-	t_cmd	*cmd;
 	int		i;
-	int		j;
-	int		num_cmds;
-
-	num_cmds = count_pipeline_cmds(start_cmd);
-	cmd = start_cmd;
-	if (num_cmds == 1 && is_builtin_without_output(cmd))
-		return (exec_builtin(cmd, env, 0));
+	
 	data.pipe_fds = malloc(sizeof(int) * 2 * (num_cmds - 1));
 	if (!data.pipe_fds)
 		return (perror("malloc:"), 1);
 	i = -1;
 	while (++i < num_cmds - 1)
 		if (pipe(data.pipe_fds + i * 2) == -1)
-			return (perror("pipe"), free(data.pipe_fds), 1);
-	i = -1;
-	while (cmd && (++i < num_cmds))
+			return (perror("pipe:"), close_pipes(&data, i), 1);
+	data.num_pids = -1;
+	while (cmd && (++data.num_pids < num_cmds))
 	{
-		pid_t pid = fork();
-		if (pid == -1)
-			return (perror("fork"), 1);
-		if (pid == 0)
+		data.pid[data.num_pids] = fork();
+		if (data.pid[data.num_pids] == -1)
 		{
-			if (i > 0)
-				dup2(data.pipe_fds[(i - 1) * 2], STDIN_FILENO);
-			if (i < num_cmds - 1)
-				dup2(data.pipe_fds[i * 2 + 1], STDOUT_FILENO);
-			j = -1;
-			while (++j < 2 * (num_cmds - 1))
-				close(data.pipe_fds[j]);
-			free(data.pipe_fds);
-			if (redirect_io(cmd->redir_list, *env))
+			perror("fork:");
+			close_pipes(&data, num_cmds - 1);
+			wait_for_children(&data);
+			return (1);
+		}
+		if (data.pid[data.num_pids] == 0)
+		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
+			if (data.num_pids > 0)
+				if (dup2(data.pipe_fds[(data.num_pids - 1) * 2], 0) == -1)
+					exit_child("dup2:", &data, num_cmds, env);
+			if (data.num_pids < num_cmds - 1)
+				if (dup2(data.pipe_fds[data.num_pids * 2 + 1], 1) == -1)
+					exit_child("dup2:", &data, num_cmds, env);
+			close_pipes(&data, num_cmds - 1);
+			*exit_status = redirect_io(cmd->redir_list, *env, exit_status);
+			if (*exit_status)
 			{
 				free_lst(env);
-				exit (1);
+				exit(*exit_status);
 			}
 			if (is_builtin(cmd))
 				exit(exec_builtin(cmd, env, 256));
 			else
 				exec_command(cmd->argv, *env);
 		}
-		else
-		{
-			data.pid[i] = pid;
-			data.num_pids++;
-		}
 		cmd = cmd->next;
 	}
-	i = -1;
-	while (++i < 2 * (num_cmds - 1))
-		close(data.pipe_fds[i]);
-	// Esperar a todos
-	int status;
-	i = -1;
-	while (++i < data.num_pids)
-		waitpid(data.pid[i], &status, 0);
-	if (i == data.num_pids - 1)
-		if (WIFEXITED(status))
-			return (WEXITSTATUS(status));
-	return (0);
+	close_pipes(&data, num_cmds - 1);
+	return (wait_for_children(&data));
 }
 
-char *expand_exit_code(const char *str, char *status_str)
+char	*expand_exit_code(char *str, char *status_str)
 {
     size_t  len;
     int		i;
+	int		j;
     int		count;
 	char	*new_str;
 	
 	count = 0;
     len = ft_strlen(status_str);
 	i = -1;
-    // Contar ocurrencias de $?
     while (str[++i])
         if (str[i] == '$' && str[i + 1] == '?')
             count++;
-    // Si no hay $? devolver copia directa
     if (count == 0)
         return (ft_strdup(str));
     new_str = malloc(ft_strlen(str) + count * (len - 2) + 1);
     if (!new_str)
         return (NULL);
     i = 0;
-    while (*str)
+	j = 0;
+    while (str[j])
     {
-        if (str[0] == '$' && str[1] == '?')
+        if (str[j] == '$' && str[j + 1] == '?')
         {
             ft_strcpy(&new_str[i], status_str);
             i += len;
-            str += 2;
+            j += 2;
         }
         else
-            new_str[i++] = *str++;
+            new_str[i++] = str[j++];
     }
     new_str[i] = '\0';
     return (new_str);
@@ -210,56 +273,60 @@ char *expand_exit_code(const char *str, char *status_str)
 void	expand_pipeline_exit_status(t_cmd *cmd, char exit_status)
 {
     char	*status_str;
-    t_cmd	*current;
+	char	*tmp;
 	t_redir *r;
 	int		i;
 
 	status_str = ft_itoa(exit_status);
-	current = cmd;
-    while (current)
+    while (cmd)
     {
-        // Expandir en argv
 		i = -1;
-        while (++i < current->argc)
-            current->argv[i] = expand_exit_code(current->argv[i], status_str);
-
-        // Expandir en redirecciones
-        r = current->redir_list;
+        while (++i < cmd->argc)
+		{
+			tmp = cmd->argv[i];
+            cmd->argv[i] = expand_exit_code(tmp, status_str);
+			free(tmp);
+		}
+        r = cmd->redir_list;
         while (r)
         {
-            r->filename = expand_exit_code(r->filename, status_str);
+			if (r->type != REDIR_HEREDOC)
+			{
+				tmp = r->filename;
+            	r->filename = expand_exit_code(tmp, status_str);
+				free(tmp);
+			}
             r = r->next;
         }
-		if (current->connector != PIPE)
+		if (cmd->connector != PIPE)
         	break;
-        current = current->next;
+        cmd = cmd->next;
     }
     free(status_str);
 }
 
-void	exec_commands(t_cmd *cmd_list, t_files *env, int *exit_status)
+void	exec_commands(t_cmd *cmd, t_files **env, int *exit_status)
 {
-    t_cmd		*cmd;
-	
-	cmd = cmd_list;
+	int		num_cmds;
+
     while (cmd)
     {
-        // 1. Expandir $? en argv y redir->filename del pipeline
         expand_pipeline_exit_status(cmd, *exit_status);
-
-        // 2. Ejecutar pipeline
-        *exit_status = execute_pipeline(cmd, &env);
-		if (*exit_status > 255)
-			return ;
-
-        // 3. Saltar al próximo grupo de comandos (después del pipeline)
+		num_cmds = count_pipeline_cmds(cmd);
+		if (num_cmds == 1 && is_builtin_without_output(cmd))
+		{
+			*exit_status = check_files(cmd->redir_list);
+			if (!*exit_status)
+				*exit_status = exec_builtin_without_output(cmd, env, 0);
+			if (*exit_status > 255)
+				return ;
+		}
+		else
+    		*exit_status = execute_pipeline(cmd, env, num_cmds, exit_status);
         while (cmd && cmd->connector == PIPE)
             cmd = cmd->next;
-
-        // 4. Evaluar si ejecutar el siguiente grupo según el conector
-        if (cmd && ((cmd->connector == AND && exit_status != 0) ||
-                    (cmd->connector == OR && exit_status == 0)))
-            // Saltar hasta próximo && o || o NULL
+        if (cmd && ((cmd->connector == AND && *exit_status != 0) ||
+                    (cmd->connector == OR && *exit_status == 0)))
             while (cmd && cmd->connector == PIPE)
                 cmd = cmd->next;
         else if (cmd)

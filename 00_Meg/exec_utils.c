@@ -93,6 +93,8 @@ int	exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child)
 	}
 	i = 0;
 	if (ft_strcmp(cmd->argv[0], "export") == 0)
+		if (cmd->argc == 1)
+			return (declare_env(*env));
 		while (++i < cmd->argc)
 			if (cmd_export(cmd->argv[i], env))
 				return (1);
@@ -106,8 +108,6 @@ int	exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child)
 
 int	exec_builtin(t_cmd *cmd, t_files **env, int is_child)
 {
-	if (check_files(cmd->redir_list, *env))
-		return (1);
 	if (ft_strcmp(cmd->argv[0], "pwd") == 0)
 		return (cmd_pwd(*env));
 	if (ft_strcmp(cmd->argv[0], "env") == 0)

@@ -103,7 +103,7 @@ int main(int argc, char **argv, char **envp)
 		print_token(token);
 		cmds = build_cmds(token);
 		clear_token(&token);
-		exec_commands(cmds, env, &exit_status);
+		exec_commands(cmds, &env, &exit_status);
 		if (exit_status > 255)
 			break ;
 		free_cmd_list(cmds);

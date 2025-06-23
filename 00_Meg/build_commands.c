@@ -184,7 +184,11 @@ int	build_arg_array(t_token *cmd_token, t_cmd *cmd)
 		{
 			cmd->argv[i] = ft_strdup(cmd_token->value);
 			if (!cmd->argv[i])
-				return (1);
+			{
+				while (i-- > 0)
+					free(cmd->argv[i]);
+				return (free(cmd->argv), 1);
+			}
 			i++;
 		}
 		cmd_token = cmd_token->next;
@@ -213,7 +217,7 @@ t_cmd	*build_cmd(t_token **tokens)
 				return (free_cmd(cmd), NULL);
 		*tokens = (*tokens)->next;
 	}
-	if (build_arg_array(cmd_token, cmd))
+	if (cmd_token && build_arg_array(cmd_token, cmd))
 		return (free_cmd(cmd), NULL);
 	if (*tokens)
 		cmd->connector = (*tokens)->type;
@@ -228,6 +232,12 @@ t_cmd	*build_cmds(t_token *tokens)
 
 	head = NULL;
 	tail = NULL;
+	if (is_connector(tokens->type))
+	{
+		ft_putstr_fd("syntax error near unexpected token '", 2);
+		ft_putstr_fd(tokens->value, 2);
+		return (ft_putstr_fd("'\n", 2), NULL);
+	}
 	while (tokens)
 	{
 		cmd = build_cmd(&tokens);
