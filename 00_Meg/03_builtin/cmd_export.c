@@ -66,6 +66,21 @@ char *cmd_export_util(char *dequote_str, char *str, char *pos)
 	return (new_str);
 }
 
+int		declare_env(t_files *env)
+{
+		t_files *temp = env;
+
+		if (!temp)
+			return (printf("no ENV data"), 1);
+		while (temp->next)
+		{
+			printf("declare -x ");
+			printf("%s\n", temp->value);
+			temp = temp->next;
+		}
+		return (0);
+}
+
 int    cmd_export(char *str, t_files **env)
 {
     char *pos;
@@ -75,6 +90,11 @@ int    cmd_export(char *str, t_files **env)
     pos = ft_strchr(str, '=');
     if (!pos)
 		return (1); // when there is no '=', exitcode == 1
+	if (pos == str)
+	{
+		printf("export: `%s': not a valid identifier", str);
+		return (1);
+	}
 	dequote_str = quote_in_var(pos);
     new_str = cmd_export_util(dequote_str, str, pos);
 	if (!new_str)
