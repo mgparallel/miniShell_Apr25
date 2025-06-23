@@ -138,6 +138,11 @@ void parse_type_arg(t_token **lst, t_token **cur_token);
 //lst_remove_token.c
 int    lst_rm_token(t_token **lst, t_token **cur_token);
 
+//add_node_to_lst
+void add_node_to_lst(char *str, int *start, int *end, t_files **lst);
+void	add_expanded_var_to_lst(char *value, t_files **lst);
+char *ft_strjoin_free(char *s1, char *s2, size_t len2);
+
 //build_cmds
 t_cmd   *build_cmds(t_token *tokens);
 void    free_cmd_list(t_cmd *cmd);

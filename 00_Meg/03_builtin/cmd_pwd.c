@@ -39,8 +39,13 @@ int cmd_env(t_files *env)
 //     t_files *env;
 //     env = cp_env(envp);
 
-//     char *re = cmd_pwd(env);
-//     printf("re: %s\n", re);
-//     // pwd_env(env);
+//     (void)ac;
+//     (void)ag;
+
+//     //char *re = cmd_pwd(env);
+//     // printf("re: %s\n", re);
+//     cmd_export("third=top", &env);
+//     cmd_export("third=new", &env);
+//     cmd_env(env);
 //     return 0;
 // }
