@@ -24,21 +24,22 @@ void parse_type_quote(t_token **lst, t_token **cur_token, t_files *env)
     char *dollar_pos;
     char *end_quote;
 
-    dollar_pos = ft_strchr((*cur_token)->value, '$');
-    if (dollar_pos && (*cur_token)->type == DOUBLE_QUOTE)
+    if ((*cur_token)->type == DOUBLE_QUOTE)
     {
         end_quote = ft_strrchr((*cur_token)->value, '"');
         if (end_quote[1] != '\0')
             update_token(cur_token, (*cur_token)->value, end_quote + 1, WORD);
         remove_outer_quote(cur_token);
         dollar_pos = ft_strchr((*cur_token)->value, '$');
+		if (!dollar_pos)
+			return ;
         if (dollar_pos[1] && dollar_pos[1] == '{')
             (*cur_token)->type = ENV_VAR;
         else
-            expand_var(lst, cur_token, env);
-        return ;
+            expand_var_quotes(lst, cur_token, env);
+		return ;
     }
-    else if (dollar_pos && (*cur_token)->type == SINGLE_QUOTE)
+    else if ((*cur_token)->type == SINGLE_QUOTE)
     {
         end_quote = ft_strrchr((*cur_token)->value, '\'');
         if (end_quote[1] != '\0')

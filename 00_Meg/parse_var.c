@@ -56,10 +56,24 @@ void parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
 {
     char *var;
     char *pos; //pointer where var ends as finding NOT-{0-9a-zA-Z_}
+	int	space;
 
+	space = 0;
     if (if_exit_code(lst, cur_token))
         return ;
     pos = (*cur_token)->value + 1;
+	if (*pos == '\0'|| *pos == '+')
+	{
+		(*cur_token)->type = ARG;
+		return ;
+	}
+	if (*pos == '=')
+	{
+		space = lst_rm_token(lst, cur_token);
+		if ((*cur_token)->next)
+			(*cur_token)->next->has_leading_space = space;
+		return ;
+	}
     while (if_alnum_underscore_braces(*pos))
     {
         if (*pos == '}')
