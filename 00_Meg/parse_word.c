@@ -60,6 +60,11 @@ void var_found(t_token **cur_token) //$USER$PWD
     pos = ft_strchr(original, '$');
     if (!pos)
         return ;
+	else if (!pos[1] && !(*cur_token)->next)
+	{
+		(*cur_token)->type = ARG;
+		return ;
+	}
     if (pos != original)
     {
         update_token(cur_token, original, pos, WORD);

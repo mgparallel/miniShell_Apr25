@@ -81,6 +81,39 @@ int		declare_env(t_files *env)
 		return (0);
 }
 
+int 	invalid_var(char *str, char *pos)
+{
+		int i;
+
+ 		i = 0;
+		if (!pos)
+			return (1);
+		while (str[i] && str[i] != *pos)
+		{
+			if (!if_alnum_underscore_braces(str[i]))
+			{
+				printf("export: `%s': not a valid identifier\n", str);
+				return (1);
+			}
+			i++;
+		}
+		return (0);
+}
+
+int		if_append_var(char *str,  char *pos, char *new_str, t_files *env)
+{
+		int i;
+		char *prev_str;
+
+		i = 0;
+		prev_str = NULL;
+		while (str[i] && *str + i != pos)
+			i++;
+		if (str[i - 1] !=  '+')
+			return (0);
+		prev_str = 
+}	
+
 int    cmd_export(char *str, t_files **env)
 {
     char *pos;
@@ -88,11 +121,11 @@ int    cmd_export(char *str, t_files **env)
 	char *dequote_str;
 
     pos = ft_strchr(str, '=');
-    if (!pos)
-		return (1); // when there is no '=', exitcode == 1
+	if (invalid_var(str, pos) == 1)
+		return (1);
 	if (pos == str)
 	{
-		printf("export: `%s': not a valid identifier", str);
+		printf("export: `%s': not a valid identifier\n", str);
 		return (1);
 	}
 	dequote_str = quote_in_var(pos);
@@ -102,6 +135,7 @@ int    cmd_export(char *str, t_files **env)
 		free(dequote_str);
         return (1);
 	}
+	if_append_var();
 	if (!if_replace(new_str, env))
     	lstadd_start(env, new_str);
 	free(new_str);
@@ -116,7 +150,7 @@ int    cmd_export(char *str, t_files **env)
 // 	if (ac > 2)
 // 		return (1);
 //     cmd_export(ag[1], &env);
-// 	cmd_export("this=top", &env);
+// 	cmd_export("this-=top", &env);
 // 	cmd_env(env);
 //     // printf("first: %s\n", env->value);
 //     // printf("second: %s\n", env->next->value);

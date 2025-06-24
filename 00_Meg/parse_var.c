@@ -62,16 +62,14 @@ void parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
     if (if_exit_code(lst, cur_token))
         return ;
     pos = (*cur_token)->value + 1;
-	if (*pos == '\0'|| *pos == '+')
+	if (*pos == '\0'|| *pos == '+' || *pos == '=')
 	{
+		if (*cur_token && ((*cur_token)->next->type == SINGLE_QUOTE || (*cur_token)->next->type == DOUBLE_QUOTE))
+		{
+			lst_rm_token(lst, cur_token);
+			return ;
+		}
 		(*cur_token)->type = ARG;
-		return ;
-	}
-	if (*pos == '=')
-	{
-		space = lst_rm_token(lst, cur_token);
-		if ((*cur_token)->next)
-			(*cur_token)->next->has_leading_space = space;
 		return ;
 	}
     while (if_alnum_underscore_braces(*pos))
