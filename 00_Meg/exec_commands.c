@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/24 19:41:01 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/24 20:11:28 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ int	fork_heredoc(char *delimiter)
     pid_t	pid;
     int		status;
 
-	printf("fork heredoc\n");
 	pid = fork();
     if (pid == -1)
         return (perror("fork"), 1);
