@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:49:56 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/18 20:05:13 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/24 14:00:36 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ void	exec_command(char **cmd_args, t_files *env)
 		exit(127);
 	}
 	execve(cmd_path, cmd_args, envp);
-	perror("execve:");
+	perror("execve");
 	free(cmd_path);
 	free_arr(envp);
 	if (errno == ENOENT)

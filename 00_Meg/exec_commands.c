@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_commands.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/24 13:19:33 by menwu            ###   ########.fr       */
+/*   Updated: 2025/06/24 15:28:53 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int	fork_heredoc(char *delimiter)
 
 	pid = fork();
     if (pid == -1)
-        return (perror("fork: "), 1);
+        return (perror("fork"), 1);
 	else if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
@@ -95,7 +95,7 @@ int	check_files(t_redir *list)
         else if (list->type == REDIR_APPEND)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd < 0)
-            return (perror("open: "), 1);
+            return (perror("open"), 1);
         if (list->type == REDIR_HEREDOC)
 		{
             fd = fork_heredoc(list->filename);
@@ -123,13 +123,13 @@ int	redirect_io(t_redir *list, t_files *env, int *exit_status)
         if (list->type == REDIR_HEREDOC)
             fd = file_heredoc(list->filename, env, *exit_status);
 		if (fd < 0)
-            return (perror("open:"), 1);
+            return (perror("open"), 1);
         if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
             if (dup2(fd, STDIN_FILENO) == -1)
-				return (perror("dup2:"), 1);
+				return (perror("dup2"), 1);
         if (list->type == REDIR_OUTPUT || list->type == REDIR_APPEND)
             if (dup2(fd, STDOUT_FILENO) == -1)
-				return (perror("dup2:"), 1);
+				return (perror("dup2"), 1);
         close(fd);
         list = list->next;
     }
@@ -166,7 +166,7 @@ int	wait_for_children(t_exec_data *data)
 
 	status = 0;
 	i = -1;
-	while (++i < data->num_pids)
+	while (++i <= data->num_pids)
 		waitpid(data->pid[i], &status, 0);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
@@ -190,18 +190,18 @@ int	execute_pipeline(t_cmd *cmd, t_files **env, int num_cmds, int *exit_status)
 	
 	data.pipe_fds = malloc(sizeof(int) * 2 * (num_cmds - 1));
 	if (!data.pipe_fds)
-		return (perror("malloc:"), 1);
+		return (perror("malloc"), 1);
 	i = -1;
 	while (++i < num_cmds - 1)
 		if (pipe(data.pipe_fds + i * 2) == -1)
-			return (perror("pipe:"), close_pipes(&data, i), 1);
+			return (perror("pipe"), close_pipes(&data, i), 1);
 	data.num_pids = -1;
 	while (cmd && (++data.num_pids < num_cmds))
 	{
 		data.pid[data.num_pids] = fork();
 		if (data.pid[data.num_pids] == -1)
 		{
-			perror("fork:");
+			perror("fork");
 			close_pipes(&data, num_cmds - 1);
 			wait_for_children(&data);
 			return (1);
@@ -234,43 +234,49 @@ int	execute_pipeline(t_cmd *cmd, t_files **env, int num_cmds, int *exit_status)
 	return (wait_for_children(&data));
 }
 
-char	*expand_exit_code(char *str, char *status_str)
+char	*expand_exit_code(const char *str, const char *status_str)
 {
-    size_t  len;
-    int		i;
-	int		j;
     int		count;
+    int		i;
+    size_t	len_status;
 	char	*new_str;
 	
 	count = 0;
-    len = ft_strlen(status_str);
-	i = -1;
-    while (str[++i])
+	i = 0;
+	len_status = ft_strlen(status_str);
+	while (str[i])
+    {
         if (str[i] == '$' && str[i + 1] == '?')
+        {
             count++;
+            i += 2;
+        }
+        else
+            i++;
+    }
     if (count == 0)
         return (ft_strdup(str));
-    new_str = malloc(ft_strlen(str) + count * (len - 2) + 1);
+    new_str = malloc(ft_strlen(str) + count * (len_status - 2) + 1);
     if (!new_str)
         return (NULL);
     i = 0;
-	j = 0;
-    while (str[j])
+    while (*str)
     {
-        if (str[j] == '$' && str[j + 1] == '?')
+        if (*str == '$' && *(str + 1) == '?')
         {
-            ft_strcpy(&new_str[i], status_str);
-            i += len;
-            j += 2;
+            ft_memcpy(&new_str[i], status_str, len_status);
+            i += len_status;
+            str += 2;
         }
         else
-            new_str[i++] = str[j++];
+            new_str[i++] = *str++;
     }
     new_str[i] = '\0';
     return (new_str);
 }
 
-void	expand_pipeline_exit_status(t_cmd *cmd, char exit_status)
+
+void	expand_pipeline_exit_status(t_cmd *cmd, int exit_status)
 {
     char	*status_str;
 	char	*tmp;
