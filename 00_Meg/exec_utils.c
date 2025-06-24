@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/18 22:47:36 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/24 13:21:49 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,11 +93,15 @@ int	exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child)
 	}
 	i = 0;
 	if (ft_strcmp(cmd->argv[0], "export") == 0)
+	{
 		if (cmd->argc == 1)
 			return (declare_env(*env));
 		while (++i < cmd->argc)
+		{
 			if (cmd_export(cmd->argv[i], env))
 				return (1);
+		}
+	}
 	if (ft_strcmp(cmd->argv[0], "unset") == 0)
 		while (++i < cmd->argc)
 			cmd_unset(cmd->argv[i], env);

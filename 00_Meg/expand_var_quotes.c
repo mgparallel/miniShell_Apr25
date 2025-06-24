@@ -43,7 +43,7 @@ char *update_original(t_token **cur_token, t_files *env, char **var)
         return (ft_strjoin(first_part, get_var_value(*var, env)));
 }
 
-void expand_var(t_token **lst, t_token **cur_token, t_files *env)
+void expand_var_quotes(t_token **lst, t_token **cur_token, t_files *env)
 {
     char *original;
     char *var;
@@ -53,8 +53,20 @@ void expand_var(t_token **lst, t_token **cur_token, t_files *env)
     if_space = 0;
     var = NULL;
     if ((*cur_token)->value[0] == '$')
+	{
+		if (!(*cur_token)->value[1] || (*cur_token)->value[1] == '+')
+		{
+			(*cur_token)->type = ARG;
+			return ;
+		}
+		else if ((*cur_token)->value[1] == '=')
+		{
+			lst_rm_token(lst, cur_token);
+			return ;
+		}
         original = get_var_value((*cur_token)->value + 1, env);
-    else
+	}
+	else
         original = update_original(cur_token, env, &var);
     if (!original)
     {

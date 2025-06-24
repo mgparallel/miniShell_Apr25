@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_commands.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/18 22:45:11 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/24 13:19:33 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	fork_heredoc(char *delimiter)
 	pid = fork();
     if (pid == -1)
         return (perror("fork: "), 1);
-	if (pid == 0)
+	else if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
         signal(SIGQUIT, SIG_DFL);
@@ -166,8 +166,8 @@ int	wait_for_children(t_exec_data *data)
 
 	status = 0;
 	i = -1;
-	while (++i < data.num_pids)
-		waitpid(data.pid[i], &status, 0);
+	while (++i < data->num_pids)
+		waitpid(data->pid[i], &status, 0);
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	if (WIFSIGNALED(status))
