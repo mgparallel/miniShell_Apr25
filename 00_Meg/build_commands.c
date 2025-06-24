@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/24 15:01:21 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/24 16:12:33 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void	free_cmd_list(t_cmd *cmd)
 	}
 }
 
-static int	is_connector(t_token_type type)
+int	is_connector(t_token_type type)
 {
 	return (type == PIPE || type == AND || type == OR);
 }
@@ -232,12 +232,6 @@ t_cmd	*build_cmds(t_token *tokens)
 
 	head = NULL;
 	tail = NULL;
-	if (is_connector(tokens->type))
-	{
-		ft_putstr_fd("syntax error near unexpected token '", 2);
-		ft_putstr_fd(tokens->value, 2);
-		return (ft_putstr_fd("'\n", 2), NULL);
-	}
 	while (tokens)
 	{
 		cmd = build_cmd(&tokens);

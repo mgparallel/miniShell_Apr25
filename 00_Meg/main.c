@@ -103,6 +103,14 @@ int main(int argc, char **argv, char **envp)
 		print_token(token);
 		if (!token)
 			continue ;
+		if (is_connector(token->type))
+		{
+			ft_putstr_fd("syntax error near unexpected token '", 2);
+			ft_putstr_fd(token->value, 2);
+			ft_putstr_fd("'\n", 2);
+			exit_status = 1;
+			continue ;
+		}
 		cmds = build_cmds(token);
 		clear_token(&token);
 		exec_commands(cmds, &env, &exit_status);

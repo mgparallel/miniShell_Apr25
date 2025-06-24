@@ -100,19 +100,19 @@ int 	invalid_var(char *str, char *pos)
 		return (0);
 }
 
-int		if_append_var(char *str,  char *pos, char *new_str, t_files *env)
-{
-		int i;
-		char *prev_str;
+// int		if_append_var(char *str,  char *pos, char *new_str, t_files *env)
+// {
+// 		int i;
+// 		char *prev_str;
 
-		i = 0;
-		prev_str = NULL;
-		while (str[i] && *str + i != pos)
-			i++;
-		if (str[i - 1] !=  '+')
-			return (0);
-		prev_str = 
-}	
+// 		i = 0;
+// 		prev_str = NULL;
+// 		while (str[i] && *str + i != pos)
+// 			i++;
+// 		if (str[i - 1] !=  '+')
+// 			return (0);
+		// prev_str = 
+// }	
 
 int    cmd_export(char *str, t_files **env)
 {
@@ -135,7 +135,7 @@ int    cmd_export(char *str, t_files **env)
 		free(dequote_str);
         return (1);
 	}
-	if_append_var();
+	// if_append_var();
 	if (!if_replace(new_str, env))
     	lstadd_start(env, new_str);
 	free(new_str);

@@ -147,6 +147,7 @@ void	add_expanded_var_to_lst(char *value, t_files **lst);
 char *ft_strjoin_free(char *s1, char *s2, size_t len2);
 
 //build_cmds
+int is_connector(t_token_type type);
 t_cmd   *build_cmds(t_token *tokens);
 void    free_cmd_list(t_cmd *cmd);
 

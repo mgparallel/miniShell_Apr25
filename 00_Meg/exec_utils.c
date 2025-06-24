@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/24 15:05:02 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/24 17:19:25 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ int	cmd_exit(t_cmd *cmd, int is_child)
 
 int	is_builtin_without_output(t_cmd *cmd)
 {
+	if (!cmd->argv)
+		return (1);
 	if (ft_strcmp(cmd->argv[0], "cd") == 0)
 		return (1);
 	if (ft_strcmp(cmd->argv[0], "export") == 0)

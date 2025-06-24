@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/24 15:28:53 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/24 19:41:01 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,18 @@ int	file_heredoc(char *delimiter, t_files *env, int exit_status)
 	char	*line;
 	int		fd;
 
-	(void)env;
 	fd = open(".heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		return (-1);
 	while (1)
 	{
-		line = readline("heredoc> ");
+		write(1, "> ", 2);
+		line = get_next_line(0);
 		if (!line)
 			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
 		else
 			expand_var_heredoc(&line, exit_status, env);
-		if (!line || ft_strcmp(line, delimiter) == 0)
+		if (!line || ft_strcmp(line, delimiter) == 10)
 			break ;
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1);
@@ -48,19 +48,21 @@ int	fork_heredoc(char *delimiter)
     pid_t	pid;
     int		status;
 
+	printf("fork heredoc\n");
 	pid = fork();
     if (pid == -1)
         return (perror("fork"), 1);
 	else if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
-        signal(SIGQUIT, SIG_DFL);
+		signal(SIGQUIT, SIG_IGN);
 		while (1)
 		{
-			line = readline("heredoc> ");
+			write(1, "> ", 2);
+			line = get_next_line(0);
 			if (!line)
 				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 0)
+			if (!line || ft_strcmp(line, delimiter) == 10)
 				break ;
 			free(line);
 		}
@@ -68,12 +70,13 @@ int	fork_heredoc(char *delimiter)
 			free(line);
 		exit(0);
 	}
+	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
     {
         status = WTERMSIG(status);
 		if (status == SIGINT)
-			return (130);
+			return (write(1, "\n", 1), 130);
 		if (status == SIGQUIT)
 			return (131);
     }
@@ -171,7 +174,13 @@ int	wait_for_children(t_exec_data *data)
 	if (WIFEXITED(status))
 		return (WEXITSTATUS(status));
 	if (WIFSIGNALED(status))
-		return (128 + WTERMSIG(status));
+	{
+		status = WTERMSIG(status);
+		if (status == SIGINT)
+			return (write(1, "\n", 1), 130);
+		if (status == SIGQUIT)
+			return (printf("quit (core dumped)\n"), 131);
+	}
 	return (1);
 }
 
@@ -231,6 +240,7 @@ int	execute_pipeline(t_cmd *cmd, t_files **env, int num_cmds, int *exit_status)
 		cmd = cmd->next;
 	}
 	close_pipes(&data, num_cmds - 1);
+	signal(SIGINT, SIG_IGN);
 	return (wait_for_children(&data));
 }
 
@@ -322,7 +332,7 @@ void	exec_commands(t_cmd *cmd, t_files **env, int *exit_status)
 		if (num_cmds == 1 && is_builtin_without_output(cmd))
 		{
 			*exit_status = check_files(cmd->redir_list);
-			if (!*exit_status)
+			if (!*exit_status && cmd->argv)
 				*exit_status = exec_builtin_without_output(cmd, env, 0);
 			if (*exit_status > 255)
 				return ;
