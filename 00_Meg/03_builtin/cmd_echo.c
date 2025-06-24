@@ -1,6 +1,21 @@
 #include "../minishell.h"
 //take into account that when echo "" is print out a new line
 //when there are other cmds, it ignores.
+
+int	if_valid_flag(char *str)
+{
+	int i;
+	
+	i = 1;
+	while (str[i])
+	{
+		if (str[i] != 'n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
 int	cmd_echo(char **argv)
 {
 	int	nl;
@@ -10,6 +25,8 @@ int	cmd_echo(char **argv)
 	i = 0;
 	while (argv[i] && ft_strncmp(argv[i], "-n", 2) == 0)
 	{
+		if (!if_valid_flag(argv[i]))
+			break ;
 		nl = 0;
 		i++;
 	}
