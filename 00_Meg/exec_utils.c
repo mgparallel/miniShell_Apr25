@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/24 13:21:49 by menwu            ###   ########.fr       */
+/*   Updated: 2025/06/24 15:05:02 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,33 +81,33 @@ int	is_builtin(t_cmd *cmd)
 	return (0);
 }
 
-int	exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child)
+int exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child)
 {
-	int	i;
-
+    int i;
+    int flag;
+	
+	flag = 0;
 	if (ft_strcmp(cmd->argv[0], "cd") == 0)
-	{
-		if (cmd->argc > 2)
-			return (ft_putstr_fd("cd: too many arguments", 2), 1);
-		return (cmd_cd(cmd->argv[1], env));
-	}
-	i = 0;
-	if (ft_strcmp(cmd->argv[0], "export") == 0)
-	{
-		if (cmd->argc == 1)
-			return (declare_env(*env));
-		while (++i < cmd->argc)
-		{
-			if (cmd_export(cmd->argv[i], env))
-				return (1);
-		}
-	}
-	if (ft_strcmp(cmd->argv[0], "unset") == 0)
-		while (++i < cmd->argc)
-			cmd_unset(cmd->argv[i], env);
-	if (ft_strcmp(cmd->argv[0], "exit") == 0)
-		return (cmd_exit(cmd, is_child));
-	return (0);
+    {
+        if (cmd->argc > 2)
+            return (ft_putstr_fd("cd: too many arguments", 2), 1);
+        return (cmd_cd(cmd->argv[1], env));
+    }
+    i = 0;
+    if (ft_strcmp(cmd->argv[0], "export") == 0)
+    {
+        if (cmd->argc == 1)
+            return (declare_env(*env));
+        while (++i < cmd->argc)
+            if (cmd_export(cmd->argv[i], env))
+                flag = 1;
+    }
+    if (ft_strcmp(cmd->argv[0], "unset") == 0)
+        while (++i < cmd->argc)
+            cmd_unset(cmd->argv[i], env);
+    if (ft_strcmp(cmd->argv[0], "exit") == 0)
+        return (cmd_exit(cmd, is_child));
+    return (flag);
 }
 
 int	exec_builtin(t_cmd *cmd, t_files **env, int is_child)

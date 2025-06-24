@@ -101,12 +101,14 @@ int main(int argc, char **argv, char **envp)
 		free(input);
 		parsing(&token, env);
 		print_token(token);
+		if (!token)
+			continue ;
 		cmds = build_cmds(token);
 		clear_token(&token);
 		exec_commands(cmds, &env, &exit_status);
+		free_cmd_list(cmds);
 		if (exit_status > 255)
 			break ;
-		free_cmd_list(cmds);
 	}
 	free_lst(&env);
 	rl_clear_history();
