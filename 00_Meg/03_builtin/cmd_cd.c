@@ -43,9 +43,7 @@ int    cmd_cd(char *str, t_files **env)
 {
     char new_buf[1024];
     char *cur_dir;
-	char *temp;
 
-	temp = NULL;
 	if (!str || str[0] == '\0')
 		return (cd_home(env));
 	if (!ft_strcmp(str, "-"))

@@ -19,18 +19,18 @@ void loop_var(char *pos, t_token **cur_token)
     init_var = pos + 1;
     if (if_exitcode_at_head(init_var, cur_token) || !init_var)
         return ;
-	else if (*init_var == '=')
-	{
-		(*cur_token)->type = ENV_VAR;
-		update_token(cur_token, (*cur_token)->value, init_var + 1, WORD);
-		return ;
-	}
-	else if (*init_var == '\'')
-	{
-		(*cur_token)->type = ENV_VAR;
-		update_token(cur_token, (*cur_token)->value, ft_strrchr((*cur_token)->value, '\''), WORD);
-		return ;
-	}
+	// else if (*init_var == '=')
+	// {
+	// 	(*cur_token)->type = ENV_VAR;
+	// 	update_token(cur_token, (*cur_token)->value, init_var + 1, WORD);
+	// 	return ;
+	// }
+	// else if (*init_var == '\'')
+	// {
+	// 	(*cur_token)->type = ENV_VAR;
+	// 	update_token(cur_token, (*cur_token)->value, ft_strrchr((*cur_token)->value, '\''), WORD);
+	// 	return ;
+	// }
     while (if_alnum_underscore_braces(*init_var) == 1)
     {
         if (*init_var == '}')
@@ -54,6 +54,7 @@ void var_found(t_token **cur_token) //$USER$PWD
     char *original;
     char *pos;
 
+    // printf("value: %s, type: %u\n", (*cur_token)->value, (*cur_token)->type);
     if ((*cur_token)->type == SINGLE_QUOTE || (*cur_token)->type == DOUBLE_QUOTE)
         return ;
     original = (*cur_token)->value;

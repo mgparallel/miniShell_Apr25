@@ -16,10 +16,12 @@ int    lst_rm_token(t_token **lst, t_token **cur_token)
         free(temp);
         return (if_space);
     }
+    temp = (*cur_token)->next;
     while (prev->next != *cur_token)
         prev = prev->next;
-    prev->next = (*cur_token)->next;
+    prev->next = temp;
     free((*cur_token)->value);
     free(*cur_token);
+    *cur_token = temp;
     return (if_space);
 }

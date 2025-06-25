@@ -111,11 +111,11 @@ int if_alnum_underscore_braces(int arg);
 void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
 
 //parse_var.c
-void parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
+int parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
 void expand_var(t_token **lst, t_token **cur_token, t_files *env);
 char *get_var_value(char *var, t_files *env);
 void if_braces(char **var);
-void parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **lst);
+int parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **lst);
 
 //if_exit_code.c
 int if_exit_code(t_token **lst, t_token **cur_token);
