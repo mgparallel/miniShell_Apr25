@@ -16,7 +16,7 @@ void loop_var(char *pos, t_token **cur_token)
 {
     char *init_var;
 
-    init_var = pos + 1;
+    init_var = pos + 1; //US
     if (if_exitcode_at_head(init_var, cur_token) || !init_var)
         return ;
 	// else if (*init_var == '=')
@@ -57,7 +57,7 @@ void var_found(t_token **cur_token) //$USER$PWD
     // printf("value: %s, type: %u\n", (*cur_token)->value, (*cur_token)->type);
     if ((*cur_token)->type == SINGLE_QUOTE || (*cur_token)->type == DOUBLE_QUOTE)
         return ;
-    original = (*cur_token)->value;
+    original = (*cur_token)->value; //$US
     pos = ft_strchr(original, '$');
     if (!pos)
         return ;
@@ -82,7 +82,7 @@ void parse_type_word(t_token **cur_token)
     char *s_quote_pos;
     char *d_quote_pos;
 
-    original = (*cur_token)->value;
+    original = (*cur_token)->value; //a   ''a'a'
     if (if_wildcard(cur_token)) //funtion return true/false
         return ; 
     s_quote_pos = ft_strchr(original, '\'');

@@ -17,13 +17,47 @@ void remove_outer_quote(t_token **cur_token)
     free(original);
 }
 
+void 	seperate_quotes_token(t_token **lst, t_token **cur_token, char quote, int count)//''a'a'a
+{
+	char *pos;
+
+	pos = ft_strchr((*cur_token)->value + 1, quote);
+	// update_token(lst, (*cur_token)->value, )
+}
+
+void	if_several_quotes(t_token **lst, t_token **cur_token, char quote) //''a'a'   'a'
+{
+	char *value;
+	int count;
+	char *pos;
+
+	value = (*cur_token)->value;
+	count = 0;
+	while (*value)
+	{
+		if (*value == quote)
+			count++;
+		value++;
+	}
+	if (count == 2)
+		return ;
+	if (count % 2)
+	{
+		printf("Error with unpaired quotes\n");
+		return ; //exit the program
+	}
+	seperate_quotes_token(lst, cur_token, quote, count);
+}
+
+
 // funtion to check if single quote/double quote contains $
 // remove outer quotes and deceide if expand
-void parse_type_quote(t_token **lst, t_token **cur_token, t_files *env)
+void parse_type_quote(t_token **lst, t_token **cur_token, t_files *env) //''a'a'   'a'
 {
     char *dollar_pos;
     char *end_quote;
 
+	if_several_quotes(lst, cur_token);
     if ((*cur_token)->type == DOUBLE_QUOTE)
     {
         end_quote = ft_strrchr((*cur_token)->value, '"');

@@ -99,7 +99,7 @@ int main(int argc, char **argv, char **envp)
 		add_history(input);
 		token = tokenizer(input);
 		free(input);
-		parsing(&token, env);
+		//parsing(&token, env);
 		print_token(token);
 		if (!token)
 			continue ;

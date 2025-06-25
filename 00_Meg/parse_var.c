@@ -28,11 +28,9 @@ int parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **
     expand_value = get_var_value(var, env);
     if (!expand_value)
     {
-        // printf("value: %s, type: %u\n", (*cur_token)->value, (*cur_token)->type);
-        if_space = lst_rm_token(lst, cur_token); // echo 'R'
-        if ((*cur_token)->next && (*cur_token)->next->has_leading_space == 0)
-            (*cur_token)->next->has_leading_space = if_space;
-        // printf("value: %s, type: %u\n", (*cur_token)->value, (*cur_token)->type);
+        if_space = lst_rm_token(lst, cur_token);
+        if ((*cur_token) && (*cur_token)->has_leading_space == 0)
+            (*cur_token)->has_leading_space = if_space;
         return (1);
     }
     else
@@ -62,7 +60,7 @@ int parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
     
     if (if_exit_code(lst, cur_token))
         return (0);
-    pos = (*cur_token)->value + 1;
+    pos = (*cur_token)->value + 1; //US
 	if (*pos == '\0'|| *pos == '+' || *pos == '=')
 	{
 		if (*cur_token && ((*cur_token)->next->type == SINGLE_QUOTE || (*cur_token)->next->type == DOUBLE_QUOTE))
@@ -88,6 +86,5 @@ int parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
     //     	return ;
 	// }
     if_braces(&pos);
-    parse_type_var_util(pos, env, cur_token, lst);
-    return (0);
+    return (parse_type_var_util(pos, env, cur_token, lst));
 }
