@@ -29,7 +29,7 @@ int cmd_env(t_files *env)
 	temp = env;
 	if (!temp)
 		return (printf("no ENV data"), 1);
-    while (temp->next)
+    while (temp)
     {
         printf("%s\n", temp->value);
         temp = temp->next;

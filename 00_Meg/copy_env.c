@@ -22,7 +22,10 @@ void update_env(char *value, t_files **env)
     new = malloc(sizeof(t_files));
     if (!new)
 		return ;
-    new->value = ft_strdup(value);
+	if (!ft_strncmp(value, "OLDPWD=", 7))
+		new->value = value;
+	else
+		new->value = ft_strdup(value);
     if (!new->value)
         return (free(new), free_lst(env));
     new->next = NULL;
@@ -33,16 +36,28 @@ t_files *cp_env(char **envp)
 {
     int i;
 	t_files *env;
-	// char *exit;
+	char *original;
+	char *new_value;
 
 	i = 0;
 	env = NULL;
-	// exit = "?=0";
+	original = NULL;
     while (envp[i])
     {
+		if (!ft_strncmp(envp[i], "_=", 2))
+		{
+			update_env("_=/usr/bin/env", &env);
+			i++;
+			continue ;
+		}
         update_env(envp[i], &env);
+		if (!ft_strncmp(envp[i], "PWD=", 4))
+			original = envp[i];
 		i++;
     }
-	// update_env(exit, &env);
+	new_value = ft_strjoin("OLD", original);
+	if (!new_value)
+		return (free_lst(&env), NULL);
+	update_env(new_value, &env);
 	return (env);
 }

@@ -3,8 +3,8 @@
 void quote_found(int *in_token, int *quote, char **token_start, char *input)
 {
     *token_start = input;
-    *in_token = !*in_token;
-    *quote = !*quote;
+    *in_token = !*in_token; //0
+    *quote = !*quote; //
 }
 
 int close_d_quote(int *quote, char *input, char **token_start, t_token **head)
@@ -34,7 +34,10 @@ int close_s_quote(int *quote, char *input, char **token_start, t_token **head)
         in_token = !in_token;
     }
     else
+	{
+		*quote = !*quote;
         return (in_token);
+	}
     *quote = !*quote;
     return (in_token);
 }

@@ -10,55 +10,6 @@ int if_alnum_underscore_braces(int arg)
         return (1);
 }
 
-// void if_cmd_util(t_token **lst)
-// {
-// 	t_token *cur_token;
-// 	int	cmd_flag;
-
-// 	cur_token = *lst;
-// 	cmd_flag = 0;
-// 	while (cur_token)
-// 	{
-// 		if (cur_token->type == CMD && !cmd_flag)
-// 			cmd_flag = 1;
-// 		else if (cur_token->type == CMD)
-// 		{
-// 			cur_token->type = ARG;
-// 			cmd_flag = 0;
-// 		}
-// 		else if (cur_token->type == PIPE)
-// 			cmd_flag = 0;
-// 		cur_token = cur_token->next;
-// 	}
-// }
-
-// void if_cmd(t_token **lst)
-// {
-//     t_token *cur_token;
-//     t_token *prev;
-
-//     cur_token = *lst; // the begining of the list, used to parse until the one before cur_token
-//     if (cur_token->type != PIPE && cur_token->type != REDIRECT)
-//         cur_token->type = CMD;
-//     prev = cur_token;
-//     cur_token = cur_token->next;
-//     while (cur_token)
-//     {
-//         // if (cur_token->type == WORD || cur_token->type == ARG || cur_token->type == EXIT_CODE)
-//         // {
-//             if (prev->type == PIPE || prev->type == AND || prev->type == OR)
-//                 cur_token->type = CMD;
-//             else if (prev->type == REDIRECT)
-//                 cur_token->type = RE_TARGET;
-//             else if (cur_token->type != EXIT_CODE)
-//                 cur_token->type = ARG;
-    
-//         prev = cur_token;
-//         cur_token = cur_token->next;
-//     }
-// 	if_cmd_util(lst);
-// }
-
 void	if_cmd(t_token **lst)
 {
 		t_token *cur_token;

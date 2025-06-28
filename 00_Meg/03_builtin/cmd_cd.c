@@ -35,7 +35,6 @@ int		cd_home(t_files **env)
 			return (printf("error after change directory\n"), 1);
 		else
 			set_env_var("PWD=", new_buf, env);
-		printf("hrer\n");
 		return (0);
 }
 
@@ -43,14 +42,18 @@ int    cmd_cd(char *str, t_files **env)
 {
     char new_buf[1024];
     char *cur_dir;
+	char *second_str;
 
 	if (!str || str[0] == '\0')
 		return (cd_home(env));
+	second_str = NULL;
 	if (!ft_strcmp(str, "-"))
 	{
 		str = get_var_value("OLDPWD", *env);
 		if (!str)
-			return (printf("No such file or directory\n"), 1);
+			return (printf("OLDPWD not set\n"), 1);
+		second_str = get_var_value("PWD", *env);
+		printf("%s\n", str);
 	}
     cur_dir = get_var_value("PWD", *env);
     if (chdir(str) != 0) //when changing dir fail

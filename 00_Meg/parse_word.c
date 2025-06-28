@@ -82,8 +82,8 @@ void parse_type_word(t_token **cur_token)
     char *s_quote_pos;
     char *d_quote_pos;
 
-    original = (*cur_token)->value; //a   ''a'a'
-    if (if_wildcard(cur_token)) //funtion return true/false
+    original = (*cur_token)->value; //a'a'aa'a'
+    if (if_wildcard(cur_token))
         return ; 
     s_quote_pos = ft_strchr(original, '\'');
     d_quote_pos = ft_strchr(original, '"');

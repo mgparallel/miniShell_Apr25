@@ -14,7 +14,7 @@ void	lstadd_back(t_token **lst, t_token *new)
 {
 	t_token	*ref;
 
-	if (lst == NULL || new == NULL)
+	if (lst == NULL)
 		return ;
 	if (*lst == NULL)
 	{
@@ -59,7 +59,10 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 
 	str = ft_strcpy(*start, end);
 	if (!str)
+	{
+		//lstadd_back(lst, NULL);
 		return ;
+	}
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
 		return ;

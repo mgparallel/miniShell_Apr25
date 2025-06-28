@@ -6,7 +6,7 @@ int    lst_rm_token(t_token **lst, t_token **cur_token)
     t_token *temp;
     int if_space;
 
-    if_space = (*cur_token)->has_leading_space; //1
+    if_space = (*cur_token)->has_leading_space;
     prev = *lst;
     if (*lst == *cur_token)
     {
@@ -16,9 +16,12 @@ int    lst_rm_token(t_token **lst, t_token **cur_token)
         free(temp);
         return (if_space);
     }
-    temp = (*cur_token)->next;
+	if (!(*cur_token)->next)
+		temp = NULL;
+	else
+		temp = (*cur_token)->next;
     while (prev->next != *cur_token)
-        prev = prev->next;
+    	prev = prev->next;
     prev->next = temp;
     free((*cur_token)->value);
     free(*cur_token);
