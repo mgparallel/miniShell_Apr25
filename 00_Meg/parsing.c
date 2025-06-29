@@ -35,12 +35,45 @@ void	if_cmd(t_token **lst)
 						cmd_flag = 1;
 					}
 					else
-						cur_token->type = ARG;
+                    {
+                        if (cur_token->type != EXIT_CODE)
+						    cur_token->type = ARG;
+                    }
 				}
 			}
 			prev = cur_token;
 			cur_token = cur_token->next;
 		}
+}
+
+void join_exitcode_tokens(t_token **lst)
+{
+    t_token *head;
+    char *new_value;
+    t_token *next_node;
+
+    new_value = NULL;
+    head = *lst;
+    next_node = head;
+    while (head)
+    {
+        if (head->next)
+        {
+            next_node = head->next;
+            if (head->next->type == EXIT_CODE && !head->next->has_leading_space)
+            {
+                new_value = ft_strjoin(head->value, head->next->value);
+                if (!new_value)
+                    return ;
+                free(head->value);
+                head->value = new_value;
+                free(head->next);
+                free(head->next->value);
+                head->next = next_node;
+            }
+        }
+        head = head->next;
+    }
 }
 
 // main function of PARSING to refine the tokens
@@ -59,7 +92,7 @@ void parsing(t_token **lst, t_files *env)
             var_found(&head);
         }
         if (head->type == SINGLE_QUOTE || head->type == DOUBLE_QUOTE)
-			parse_type_quote(lst, &head, env);
+			parse_type_quote(&head);
         if (head->type == ENV_VAR)
         {
                 if (parse_type_var(lst, &head, env))
@@ -72,4 +105,5 @@ void parsing(t_token **lst, t_files *env)
         head = head->next;
     }
     if_cmd(lst);
+    join_exitcode_tokens(lst);
 }

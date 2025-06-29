@@ -68,12 +68,12 @@ void expand_var_quotes(t_token **lst, t_token **cur_token, t_files *env)
 	}
 	else
         original = update_original(cur_token, env, &var);
-
     if (!original)
     {
-        free(var);
-        if_space = lst_rm_token(lst, cur_token);
-        if ((*cur_token)->next->has_leading_space == 0)
+        if (var)
+			free(var);
+        lst_rm_token(lst, cur_token);
+        if (*cur_token && (*cur_token)->next &&(*cur_token)->next->has_leading_space == 0)
             (*cur_token)->next->has_leading_space = if_space;
 		return ;
     }
