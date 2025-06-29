@@ -93,7 +93,7 @@ int main(int argc, char **argv, char **envp)
 		if (!input)
 		{
 			printf("exit\n");
-			exit_status = 256;
+			exit_status = 0;
 			break ;
 		}
 		add_history(input);
@@ -115,10 +115,8 @@ int main(int argc, char **argv, char **envp)
 		clear_token(&token);
 		exec_commands(cmds, &env, &exit_status);
 		free_cmd_list(cmds);
-		if (exit_status > 255)
-			break ;
 	}
 	free_lst(&env);
 	rl_clear_history();
-	return (exit_status - 256);
+	return (exit_status);
 }
