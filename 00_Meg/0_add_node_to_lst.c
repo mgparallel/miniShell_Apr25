@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   0_add_node_to_lst.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 00:18:29 by menwu             #+#    #+#             */
+/*   Updated: 2025/06/30 00:18:31 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void add_node_to_lst(char *str, int *start, int *end, t_files **lst)
+void	add_node_to_lst(char *str, int *start, int *end, t_files **lst)
 {
-	t_files *new_node;
-	char *node_value;
+		t_files		*new_node;
+		char		*node_value;
 
 	node_value = ft_strndup(str + *start, *end - *start);
 	if (!node_value)
@@ -60,7 +72,7 @@ char *ft_strjoin_free(char *s1, char *s2, size_t len2)
 		len1 = ft_strlen(s1);
 	re = malloc(len1 + len2 + 1);
 	if (!re)
-		return NULL;
+		return (NULL);
 	if (s1)
 		i = copy_first_str(&re, &s1, len1);
 	while (j < (size_t)len2)

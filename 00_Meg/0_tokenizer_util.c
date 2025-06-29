@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   0_tokenizer_util.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 00:17:39 by menwu             #+#    #+#             */
+/*   Updated: 2025/06/30 00:18:24 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 bool ch_is_space(char ch)
@@ -8,6 +20,11 @@ bool ch_is_space(char ch)
 bool ch_is_special(char ch)
 {
     return (ch == '>' || ch == '<' || ch == '|' || ch == '&');
+}
+
+bool space_special(char ch)
+{
+	return (ch_is_space(ch) || ch_is_special(ch));
 }
 
 void	lstadd_back(t_token **lst, t_token *new)
@@ -77,26 +94,3 @@ char *ft_strcpy(char *start, char *end)
 // 	lstadd_back(lst, new_token);
 // 	*start = NULL; //reset the start point
 // }
-
-void create_token(char **start, char *end, t_token_type type, t_token **lst)
-{
-	t_token *new_token;
-	char *str;
-
-	str = ft_strcpy(*start, end);
-	if (!str)
-		return ;
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return ;
-	new_token->value = str;
-	new_token->type = type;
-	new_token->lst = NULL;
-	new_token->next = NULL;
-	if (ch_is_space(*(*start - 1)))
-		new_token->has_leading_space = 1;
-	else
-		new_token->has_leading_space = 0;
-	lstadd_back(lst, new_token);
-	*start = NULL; //reset the start point
-}

@@ -95,12 +95,15 @@ int	delimiter_found(int *in_token, char **input, char **token_start, t_token **h
 //tokenizer_input.c
 int parse_input(char **input, t_token **head, int *in_token, char **token_start);
 
-//tokenizer_util.c
+//create_token.c
 void create_token(char **start, char *end, t_token_type type, t_token **lst);
+
+//tokenizer_util.c
 char *ft_strcpy(char *start, char *end);
 void	lstadd_back(t_token **lst, t_token *new);
 bool ch_is_space(char ch);
 bool ch_is_special(char ch);
+bool space_special(char ch);
 
 // parsing
 void parsing(t_token **lst, t_files *env);
