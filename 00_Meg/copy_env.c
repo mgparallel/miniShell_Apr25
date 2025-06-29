@@ -22,10 +22,7 @@ void update_env(char *value, t_files **env)
     new = malloc(sizeof(t_files));
     if (!new)
 		return ;
-	if (!ft_strncmp(value, "OLDPWD=", 7))
-		new->value = value;
-	else
-		new->value = ft_strdup(value);
+	new->value = ft_strdup(value);
     if (!new->value)
         return (free(new), free_lst(env));
     new->next = NULL;
