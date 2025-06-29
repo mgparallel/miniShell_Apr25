@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <readline/readline.h>
@@ -152,13 +153,12 @@ t_cmd   *build_cmds(t_token *tokens);
 void    free_cmd_list(t_cmd *cmd);
 
 //exec_commands
-void    exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status);
-int check_files(t_redir *list);
-int cmd_exit(t_cmd *cmd, int is_child);
+void    exec_commands(t_cmd **cmd_list, t_files **env, int *exit_status);
+int cmd_exit(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status);
 
 //exec utils
-int exec_builtin(t_cmd *cmd, t_files **env, int is_child);
-int exec_builtin_without_output(t_cmd *cmd, t_files **env, int is_child);
+int exec_builtin(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status);
+int exec_builtin_without_output(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status);
 int is_builtin(t_cmd *cmd);
 int is_builtin_without_output(t_cmd *cmd);;
 void    exec_command(char **cmd_args, t_files *env);
