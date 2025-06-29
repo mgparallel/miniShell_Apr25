@@ -118,7 +118,7 @@ void if_braces(char **var);
 int parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **lst);
 
 //if_exit_code.c
-int if_exit_code(t_token **lst, t_token **cur_token);
+int if_exit_code(t_token **cur_token);
 void    check_prev_exitcode(t_token **lst, t_token **cur_token);
 
 //expand_var_quotes.c
@@ -133,11 +133,11 @@ void parse_type_word(t_token **cur_token);
 void var_found(t_token **cur_token);
 
 //parse_quote.c
-void parse_type_quote(t_token **lst, t_token **cur_token, t_files *env);
+void parse_type_quote(t_token **cur_token);
 
 //parse_arg.c
 void parse_type_arg(t_token **lst, t_token **cur_token);
-
+void    join_token(t_token **prev, t_token **cur_token);
 //lst_remove_token.c
 int    lst_rm_token(t_token **lst, t_token **cur_token);
 

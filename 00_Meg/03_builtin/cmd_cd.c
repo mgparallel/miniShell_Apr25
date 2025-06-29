@@ -42,17 +42,14 @@ int    cmd_cd(char *str, t_files **env)
 {
     char new_buf[1024];
     char *cur_dir;
-	char *second_str;
 
 	if (!str || str[0] == '\0')
 		return (cd_home(env));
-	second_str = NULL;
 	if (!ft_strcmp(str, "-"))
 	{
 		str = get_var_value("OLDPWD", *env);
 		if (!str)
 			return (printf("OLDPWD not set\n"), 1);
-		second_str = get_var_value("PWD", *env);
 		printf("%s\n", str);
 	}
     cur_dir = get_var_value("PWD", *env);

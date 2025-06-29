@@ -28,19 +28,19 @@ void    check_prev_exitcode(t_token **lst, t_token **cur_token)
             return ;
 }
 
-int if_exit_code(t_token **lst, t_token **cur_token)
+int if_exit_code(t_token **cur_token)
 {
     char *var;
 
-    var = (*cur_token)->value + 1;
+    var = (*cur_token)->value + 1; //?
     if_braces(&var);
     if (!ft_strchr(var, '?'))
         return (0);
     if (var[0] == '?')
     {
         (*cur_token)->type = EXIT_CODE;
-        update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, WORD);
-        check_prev_exitcode(lst, cur_token);
+        // update_token(cur_token, (*cur_token)->value, (*cur_token)->value + 2, WORD);
+        //check_prev_exitcode(lst, cur_token);
         return (1);
     }
     return (0);

@@ -58,11 +58,11 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 	char *str;
 
 	str = ft_strcpy(*start, end);
-	if (!str)
-	{
-		//lstadd_back(lst, NULL);
-		return ;
-	}
+	// if (!*start)
+	// {
+	// 	lstadd_back(lst, NULL);
+	// 	return ;
+	// }
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
 		return ;
