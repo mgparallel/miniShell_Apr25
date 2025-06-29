@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/29 20:07:20 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/29 20:22:30 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	is_builtin(t_cmd *cmd)
 	return (0);
 }
 
-int exec_builtin_without_output(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status)
+int exec_builtin_without_output(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status)
 {
     int i;
     int flag;
@@ -70,11 +70,11 @@ int exec_builtin_without_output(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int
         while (++i < cmd->argc)
             cmd_unset(cmd->argv[i], env);
     if (ft_strcmp(cmd->argv[0], "exit") == 0)
-        return (cmd_exit(cmd_list, env, cmd, exit_status));
+        return (cmd_exit(cmd_list, cmd, env, exit_status));
     return (flag);
 }
 
-int	exec_builtin(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status)
+int	exec_builtin(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status)
 {
 	if (ft_strcmp(cmd->argv[0], "pwd") == 0)
 		return (cmd_pwd(*env));
@@ -82,5 +82,5 @@ int	exec_builtin(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status)
 		return (cmd_env(*env));
 	if (ft_strcmp(cmd->argv[0], "echo") == 0)
 		return (cmd_echo(cmd->argv + 1));
-	return (exec_builtin_without_output(cmd_list, env, cmd, exit_status));
+	return (exec_builtin_without_output(cmd_list, cmd, env, exit_status));
 }

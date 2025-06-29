@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/29 20:05:37 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/29 20:22:22 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,7 +191,7 @@ void	exit_child(char *msg, t_exec_data *data, int num_cmds, t_files **env)
 	exit (1);
 }
 
-int	execute_pipeline(t_cmd **cmd_list, t_cmd *cmd, t_files **env, int *exit_status)
+int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_status)
 {
 	t_exec_data	data;
 	int		num_cmds;
@@ -328,11 +328,11 @@ void	expand_pipeline_exit_status(t_cmd *cmd, int exit_status)
     free(status_str);
 }
 
-void	exec_commands(t_cmd **cmd_list, t_files **env, int *exit_status)
+void	exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status)
 {
 	t_cmd	*cmd;
 
-	cmd = *cmd_list;
+	cmd = cmd_list;
     while (cmd)
     {
         expand_pipeline_exit_status(cmd, *exit_status);

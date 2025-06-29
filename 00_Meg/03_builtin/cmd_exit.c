@@ -6,11 +6,11 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/29 20:09:34 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/29 20:16:42 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/06/29 20:25:27 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
 int is_numeric(const char *str)
 {
@@ -72,7 +72,7 @@ int str_to_long_long(const char *str, long long *result)
     return (1);
 }
 
-int cmd_exit(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int last_status)
+int cmd_exit(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int last_status)
 {
     long long num;
 
@@ -85,7 +85,6 @@ int cmd_exit(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int last_status)
     }
     if (!is_numeric(cmd->argv[1]))
     {
-        printf("exit\n");
 		ft_putstr_fd("exit:", 2);
 		ft_putstr_fd(cmd->argv[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
@@ -95,7 +94,6 @@ int cmd_exit(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int last_status)
     }
     if (!str_to_long_long(cmd->argv[1], &num))
     {
-        printf("exit\n");
 		ft_putstr_fd("exit:", 2);
 		ft_putstr_fd(cmd->argv[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
@@ -105,7 +103,6 @@ int cmd_exit(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int last_status)
     }
     if (cmd->argc > 2)
     {
-        printf("exit\n");
 		ft_putstr_fd("exit: too many arguments\n", 2);
         return (1);
     }

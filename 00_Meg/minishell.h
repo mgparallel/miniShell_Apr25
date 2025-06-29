@@ -153,17 +153,17 @@ t_cmd   *build_cmds(t_token *tokens);
 void    free_cmd_list(t_cmd *cmd);
 
 //exec_commands
-void    exec_commands(t_cmd **cmd_list, t_files **env, int *exit_status);
-int cmd_exit(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status);
+void    exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status);
 
 //exec utils
-int exec_builtin(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status);
-int exec_builtin_without_output(t_cmd **cmd_list, t_files **env, t_cmd *cmd, int exit_status);
+int exec_builtin(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status);
+int exec_builtin_without_output(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status);
 int is_builtin(t_cmd *cmd);
 int is_builtin_without_output(t_cmd *cmd);;
 void    exec_command(char **cmd_args, t_files *env);
 
 //03_builtin
+int     cmd_exit(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status);
 int     cmd_pwd(t_files *env);
 int     cmd_export(char *str, t_files **env);
 int		declare_env(t_files *env);

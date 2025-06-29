@@ -113,7 +113,7 @@ int main(int argc, char **argv, char **envp)
 		}
 		cmds = build_cmds(token);
 		clear_token(&token);
-		exec_commands(&cmds, &env, &exit_status);
+		exec_commands(cmds, &env, &exit_status);
 		free_cmd_list(cmds);
 	}
 	free_lst(&env);
