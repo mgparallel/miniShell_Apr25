@@ -76,6 +76,14 @@ void join_exitcode_tokens(t_token **lst)
     }
 }
 
+void parsing_util(t_token **cur_token, t_token **lst)
+{
+    if ((*cur_token)->type == ARG)
+            parse_type_arg(lst, cur_token);
+    if ((*cur_token)->type == WILDCARD)
+            expand_wildcard(lst, cur_token);
+}
+
 // main function of PARSING to refine the tokens
 void parsing(t_token **lst, t_files *env)
 {
@@ -87,21 +95,18 @@ void parsing(t_token **lst, t_files *env)
     while (head)
     {
         if (head->type == WORD)
-        {
             parse_type_word(&head);
-            var_found(&head);
-        }
         if (head->type == SINGLE_QUOTE || head->type == DOUBLE_QUOTE)
-			parse_type_quote(&head);
+		{
+            if (parse_type_quote(&head))
+                    continue ;
+        }
         if (head->type == ENV_VAR)
         {
                 if (parse_type_var(lst, &head, env))
                     continue ;
         }
-        if (head->type == ARG)
-            parse_type_arg(lst, &head);
-        if (head->type == WILDCARD)
-            expand_wildcard(lst, &head);
+        parsing_util(&head, lst);
         head = head->next;
     }
     if_cmd(lst);

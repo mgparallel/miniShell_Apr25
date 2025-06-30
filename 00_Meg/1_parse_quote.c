@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   1_parse_quote.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/01 00:07:08 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/01 00:07:09 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 // funtion to remove quotes wihin the token->value
@@ -32,7 +44,7 @@ void remove_inner_quote(t_token **cur_token, char quote) //a'a'  aa
 
 // funtion to check if single quote/double quote contains $
 // remove outer quotes and deceide if expand
-void parse_type_quote(t_token **cur_token)
+int parse_type_quote(t_token **cur_token)
 {
     char *dollar_pos;
     char *end_quote;
@@ -45,13 +57,9 @@ void parse_type_quote(t_token **cur_token)
         remove_inner_quote(cur_token, '"');
         dollar_pos = ft_strchr((*cur_token)->value, '$');
 		if (!dollar_pos)
-			return ;
-        // if (dollar_pos[1] && dollar_pos[1] == '{')
-        (*cur_token)->type = ENV_VAR;
-        return ;
-        // else
-        //     expand_var_quotes(lst, cur_token, env);
-		return ;
+			return (0);
+        (*cur_token)->type = WORD;
+		return (1);
     }
     else if ((*cur_token)->type == SINGLE_QUOTE)
     {
@@ -60,4 +68,5 @@ void parse_type_quote(t_token **cur_token)
             update_token(cur_token, (*cur_token)->value, end_quote + 1, WORD);
     }
     remove_inner_quote(cur_token, '\'');
+    return (0);
 }

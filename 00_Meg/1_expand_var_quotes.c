@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   1_expand_var_quotes.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/30 23:53:12 by menwu             #+#    #+#             */
+/*   Updated: 2025/06/30 23:53:14 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 char *get_var_value(char *var, t_files *env)
@@ -27,7 +39,7 @@ char *get_var_value(char *var, t_files *env)
 
 char *update_original(t_token **cur_token, t_files *env, char **var)
 {
-    char *first_part; //string before $
+    char *first_part;
     char *pos;
 
     pos =  ft_strchr((*cur_token)->value, '$');
@@ -43,14 +55,19 @@ char *update_original(t_token **cur_token, t_files *env, char **var)
         return (ft_strjoin(first_part, get_var_value(*var, env)));
 }
 
+void no_original(char *var, t_token **lst, t_token **cur_token)
+{
+	if (var)
+		free(var);
+    lst_rm_token(lst, cur_token);
+}
+
 void expand_var_quotes(t_token **lst, t_token **cur_token, t_files *env)
 {
     char *original;
     char *var;
-    int if_space;
 
     original = NULL;
-    if_space = 0;
     var = NULL;
     if ((*cur_token)->value[0] == '$')
 	{
@@ -69,13 +86,6 @@ void expand_var_quotes(t_token **lst, t_token **cur_token, t_files *env)
 	else
         original = update_original(cur_token, env, &var);
     if (!original)
-    {
-        if (var)
-			free(var);
-        lst_rm_token(lst, cur_token);
-        if (*cur_token && (*cur_token)->next &&(*cur_token)->next->has_leading_space == 0)
-            (*cur_token)->next->has_leading_space = if_space;
-		return ;
-    }
+		return (no_original(var, lst, cur_token));
     (*cur_token)->value = original;
 }

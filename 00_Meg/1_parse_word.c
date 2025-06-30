@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   1_parse_word.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/01 00:12:22 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/01 00:14:24 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int if_exitcode_at_head(char *init_var, t_token **cur_token)
@@ -11,44 +23,6 @@ int if_exitcode_at_head(char *init_var, t_token **cur_token)
     }
     return (0);
 }
-
-// void loop_var(char *pos, t_token **cur_token)
-// {
-//     char *init_var;
-
-//     init_var = pos + 1; 
-//     printf("ini: %s\n", init_var);
-//     if (if_exitcode_at_head(init_var, cur_token) || !init_var)
-//         return ;
-// 	// else if (*init_var == '=')
-// 	// {
-// 	// 	(*cur_token)->type = ENV_VAR;
-// 	// 	update_token(cur_token, (*cur_token)->value, init_var + 1, WORD);
-// 	// 	return ;
-// 	// }
-// 	// else if (*init_var == '\'')
-// 	// {
-// 	// 	(*cur_token)->type = ENV_VAR;
-// 	// 	update_token(cur_token, (*cur_token)->value, ft_strrchr((*cur_token)->value, '\''), WORD);
-// 	// 	return ;
-// 	// }
-//     while (if_alnum_underscore_braces(*init_var) == 1)
-//     {
-//         // if (*init_var == '}')
-//         //     break ;
-//         init_var++;
-//     }
-//     if (*init_var != '\0') //we seperate into 2 tokens: VAR and WORD
-//     {
-//         // if (*init_var == '}')
-//         //     update_token(cur_token, (*cur_token)->value, init_var + 1, WORD);
-//         // else
-//             update_token(cur_token, (*cur_token)->value, init_var, WORD);
-//         (*cur_token)->type = ENV_VAR;
-//     }
-//     else
-//         (*cur_token)->type = ENV_VAR;
-// }
 
 void loop_var(char *pos, t_token **cur_token)
 {
@@ -112,4 +86,5 @@ void parse_type_word(t_token **cur_token)
             update_token(cur_token, original, s_quote_pos, SINGLE_QUOTE);
     else
             update_token(cur_token, original, d_quote_pos, DOUBLE_QUOTE);
+    var_found(cur_token);
 }
