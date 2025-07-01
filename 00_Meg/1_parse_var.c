@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:11:42 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/01 00:11:43 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/02 00:25:24 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **
         (*cur_token)->value = expand_value;
     }
     (*cur_token)->type = ARG;
-    return (0);
+    return (1);
 }
 
 int if_symbol_after_dollar(t_token **cur_token, t_token **lst)
@@ -75,19 +75,25 @@ int parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
     var = NULL;
     if (if_exit_code(cur_token))
         return (0);
-    pos = (*cur_token)->value + 1; //{USER}
+    pos = (*cur_token)->value + 1; //USER$?
 	if (*pos == '\0'|| *pos == '+' || *pos == '=')
 		return (if_symbol_after_dollar(cur_token, lst));
     while (if_alnum_underscore_braces(*pos))
         pos++;
     if (*pos != '\0') //we seperate into 2 tokens: VAR and WORD
-            update_token(lst, (*cur_token)->value, pos + 1, WORD);
+    {
+            update_token(lst, (*cur_token)->value, pos, WORD);
+            var = ft_strcpy((*cur_token)->value + 1, pos);
+            if (!var)
+                return (0);
+    }
     else
     {
 		var = ft_strdup((*cur_token)->value + 1);
 		if (!var)
         	return (1);
 	}
+    printf("vare: %s\n", var);
     if_braces(&var);
     return (parse_type_var_util(var, env, cur_token, lst));
 }

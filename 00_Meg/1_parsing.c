@@ -46,13 +46,26 @@ void	if_cmd(t_token **lst)
 		}
 }
 
+void merge_exitcode_tokens(t_token **cur_token, t_token **next_node)
+{
+        char *new_value;
+
+        new_value = ft_strjoin((*cur_token)->value, (*cur_token)->next->value);
+        if (!new_value)
+            return ;
+        free((*cur_token)->value);
+        (*cur_token)->value = new_value;
+        free((*cur_token)->next);
+        free((*cur_token)->next->value);
+        (*cur_token)->next = *next_node;
+}
+
 void join_exitcode_tokens(t_token **lst)
 {
     t_token *head;
-    char *new_value;
     t_token *next_node;
+    char *new_value =NULL;
 
-    new_value = NULL;
     head = *lst;
     next_node = head;
     while (head)
@@ -61,6 +74,7 @@ void join_exitcode_tokens(t_token **lst)
         {
             next_node = head->next;
             if (head->next->type == EXIT_CODE && !head->next->has_leading_space)
+                //merge_exitcode_tokens(&head, &next_node);
             {
                 new_value = ft_strjoin(head->value, head->next->value);
                 if (!new_value)
@@ -95,7 +109,10 @@ void parsing(t_token **lst, t_files *env)
     while (head)
     {
         if (head->type == WORD)
+        {
             parse_type_word(&head);
+            var_found(&head);
+        }
         if (head->type == SINGLE_QUOTE || head->type == DOUBLE_QUOTE)
 		{
             if (parse_type_quote(&head))
@@ -110,5 +127,5 @@ void parsing(t_token **lst, t_files *env)
         head = head->next;
     }
     if_cmd(lst);
-    join_exitcode_tokens(lst);
+    // join_exitcode_tokens(lst);
 }

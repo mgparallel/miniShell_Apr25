@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:12:22 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/01 00:14:24 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/02 00:21:51 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ void loop_var(char *pos, t_token **cur_token)
     if (*init_var != '\0') //we seperate into 2 tokens: VAR and WORD
         update_token(cur_token, (*cur_token)->value, init_var, WORD);
     (*cur_token)->type = ENV_VAR;
-   
 }
 
 void var_found(t_token **cur_token) //${USER}
@@ -74,7 +73,10 @@ void parse_type_word(t_token **cur_token)
 
     original = (*cur_token)->value;
     if (if_wildcard(cur_token))
+    {
+        //var_found(cur_token);
         return ; 
+    }
     s_quote_pos = ft_strchr(original, '\'');
     d_quote_pos = ft_strchr(original, '"');
     if (!s_quote_pos && !d_quote_pos)
@@ -86,5 +88,5 @@ void parse_type_word(t_token **cur_token)
             update_token(cur_token, original, s_quote_pos, SINGLE_QUOTE);
     else
             update_token(cur_token, original, d_quote_pos, DOUBLE_QUOTE);
-    var_found(cur_token);
+    //var_found(cur_token);
 }
