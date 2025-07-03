@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/29 20:22:22 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/03 20:07:59 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ int	file_heredoc(char *delimiter, t_files *env, int exit_status)
 		if (!line || ft_strcmp(line, delimiter) == 10)
 			break ;
 		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
 		free(line);
 	}
 	if (line)
@@ -202,7 +201,8 @@ int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_statu
 	{
 		*exit_status = check_files(cmd->redir_list);
 		if (!*exit_status && cmd->argv)
-			return (exec_builtin_without_output(cmd_list, cmd, env, *exit_status));
+			*exit_status = exec_builtin_without_output(cmd_list, cmd, env, *exit_status);
+		return (*exit_status);
 	}
 	data.pipe_fds = malloc(sizeof(int) * 2 * (num_cmds - 1));
 	if (!data.pipe_fds)
