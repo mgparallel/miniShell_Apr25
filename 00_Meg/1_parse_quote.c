@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:07:08 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 07:47:29 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 11:01:46 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,13 +44,14 @@ void remove_inner_quote(t_token **cur_token, char quote) //a'a'  aa
 
 // funtion to check if single quote/double quote contains $
 // remove outer quotes and deceide if expand
-int parse_type_quote(t_token **cur_token)
+int parse_type_quote(t_token **lst, t_token **cur_token)
 {
     char *dollar_pos;
     char *end_quote;
 	
     if ((*cur_token)->type == DOUBLE_QUOTE)
     {
+		skip_expansion(lst, cur_token);
         end_quote = ft_strrchr((*cur_token)->value, '"');
         if (end_quote[1] != '\0')
         {
@@ -74,5 +75,6 @@ int parse_type_quote(t_token **cur_token)
 		}
     }
     remove_inner_quote(cur_token, '\'');
+	(*cur_token)->has_leading_space = 2;
     return (0);
 }

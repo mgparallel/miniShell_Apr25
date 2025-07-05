@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:20:58 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 05:26:50 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 08:39:11 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,17 +67,24 @@ int	delimiter_found(int *in_token, char **input, char **token_start,
 int	check_quote_error(char *input)
 {
 	int i;
-	int count;
+	int s_q;
+	int	d_q;
 
 	i = 0;
-	count = 0;
+	s_q = 0;
+	d_q = 0;
 	while (input[i])
 	{
-		if (input[i] == '\'' || input[i] == '"')
-			count++;
+		if (input[i] == '\'' && !d_q)
+			s_q = !s_q;
+		else if (input[i] == '"' && !s_q)
+			d_q = !d_q;
 		i++;
 	}
-	return (count % 2);
+	if (s_q == 0 && d_q == 0)
+		return (0);
+	else
+		return (1);
 }
 
 t_token	*tokenizer(char *input, int *exit_status)

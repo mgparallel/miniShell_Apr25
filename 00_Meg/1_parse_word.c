@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:12:22 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 07:11:48 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 11:19:00 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,20 @@ int loop_var(char *pos, t_token **cur_token) //$USER$?
         return (update_token(cur_token, (*cur_token)->value, init_var, WORD));
 	else
 		return (0);
-    // (*cur_token)->type = ENV_VAR;
 }
 
-int var_found(t_token **cur_token)
+int var_found(t_token **lst, t_token **cur_token)
 {
     char *original;
     char *pos;
 
     if ((*cur_token)->type == SINGLE_QUOTE || (*cur_token)->type == DOUBLE_QUOTE)
         return (0);
+	else if (skip_expansion(lst, cur_token))
+	{
+		(*cur_token)->type = ARG;
+		return (1);
+	}
     original = (*cur_token)->value;
     pos = ft_strchr(original, '$');
     if (!pos)

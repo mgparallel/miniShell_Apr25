@@ -80,7 +80,7 @@ int     invalid_var(char *str, char *pos)
         int i;
         i = 0;
         if (!pos)
-            return (1);
+            return (printf("export: `%s': not a valid identifier\n", str), 1);
         while (str[i] && str[i] != *pos)
         {
             if (!if_alnum_underscore_braces(str[i]))

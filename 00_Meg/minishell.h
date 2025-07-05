@@ -120,6 +120,7 @@ void expand_var(t_token **lst, t_token **cur_token, t_files *env);
 char *get_var_value(char *var, t_files *env);
 void if_braces(char **var);
 int parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **lst);
+int skip_expansion(t_token **lst, t_token **cur_token);
 
 //if_exit_code.c
 int if_exit_code(t_token **cur_token);
@@ -134,10 +135,10 @@ void	expand_var_heredoc(char **line, int exit_status, t_files *env);
 
 //parse_word.c
 void parse_type_word(t_token **cur_token);
-int var_found(t_token **cur_token);
+int var_found(t_token **lst, t_token **cur_token);
 
 //parse_quote.c
-int parse_type_quote(t_token **cur_token);
+int parse_type_quote(t_token **lst, t_token **cur_token);
 
 //parse_arg.c
 int parse_type_arg(t_token **lst, t_token **cur_token);
