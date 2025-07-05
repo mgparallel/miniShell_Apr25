@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:11:42 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 04:06:37 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 07:30:54 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,27 +66,28 @@ int parse_type_var(t_token **lst, t_token **cur_token, t_files *env)
 	{
 		end_brace = ft_strchr(pos, '}');
 		if (!end_brace)
-			return (-1);
+			return (printf("Syntex error: Non closing braces"), -1);
 		var = ft_strcpy(pos + 1, end_brace);
 		if (!var)
-			return (-1);
+			return (printf("Malloc failed"), -1);
 		pos = end_brace + 1;
 	}
 	if (!var) //no braces
 	{
 		var = ft_strdup(pos);
 		if (!var)
-        	return (1);
+        	return (printf("Malloc failed"), -1); //changed
 		while (if_alnum_underscore_braces(*pos))
         	pos++;
 	}
     if (*pos != '\0') //we seperate into 2 tokens: VAR and WORD
     {
-            update_token(lst, (*cur_token)->value, pos, WORD);
+            if (update_token(lst, (*cur_token)->value, pos, WORD) == -1)
+				return (-1);
 			free(var);
             var = ft_strcpy((*cur_token)->value + 1, pos);
             if (!var)
-                return (-1);
+                return (printf("Malloc failed"), -1);
     }
 	return (parse_type_var_util(var, env, cur_token, lst));
 }

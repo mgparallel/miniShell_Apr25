@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:07:08 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/01 00:07:09 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 07:47:29 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,15 @@ int parse_type_quote(t_token **cur_token)
 {
     char *dollar_pos;
     char *end_quote;
-
+	
     if ((*cur_token)->type == DOUBLE_QUOTE)
     {
         end_quote = ft_strrchr((*cur_token)->value, '"');
         if (end_quote[1] != '\0')
-            update_token(cur_token, (*cur_token)->value, end_quote + 1, WORD);
+        {
+			if (update_token(cur_token, (*cur_token)->value, end_quote + 1, WORD) == -1)
+				return (-1);
+		}
         remove_inner_quote(cur_token, '"');
         dollar_pos = ft_strchr((*cur_token)->value, '$');
 		if (!dollar_pos)
@@ -65,7 +68,10 @@ int parse_type_quote(t_token **cur_token)
     {
         end_quote = ft_strrchr((*cur_token)->value, '\'');
         if (end_quote[1] != '\0')
-            update_token(cur_token, (*cur_token)->value, end_quote + 1, WORD);
+        {
+			if (update_token(cur_token, (*cur_token)->value, end_quote + 1, WORD) == -1)
+				return (-1);
+		}
     }
     remove_inner_quote(cur_token, '\'');
     return (0);

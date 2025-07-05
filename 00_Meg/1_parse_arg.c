@@ -6,13 +6,13 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:06:44 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 03:37:32 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 07:47:01 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void    join_token(t_token **prev, t_token **cur_token)
+int    join_token(t_token **prev, t_token **cur_token)
 {
     char *new_value;
     t_token *next_t;
@@ -20,7 +20,7 @@ void    join_token(t_token **prev, t_token **cur_token)
     next_t = (*cur_token)->next;
     new_value = ft_strjoin((*prev)->value, (*cur_token)->value);
     if (!new_value)
-        return ;
+        return (printf("Malloc failed\n"), -1);
 	else
 	{	
 		free((*prev)->value);
@@ -29,20 +29,23 @@ void    join_token(t_token **prev, t_token **cur_token)
 		free((*cur_token)->value);
 		free(*cur_token);
 	}
+	return (0);
 }
 
-void    parse_type_arg(t_token **lst, t_token **cur_token)
+int    parse_type_arg(t_token **lst, t_token **cur_token)
 {
     t_token *prev;
     char *var;
 
     if (*lst == *cur_token)
-        return ;
+        return (0);
     var = (*cur_token)->value;
     prev = *lst;
     while (prev->next != *cur_token)
         prev = prev->next;
-    if (!(*cur_token)->has_leading_space 
-                    && prev->type != PIPE && prev->type != REDIRECT)
-        join_token(&prev, cur_token);
+    if (!(*cur_token)->has_leading_space &&
+					prev->type != PIPE && prev->type != REDIRECT)
+        return (join_token(&prev, cur_token));
+	else
+		return (0);
 }

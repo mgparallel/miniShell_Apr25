@@ -9,7 +9,7 @@ void update_token_util(t_token **current_token, t_token **quote_token, char *fir
     (*current_token)->next = *quote_token;
 }
 
-void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
+int update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
 {
     t_token *current_token;
     t_token *quote_token;
@@ -22,14 +22,15 @@ void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
 	quote_token->value = NULL;
     quote_token->next = NULL;
     if (!quote_token)
-        return ;
+        return (printf("error with malloc\n"), -1);
     first_value = ft_substr(str, 0, quote_pos - str);
     if (!first_value)
-        return (free(quote_token));
+        return (free(quote_token), printf("error with malloc\n"), -1);
     quote_token->value = ft_strdup(quote_pos);
     if (!quote_token->value)
-        return (free(quote_token), free(first_value));
+        return (free(quote_token), free(first_value), printf("error with malloc\n"), -1);
     update_token_util(&current_token, &quote_token, first_value, type);
 	if (original)
 		free(original);
+	return (0);
 }

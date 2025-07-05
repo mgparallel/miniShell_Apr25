@@ -197,7 +197,7 @@ bool if_wildcard(t_token **cur_token)
     return (true);
 }
 
-void expand_wildcard(t_token **lst, t_token **cur_token)
+int expand_wildcard(t_token **lst, t_token **cur_token)
 {
     t_files *fn_lst;
     t_files *result;
@@ -206,14 +206,15 @@ void expand_wildcard(t_token **lst, t_token **cur_token)
     result = NULL;
     fetch_wildcard(&fn_lst);
     if (!fn_lst)
-        return ;
+        return (printf("Failed fetching file names\n"), -1);
     fn_match(fn_lst, (*cur_token)->value, &result);
     if (!result)
     {
         (*cur_token)->type = WORD;
-        return ;
+        return (0);
     }
 	add_wildcard_token(lst, *cur_token, result);
+	return (0);
 }
 
 // int main(void)

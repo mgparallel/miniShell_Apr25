@@ -112,7 +112,7 @@ void if_cmd(t_token **lst);
 int if_alnum_underscore_braces(int arg);
 
 //update_token.c
-void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
+int update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
 
 //parse_var.c
 int parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
@@ -134,14 +134,14 @@ void	expand_var_heredoc(char **line, int exit_status, t_files *env);
 
 //parse_word.c
 void parse_type_word(t_token **cur_token);
-void var_found(t_token **cur_token);
+int var_found(t_token **cur_token);
 
 //parse_quote.c
 int parse_type_quote(t_token **cur_token);
 
 //parse_arg.c
-void parse_type_arg(t_token **lst, t_token **cur_token);
-void    join_token(t_token **prev, t_token **cur_token);
+int parse_type_arg(t_token **lst, t_token **cur_token);
+int    join_token(t_token **prev, t_token **cur_token);
 //lst_remove_token.c
 int    lst_rm_token(t_token **lst, t_token **cur_token);
 
@@ -178,7 +178,7 @@ int     cmd_echo(char **argv);
 int     cmd_cd(char *str, t_files **env);
 
 //04_bonus_wildcard
-void   expand_wildcard(t_token **lst, t_token **cur_token);
+int   expand_wildcard(t_token **lst, t_token **cur_token);
 void fetch_wildcard(t_files **fn);
 bool if_wildcard(t_token **cur_token);
 void fn_match_util(char **arr, t_files **fn_lst, t_files **result);
