@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:06:44 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 07:47:01 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 20:24:47 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,14 @@ int    join_token(t_token **prev, t_token **cur_token)
         return (printf("Malloc failed\n"), -1);
 	else
 	{	
+        if ((*cur_token)->type == EXIT_CODE)
+            (*prev)->type = EXIT_CODE;
 		free((*prev)->value);
 		(*prev)->value = new_value;
 		(*prev)->next = next_t;
 		free((*cur_token)->value);
 		free(*cur_token);
+            
 	}
 	return (0);
 }
@@ -35,11 +38,9 @@ int    join_token(t_token **prev, t_token **cur_token)
 int    parse_type_arg(t_token **lst, t_token **cur_token)
 {
     t_token *prev;
-    char *var;
 
     if (*lst == *cur_token)
         return (0);
-    var = (*cur_token)->value;
     prev = *lst;
     while (prev->next != *cur_token)
         prev = prev->next;

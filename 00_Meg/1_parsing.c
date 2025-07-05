@@ -86,21 +86,23 @@ int join_exitcode_tokens(t_token **lst, t_token **cur_token)
 
 int parsing_util(t_token **cur_token, t_token **lst)
 {
-    if ((*cur_token)->type == ARG)
-    {
-		if (parse_type_arg(lst, cur_token) == -1)	
-			return (-1);
-	}
+    // if ((*cur_token)->type == ARG)
+    // {
+	// 	if (parse_type_arg(lst, cur_token) == -1)	
+	// 		return (-1);
+	// }
     if ((*cur_token)->type == WILDCARD)
     {
 		if (expand_wildcard(lst, cur_token) == -1)
 			return (-1);
 	}
-	if ((*cur_token)->type == EXIT_CODE)
-    {
-		if (join_exitcode_tokens(lst, cur_token) == -1)
-				return (-1);
-	}
+    if (parse_type_arg(lst, cur_token) == -1)	
+			return (-1);
+	// if ((*cur_token)->type == EXIT_CODE)
+    // {
+	// 	if (join_exitcode_tokens(lst, cur_token) == -1)
+	// 			return (-1);
+	// }
 	return (0);
 }
 
