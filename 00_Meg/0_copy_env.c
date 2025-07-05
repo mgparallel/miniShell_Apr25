@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:18:39 by menwu             #+#    #+#             */
-/*   Updated: 2025/06/30 00:18:41 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/04 23:58:22 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,5 +75,6 @@ t_files *cp_env(char **envp)
 	if (!new_value)
 		return (free_lst(&env), NULL);
 	update_env(new_value, &env);
+	free(new_value);
 	return (env);
 }

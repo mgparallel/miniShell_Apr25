@@ -19,6 +19,7 @@ int cmd_pwd(t_files *env)
     if (ref == NULL)
         return (printf("no PWD value\n"), 1);
     printf("%s\n", result);
+	free(result);
     return (0);
 }
 

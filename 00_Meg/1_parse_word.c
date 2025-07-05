@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:12:22 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/02 00:21:51 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 05:09:43 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,36 @@ int if_exitcode_at_head(char *init_var, t_token **cur_token)
     return (0);
 }
 
-void loop_var(char *pos, t_token **cur_token)
+void loop_var(char *pos, t_token **cur_token) //$USER$?
 {
     char *init_var;
 
-    init_var = pos + 1; 
+    init_var = pos + 1;
     if (if_exitcode_at_head(init_var, cur_token) || !init_var)
         return ;
     while (if_alnum_underscore_braces(*init_var) == 1)
+	{
+		if (*init_var == '}')
+		{
+			init_var++;
+			break ;
+		}
         init_var++;
-    if (*init_var != '\0') //we seperate into 2 tokens: VAR and WORD
+	}
+	// printf("this: %s\n", init_var);
+    if (*init_var != '\0')
         update_token(cur_token, (*cur_token)->value, init_var, WORD);
     (*cur_token)->type = ENV_VAR;
 }
 
-void var_found(t_token **cur_token) //${USER}
+void var_found(t_token **cur_token)
 {
     char *original;
     char *pos;
 
     if ((*cur_token)->type == SINGLE_QUOTE || (*cur_token)->type == DOUBLE_QUOTE)
         return ;
-    original = (*cur_token)->value; //$?
+    original = (*cur_token)->value;
     pos = ft_strchr(original, '$');
     if (!pos)
         return ;
@@ -57,7 +65,7 @@ void var_found(t_token **cur_token) //${USER}
     if (pos != original)
     {
         (*cur_token)->type = ARG;
-        update_token(cur_token, original, pos, ENV_VAR);
+        update_token(cur_token, original, pos, WORD); //changed
         return ;
     }
     loop_var(pos, cur_token);
@@ -65,7 +73,7 @@ void var_found(t_token **cur_token) //${USER}
 
 // funton to parse the token with type="WORD"
 // if find quotes, remove and update token value
-void parse_type_word(t_token **cur_token)
+void parse_type_word(t_token **cur_token) 
 {
     char *original;
     char *s_quote_pos;
@@ -73,10 +81,7 @@ void parse_type_word(t_token **cur_token)
 
     original = (*cur_token)->value;
     if (if_wildcard(cur_token))
-    {
-        //var_found(cur_token);
-        return ; 
-    }
+        return ;
     s_quote_pos = ft_strchr(original, '\'');
     d_quote_pos = ft_strchr(original, '"');
     if (!s_quote_pos && !d_quote_pos)
@@ -88,5 +93,4 @@ void parse_type_word(t_token **cur_token)
             update_token(cur_token, original, s_quote_pos, SINGLE_QUOTE);
     else
             update_token(cur_token, original, d_quote_pos, DOUBLE_QUOTE);
-    //var_found(cur_token);
 }

@@ -25,10 +25,10 @@ char *print_out_type(t_token_type type)
 // function to print tokens in the lst -> remove later
 void print_token(t_token *token)
 {
-	if (!token)
-	{	printf("No token\n");
-		return ;
-	}
+	// if (!token)
+	// {	printf("No token\n");
+	// 	return ;
+	// }
 	while (token)
 	{
 		if (token->type == WILDCARD)
@@ -56,12 +56,18 @@ void print_token(t_token *token)
 
 void clear_token(t_token **token)
 {
-	while (*token)
-	{
-		free((*token)->value);
-		free(*token);
-		*token = (*token)->next;
-	}
+	t_token *tmp;
+
+    while (*token)
+    {
+        tmp = (*token)->next;
+        if (!*token)
+        	return ;
+    	if ((*token)->value)
+        	free((*token)->value);
+    	free(*token);
+        *token = tmp;
+    }
 }
 
 void    handle_sigint(int sig)
@@ -97,11 +103,12 @@ int main(int argc, char **argv, char **envp)
 			break ;
 		}
 		add_history(input);
-		token = tokenizer(input);
+		token = tokenizer(input, &exit_status);
 		free(input);
-		parsing(&token, env);
+		if (!exit_status)
+			exit_status = parsing(&token, env);
 		print_token(token);
-		if (!token)
+		if (!token || exit_status) //change made!
 			continue ;
 		if (is_connector(token->type))
 		{
@@ -109,6 +116,7 @@ int main(int argc, char **argv, char **envp)
 			ft_putstr_fd(token->value, 2);
 			ft_putstr_fd("'\n", 2);
 			exit_status = 1;
+			clear_token(&token);
 			continue ;
 		}
 		cmds = build_cmds(token);

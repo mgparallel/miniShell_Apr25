@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:20:58 by menwu             #+#    #+#             */
-/*   Updated: 2025/06/30 00:20:59 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 05:26:50 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,23 @@ int	delimiter_found(int *in_token, char **input, char **token_start,
 	return (1);
 }
 
-t_token	*tokenizer(char *input)
+int	check_quote_error(char *input)
+{
+	int i;
+	int count;
+
+	i = 0;
+	count = 0;
+	while (input[i])
+	{
+		if (input[i] == '\'' || input[i] == '"')
+			count++;
+		i++;
+	}
+	return (count % 2);
+}
+
+t_token	*tokenizer(char *input, int *exit_status)
 {
 	int in_token;
 	char *token_start;
@@ -73,6 +89,12 @@ t_token	*tokenizer(char *input)
 	in_token = 0;
 	token_start = NULL;
     head = NULL;
+	*exit_status = check_quote_error(input);
+	if (*exit_status)
+	{
+		printf("Syntax error: Unclosed quotes/symbols\n");
+		return (NULL);
+	}
 	in_token = parse_input(&input, &head, &in_token, &token_start);
 	if (in_token)
 		create_token(&token_start, input, WORD, &head);

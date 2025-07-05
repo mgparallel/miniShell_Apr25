@@ -8,7 +8,7 @@ void    set_env_var(char *var, char *path, t_files **env)
     if (!new)
         return ;
     cmd_export(new, env);
-	
+	free(new);
 }
 
 int		cd_home(t_files **env)
@@ -20,10 +20,7 @@ int		cd_home(t_files **env)
 		cur_dir = NULL;
 		str = get_var_value("HOME", *env);
 		if (!str)
-		{
-			printf("No $Home set\n");
-			return (1);
-		}
+			return (printf("No $Home set\n"), 1);
 		cur_dir = get_var_value("PWD", *env);
 		if (chdir(str) != 0) //when changing dir fail
 			return (printf("No such file or directory\n"), 1);
@@ -32,10 +29,10 @@ int		cd_home(t_files **env)
 		else
 			cmd_unset("OLDPWD", env);
 		if (getcwd(new_buf, sizeof(new_buf)) == NULL)
-			return (printf("error after change directory\n"), 1);
+			return (free(str), free(cur_dir), printf("error after change directory\n"), 1);
 		else
 			set_env_var("PWD=", new_buf, env);
-		return (0);
+		return (free(str), free(cur_dir), 0);
 }
 
 int    cmd_cd(char *str, t_files **env)
@@ -51,19 +48,21 @@ int    cmd_cd(char *str, t_files **env)
 		if (!str)
 			return (printf("OLDPWD not set\n"), 1);
 		printf("%s\n", str);
+		free(str);
+		return (0);
 	}
     cur_dir = get_var_value("PWD", *env);
     if (chdir(str) != 0) //when changing dir fail
-        return (printf("No such file or directory\n"), 1);
+        return (free(cur_dir), printf("No such file or directory\n"), 1);
     if (cur_dir)
         set_env_var("OLDPWD=", cur_dir, env);
     else
         cmd_unset("OLDPWD", env);
     if (getcwd(new_buf, sizeof(new_buf)) == NULL)
-        return (printf("error after change directory\n"), 1);
+        return (free(cur_dir), printf("error after change directory\n"), 1);
     else
         set_env_var("PWD=", new_buf, env);
-    return (0);
+    return (free(cur_dir), 0);
 }
 
 // int main(int ac, char **ag, char **envp)

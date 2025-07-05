@@ -90,7 +90,7 @@ void update_env(char *value, t_files **env);
 void free_lst(t_files **lst);
 
 //tokenizer.c
-t_token *tokenizer(char *input);
+t_token *tokenizer(char *input, int *exit_status);
 int	delimiter_found(int *in_token, char **input, char **token_start, t_token **head);
 
 //tokenizer_input.c
@@ -107,7 +107,7 @@ bool ch_is_special(char ch);
 bool space_special(char ch);
 
 // parsing
-void parsing(t_token **lst, t_files *env);
+int parsing(t_token **lst, t_files *env);
 void if_cmd(t_token **lst);
 int if_alnum_underscore_braces(int arg);
 

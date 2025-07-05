@@ -60,34 +60,18 @@ void merge_exitcode_tokens(t_token **cur_token, t_token **next_node)
         (*cur_token)->next = *next_node;
 }
 
-void join_exitcode_tokens(t_token **lst)
+void join_exitcode_tokens(t_token **lst, t_token **cur_token)
 {
-    t_token *head;
-    t_token *next_node;
-    char *new_value =NULL;
+    t_token *prev;
+    t_token *next;
 
-    head = *lst;
-    next_node = head;
-    while (head)
-    {
-        if (head->next)
-        {
-            next_node = head->next;
-            if (head->next->type == EXIT_CODE && !head->next->has_leading_space)
-                //merge_exitcode_tokens(&head, &next_node);
-            {
-                new_value = ft_strjoin(head->value, head->next->value);
-                if (!new_value)
-                    return ;
-                free(head->value);
-                head->value = new_value;
-                free(head->next);
-                free(head->next->value);
-                head->next = next_node;
-            }
-        }
-        head = head->next;
-    }
+	if ((*cur_token)->has_leading_space)
+		return ;
+    prev = *lst;
+    next = (*cur_token)->next;
+    while (prev->next && prev->next != *cur_token)
+		prev = prev->next;
+	merge_exitcode_tokens(&prev, &next);
 }
 
 void parsing_util(t_token **cur_token, t_token **lst)
@@ -96,15 +80,15 @@ void parsing_util(t_token **cur_token, t_token **lst)
             parse_type_arg(lst, cur_token);
     if ((*cur_token)->type == WILDCARD)
             expand_wildcard(lst, cur_token);
+	if ((*cur_token)->type == EXIT_CODE)
+            join_exitcode_tokens(lst, cur_token);
 }
 
 // main function of PARSING to refine the tokens
-void parsing(t_token **lst, t_files *env)
+int parsing(t_token **lst, t_files *env)
 {
     t_token *head;
 
-    if (!*lst || !lst)
-        return ;
     head = *lst;
     while (head)
     {
@@ -127,5 +111,5 @@ void parsing(t_token **lst, t_files *env)
         head = head->next;
     }
     if_cmd(lst);
-    // join_exitcode_tokens(lst);
+	return (0);
 }

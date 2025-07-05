@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:17:57 by menwu             #+#    #+#             */
-/*   Updated: 2025/06/30 00:17:58 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 02:21:24 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 	if (!str)
 		return ;
 	new_token = malloc(sizeof(t_token));
+	new_token->value = NULL;
 	if (!new_token)
 		return ;
 	new_token->value = str;

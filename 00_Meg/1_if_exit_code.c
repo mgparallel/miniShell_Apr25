@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 23:53:45 by menwu             #+#    #+#             */
-/*   Updated: 2025/06/30 23:53:46 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 03:37:23 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int if_exit_code(t_token **cur_token)
     char *var;
 
     var = (*cur_token)->value + 1;
-    if_braces(&var);
     if (!ft_strchr(var, '?'))
         return (0);
     if (var[0] == '?')

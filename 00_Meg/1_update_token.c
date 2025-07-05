@@ -19,14 +19,17 @@ void update_token(t_token **lst, char *str, char *quote_pos, t_token_type type)
     current_token = *lst;
     original = current_token->value;
     quote_token = malloc(sizeof(t_token));
+	quote_token->value = NULL;
+    quote_token->next = NULL;
     if (!quote_token)
         return ;
-    first_value = ft_strcpy(str, quote_pos);
+    first_value = ft_substr(str, 0, quote_pos - str);
     if (!first_value)
         return (free(quote_token));
     quote_token->value = ft_strdup(quote_pos);
     if (!quote_token->value)
         return (free(quote_token), free(first_value));
     update_token_util(&current_token, &quote_token, first_value, type);
-    free(original);
+	if (original)
+		free(original);
 }

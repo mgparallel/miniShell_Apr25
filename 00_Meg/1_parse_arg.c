@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:06:44 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/01 00:06:45 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/05 03:37:32 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,14 @@ void    join_token(t_token **prev, t_token **cur_token)
     new_value = ft_strjoin((*prev)->value, (*cur_token)->value);
     if (!new_value)
         return ;
-    (*prev)->value = new_value;
-    (*prev)->next = next_t;
-    free(*cur_token);
+	else
+	{	
+		free((*prev)->value);
+		(*prev)->value = new_value;
+		(*prev)->next = next_t;
+		free((*cur_token)->value);
+		free(*cur_token);
+	}
 }
 
 void    parse_type_arg(t_token **lst, t_token **cur_token)
@@ -37,7 +42,6 @@ void    parse_type_arg(t_token **lst, t_token **cur_token)
     prev = *lst;
     while (prev->next != *cur_token)
         prev = prev->next;
-    if_braces(&var);
     if (!(*cur_token)->has_leading_space 
                     && prev->type != PIPE && prev->type != REDIRECT)
         join_token(&prev, cur_token);
