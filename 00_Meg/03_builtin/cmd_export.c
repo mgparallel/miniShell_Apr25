@@ -78,10 +78,19 @@ int     declare_env(t_files *env)
 int     invalid_var(char *str, char *pos)
 {
         int i;
+
         i = 0;
         if (!pos)
-            return (printf("export: `%s': not a valid identifier\n", str), 1);
-        while (str[i] && str[i] != *pos)
+		{
+			while(if_alnum_underscore_braces(str[i]))
+				i++;
+			if (str[i] != '\0')
+            	return (printf("export: `%s': not a valid identifier\n", str), 1);
+			else
+				return (1);
+		}
+		i = 0;
+		while (str[i] && str[i] != *pos)
         {
             if (!if_alnum_underscore_braces(str[i]))
             {
