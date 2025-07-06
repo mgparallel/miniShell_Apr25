@@ -46,6 +46,7 @@ typedef struct s_token
     char            *value;
     t_files         *lst;
     int             has_leading_space;
+	int				in_quote;
     struct s_token *next;
 } t_token;
 

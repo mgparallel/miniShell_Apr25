@@ -5,13 +5,14 @@ char *quote_in_var(char *pos)
     char *end;
     char *result;
     int len;
+
     end = pos + (int)ft_strlen(pos) - 1;
     len = ft_strlen(pos);
     if (len < 2)
         return (NULL);
     if ((pos[1] == '\'' && end[0] == '\'') || (pos[1] == '"' && end[0] == '"'))
     {
-        result = ft_strndup(pos + 2, len - 2);
+        result = ft_strndup(pos + 2, len - 3);
         return (result);
     }
     else
@@ -50,16 +51,14 @@ char *cmd_export_util(char *dequote_str, char *str, char *pos)
         new_str = ft_strdup(str);
     else
     {
-        first = ft_strcpy(str, pos - 1);
+        first = ft_strcpy(str, pos + 1);
         if (!first)
-        {
-            free(dequote_str);
-            return (NULL);
-        }
+            return (free(dequote_str), NULL);
         new_str = ft_strjoin(first, dequote_str);
         if (!new_str)
-            free(first);
+            return (free(first), NULL);
     }
+	free(first);
     return (new_str);
 }
 int     declare_env(t_files *env)
@@ -75,16 +74,36 @@ int     declare_env(t_files *env)
         }
         return (0);
 }
+
+int		all_number(char *str)
+{
+		int i;
+
+		i = 0;
+		while (str[i])
+		{
+			if (str[i] >= 48 && str[i] <= 57)
+				i++;
+			else
+				return (0);
+		}
+		if (str[i] == '\0')
+			return (1);
+		return (0);
+}
+
 int     invalid_var(char *str, char *pos)
 {
         int i;
+		int flag;
 
         i = 0;
+		flag = 0;
         if (!pos)
 		{
 			while(if_alnum_underscore_braces(str[i]))
-				i++;
-			if (str[i] != '\0')
+					i++;
+			if (str[i] != '\0' || all_number(str))
             	return (printf("export: `%s': not a valid identifier\n", str), 1);
 			else
 				return (1);
@@ -102,8 +121,12 @@ int     invalid_var(char *str, char *pos)
                 printf("export: `%s': not a valid identifier\n", str);
                 return (1);
             }
+			if (str[i] >= 48 && str[i] <= 57)
+				flag++;
             i++;
         }
+		if (flag == pos - str)
+                return (printf("export: `%s': not a valid identifier\n", str), 1);
         return (0);
 }
 int     if_append_var(char *str,  char *pos, t_files **env)
@@ -160,7 +183,7 @@ int    cmd_export(char *str, t_files **env)
         printf("export: `%s': not a valid identifier\n", str);
         return (2);
     }
-    dequote_str = quote_in_var(pos);
+    dequote_str = quote_in_var(pos); //after = no quote
     if_append = if_append_var(str, pos, env);
 	if (if_append)
 		return (if_append);
@@ -172,8 +195,7 @@ int    cmd_export(char *str, t_files **env)
     }
     if (!if_replace(new_str, env))
         lstadd_start(env, new_str);
-    free(new_str);
-    return (0);
+    return (free(dequote_str), free(new_str), 0);
 }
 // int main(int ac, char **ag, char **envp)
 // {

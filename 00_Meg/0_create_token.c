@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:17:57 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 02:21:24 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 18:03:01 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,10 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 		new_token->has_leading_space = 1;
 	else
 		new_token->has_leading_space = 0;
+	if (type == SINGLE_QUOTE || type == DOUBLE_QUOTE)
+		new_token->in_quote = 1;
+	else
+		new_token->in_quote = 0;
 	lstadd_back(lst, new_token);
 	*start = NULL; //reset the start point
 }

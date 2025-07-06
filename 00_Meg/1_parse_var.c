@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:11:42 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 11:27:43 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 18:53:13 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,18 +56,8 @@ int skip_expansion(t_token **lst, t_token **cur_token)
 	head = *lst;
 	while (head->next && head->next != *cur_token)
 		head = head->next;
-	if (head->type == REDIRECT)
-	{
-		if ((*cur_token)->has_leading_space == 2)
-			return (1);
-	}
-	if (head->type == REDIRECT)
-	{
-		if (!(ft_strncmp(head->value, "<<", 2)) && 
-					((*cur_token)->type == SINGLE_QUOTE || (*cur_token)->type == DOUBLE_QUOTE))
-			(*cur_token)->has_leading_space = 2;
+	if (head->type == REDIRECT && !(ft_strncmp(head->value, "<<", 2)))
 		return (1);
-	}
 	return (0);
 }
 

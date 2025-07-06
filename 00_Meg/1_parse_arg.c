@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:06:44 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 20:24:47 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 18:18:56 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,13 @@ int    join_token(t_token **prev, t_token **cur_token)
 	{	
         if ((*cur_token)->type == EXIT_CODE)
             (*prev)->type = EXIT_CODE;
+		if ((*cur_token)->in_quote)
+			(*prev)->in_quote = 1;
 		free((*prev)->value);
 		(*prev)->value = new_value;
 		(*prev)->next = next_t;
 		free((*cur_token)->value);
 		free(*cur_token);
-            
 	}
 	return (0);
 }
@@ -46,7 +47,11 @@ int    parse_type_arg(t_token **lst, t_token **cur_token)
         prev = prev->next;
     if (!(*cur_token)->has_leading_space &&
 					prev->type != PIPE && prev->type != REDIRECT)
+	{
+		if ((*cur_token)->type == PIPE)
+			return (0);
         return (join_token(&prev, cur_token));
+	}
 	else
 		return (0);
 }

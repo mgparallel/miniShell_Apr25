@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:12:22 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 11:19:00 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 18:36:22 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int loop_var(char *pos, t_token **cur_token) //$USER$?
         return (0);
 	else if (flag == -1)
 		return (-1);
-    while (if_alnum_underscore_braces(*init_var) == 1)
+    while (if_alnum_underscore_braces(*init_var))
 	{
 		if (*init_var == '}')
 		{
@@ -88,7 +88,7 @@ int var_found(t_token **lst, t_token **cur_token)
 
 // funton to parse the token with type="WORD"
 // if find quotes, remove and update token value
-void parse_type_word(t_token **cur_token) 
+void parse_type_word(t_token **cur_token) //$USER'a'
 {
     char *original;
     char *s_quote_pos;

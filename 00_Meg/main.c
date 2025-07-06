@@ -25,10 +25,6 @@ char *print_out_type(t_token_type type)
 // function to print tokens in the lst -> remove later
 void print_token(t_token *token)
 {
-	// if (!token)
-	// {	printf("No token\n");
-	// 	return ;
-	// }
 	while (token)
 	{
 		if (token->type == WILDCARD)
@@ -48,7 +44,7 @@ void print_token(t_token *token)
 				printf("WILDCARD->Literal value: %s\n", token->value);
 		}
 		else
-			printf("\nVALUE: %s, TYPE: %s, SPACE? %d \n", token->value, print_out_type(token->type), token->has_leading_space);
+			printf("\nVALUE: %s, TYPE: %s, SPACE? %d, IN_QUOTE? %d\n", token->value, print_out_type(token->type), token->has_leading_space, token->in_quote);
 		token = token->next;
 	}
 	printf("\n");
@@ -95,7 +91,7 @@ int main(int argc, char **argv, char **envp)
 	{
 		signal(SIGINT, handle_sigint);
 		signal(SIGQUIT, SIG_IGN);
-		input = readline("Minishell> "); //echo -n "this is test" $USER | grep "test" >> outfile  
+		input = readline("Minishell> ");
 		if (!input)
 		{
 			printf("exit\n");
