@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:18:29 by menwu             #+#    #+#             */
-/*   Updated: 2025/06/30 00:18:31 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 22:32:38 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 void	add_node_to_lst(char *str, int *start, int *end, t_files **lst)
 {
-		t_files		*new_node;
-		char		*node_value;
+	t_files	*new_node;
+	char	*node_value;
 
 	node_value = ft_strndup(str + *start, *end - *start);
 	if (!node_value)
@@ -32,21 +32,21 @@ void	add_node_to_lst(char *str, int *start, int *end, t_files **lst)
 
 void	add_expanded_var_to_lst(char *value, t_files **lst)
 {
-		t_files *new_node;
+	t_files	*new_node;
 
-		new_node = malloc(sizeof(t_files));
-		if (!new_node)
-			return (free_lst(lst));
-		new_node->value = ft_strdup(value);
-		if (!new_node->value)
-			return (free(new_node), free_lst(lst));
-		new_node->next = NULL;
-		indir_lst_addback(lst, new_node);
+	new_node = malloc(sizeof(t_files));
+	if (!new_node)
+		return (free_lst(lst));
+	new_node->value = ft_strdup(value);
+	if (!new_node->value)
+		return (free(new_node), free_lst(lst));
+	new_node->next = NULL;
+	indir_lst_addback(lst, new_node);
 }
 
 int	copy_first_str(char **re, char **s1, int len1)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < len1)
@@ -58,12 +58,12 @@ int	copy_first_str(char **re, char **s1, int len1)
 	return (i);
 }
 
-char *ft_strjoin_free(char *s1, char *s2, size_t len2)
+char	*ft_strjoin_free(char *s1, char *s2, size_t len2)
 {
-	size_t len1;
-	size_t i;
-	size_t j;
-	char *re;
+	size_t	len1;
+	size_t	i;
+	size_t	j;
+	char	*re;
 
 	i = 0;
 	j = 0;

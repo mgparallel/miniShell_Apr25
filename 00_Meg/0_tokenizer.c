@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:20:58 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/05 08:39:11 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 22:41:54 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	start_special_t(char **start, char **input, t_token **head, int *in_token)
 {
 	if (ch_is_special(**input))
 	{
-        *start = *input;
+		*start = *input;
 		if (*(*input + 1) == **input)
 		{
 			if (**input == '|')
@@ -38,7 +38,7 @@ int	start_special_t(char **start, char **input, t_token **head, int *in_token)
 				*in_token = !*in_token;
 		}
 	}
-    return (1);
+	return (1);
 }
 
 int	delimiter_found(int *in_token, char **input, char **token_start,
@@ -58,16 +58,15 @@ int	delimiter_found(int *in_token, char **input, char **token_start,
 			return (0);
 		}
 	}
-	else
-		if (!start_special_t(token_start, input, head, in_token))
-            return (0);
+	else if (!start_special_t(token_start, input, head, in_token))
+		return (0);
 	return (1);
 }
 
 int	check_quote_error(char *input)
 {
-	int i;
-	int s_q;
+	int	i;
+	int	s_q;
 	int	d_q;
 
 	i = 0;
@@ -89,13 +88,13 @@ int	check_quote_error(char *input)
 
 t_token	*tokenizer(char *input, int *exit_status)
 {
-	int in_token;
-	char *token_start;
-	t_token *head;
+	int		in_token;
+	char	*token_start;
+	t_token	*head;
 
 	in_token = 0;
 	token_start = NULL;
-    head = NULL;
+	head = NULL;
 	*exit_status = check_quote_error(input);
 	if (*exit_status)
 	{

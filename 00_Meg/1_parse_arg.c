@@ -6,25 +6,25 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:06:44 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/06 18:18:56 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 22:48:23 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int    join_token(t_token **prev, t_token **cur_token)
+int	join_token(t_token **prev, t_token **cur_token)
 {
-    char *new_value;
-    t_token *next_t;
+	char	*new_value;
+	t_token	*next_t;
 
-    next_t = (*cur_token)->next;
-    new_value = ft_strjoin((*prev)->value, (*cur_token)->value);
-    if (!new_value)
-        return (printf("Malloc failed\n"), -1);
+	next_t = (*cur_token)->next;
+	new_value = ft_strjoin((*prev)->value, (*cur_token)->value);
+	if (!new_value)
+		return (printf("Malloc failed\n"), -1);
 	else
-	{	
-        if ((*cur_token)->type == EXIT_CODE)
-            (*prev)->type = EXIT_CODE;
+	{
+		if ((*cur_token)->type == EXIT_CODE)
+			(*prev)->type = EXIT_CODE;
 		if ((*cur_token)->in_quote)
 			(*prev)->in_quote = 1;
 		free((*prev)->value);
@@ -36,21 +36,21 @@ int    join_token(t_token **prev, t_token **cur_token)
 	return (0);
 }
 
-int    parse_type_arg(t_token **lst, t_token **cur_token)
+int	parse_type_arg(t_token **lst, t_token **cur_token)
 {
-    t_token *prev;
+	t_token	*prev;
 
-    if (*lst == *cur_token)
-        return (0);
-    prev = *lst;
-    while (prev->next != *cur_token)
-        prev = prev->next;
-    if (!(*cur_token)->has_leading_space &&
-					prev->type != PIPE && prev->type != REDIRECT)
+	if (*lst == *cur_token)
+		return (0);
+	prev = *lst;
+	while (prev->next != *cur_token)
+		prev = prev->next;
+	if (!(*cur_token)->has_leading_space && prev->type != PIPE
+		&& prev->type != REDIRECT)
 	{
 		if ((*cur_token)->type == PIPE)
 			return (0);
-        return (join_token(&prev, cur_token));
+		return (join_token(&prev, cur_token));
 	}
 	else
 		return (0);

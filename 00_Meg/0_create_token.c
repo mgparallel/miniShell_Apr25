@@ -6,16 +6,16 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:17:57 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/06 18:03:01 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/06 22:35:03 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void create_token(char **start, char *end, t_token_type type, t_token **lst)
+void	create_token(char **start, char *end, t_token_type type, t_token **lst)
 {
-	t_token *new_token;
-	char *str;
+	t_token	*new_token;
+	char	*str;
 
 	str = ft_strcpy(*start, end);
 	if (!str)
@@ -37,5 +37,5 @@ void create_token(char **start, char *end, t_token_type type, t_token **lst)
 	else
 		new_token->in_quote = 0;
 	lstadd_back(lst, new_token);
-	*start = NULL; //reset the start point
+	*start = NULL;
 }

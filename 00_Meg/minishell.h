@@ -110,10 +110,10 @@ bool space_special(char ch);
 // parsing
 int parsing(t_token **lst, t_files *env);
 void if_cmd(t_token **lst);
-int if_alnum_underscore_braces(int arg);
 
 //update_token.c
 int update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
+int if_alnum_underscore_braces(int arg);
 
 //parse_var.c
 int parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
@@ -140,6 +140,11 @@ int var_found(t_token **lst, t_token **cur_token);
 
 //parse_quote.c
 int parse_type_quote(t_token **lst, t_token **cur_token);
+
+//parse_quote_util.c
+void	remove_inner_quote(t_token **cur_token, char quote);
+int	after_export(t_token **lst, t_token **cur_token);
+int	var_before_quote(t_token **lst, t_token **cur_token, t_token_type type);
 
 //parse_arg.c
 int parse_type_arg(t_token **lst, t_token **cur_token);
