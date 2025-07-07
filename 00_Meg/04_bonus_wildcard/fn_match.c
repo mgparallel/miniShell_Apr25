@@ -13,73 +13,61 @@ void free_arr(char **arr)
     arr = NULL;
 }
 
-char **prepend_arr(char **arr, char *value, char *str)
+void fn_match_util(char **arr, t_files **fn_lst, t_files **result)
 {
-    char **new_arr;
-    int len;
-    int i;
-    int flag;
+    char *trimmed;
+    char **temp;
+    int flag; //mark valid filenames with flag = 1
 
-    len = 0;
-    i = 0;
+    temp = NULL;
+    trimmed = NULL;
     flag = 0;
-    while (arr[len])
-        len++;
-    if (value[ft_strlen(value) - 1] == '*')
+    while (*fn_lst) //iterate filename by filename calling ->next
     {
-        new_arr = (char **)malloc(sizeof(char *) * (len + 3));
-        flag = 1;
+        if_end_to_match(arr, &flag);
+        temp = arr;
+        if (temp[0][0] != '*') //when * NOT at the begining e.g. mini*.h, ft_*
+        {
+            if (ft_strncmp((*fn_lst)->value, *temp, ft_strlen(*temp)))
+            {
+                *fn_lst = (*fn_lst)->next;
+                continue ;
+            }
+        }
+        else
+            temp++;
+        trimmed = (*fn_lst)->value;
+        while (*++temp)
+        {
+            trimmed = strmatch(trimmed, *(temp - 1));
+            if (!trimmed)
+            {
+                if (arr[0][0] == '*' && !temp++)
+                    flag = 1;
+                break ;
+            }
+            else if (*trimmed == '\0')
+            {
+                if (!temp++)
+                    flag = 1;
+            }
+        }
+        if (trimmed && trimmed[0] != '\0')
+        {
+            if (flag != -1)
+                flag = 1;
+            else
+            {
+                trimmed = trimmed + ft_strlen(trimmed) - ft_strlen(*(temp - 1));
+                if (!ft_strcmp(trimmed, *(temp - 1)))
+                    flag = 1;
+            }
+        }
+        update_result((*fn_lst)->value, result, &flag);
+        *fn_lst = (*fn_lst)->next;
     }
-    else
-        new_arr = (char **)malloc(sizeof(char *) * (len + 2));
-    if (!new_arr)
-        return (NULL);
-    new_arr[i] = ft_strdup(str);
-    if (!new_arr[i])
-        return (free(new_arr), NULL);
-    while (i < len)
-    {
-        new_arr[i + 1] = arr[i];
-        i++;
-    }
-    if (flag == 1)
-    {
-        new_arr[i + 1] = ft_strdup(str);
-        if (!new_arr[i + 1])
-            return (free_arr(new_arr), NULL);
-        i++;
-    }
-    new_arr[i + 1] = NULL;
-    return (new_arr);
 }
 
-char **append_arr(char **arr, char *str) //probelm here still
-{
-    char **new_arr;
-    int len;
-    int i;
-
-    len = 0;
-    i = 0;
-    while (arr[len])
-        len++;
-    new_arr = (char **)malloc(sizeof(char *) * (len + 2));
-    if (!new_arr)
-        return (NULL);
-    while (i < len)
-    {
-        new_arr[i] = arr[i];
-        i++;
-    }
-    new_arr[i] = ft_strdup(str);
-    if (!new_arr[i])
-        return (free_arr(new_arr), NULL);
-    new_arr[i + 1] = NULL;
-    return (new_arr);
-}
-
-//funtion to parse the fn_lst and token value
-//update result if the wildcard token if valid
 void fn_match(t_files *fn_lst, char *value, t_files **result)
 {
     char **arr; //to store str after splitting

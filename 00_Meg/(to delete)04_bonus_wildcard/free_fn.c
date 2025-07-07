@@ -1,41 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_unset.c                                        :+:      :+:    :+:   */
+/*   free_fn.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/07 22:34:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 22:34:25 by menwu            ###   ########.fr       */
+/*   Created: 2025/07/07 22:49:06 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/07 22:49:39 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	cmd_unset(char *var, t_files **env)
+void	free_fn(t_files **fn)
 {
 	t_files	*temp;
-	t_files	*prev;
-	t_files	*ref;
 
-	prev = NULL;
-	ref = *env;
-	while (ref)
+	while (*fn)
 	{
-		if (!ft_strncmp(var, ref->value, ft_strlen(var))
-			&& ref->value[ft_strlen(var)] == '=')
-		{
-			temp = ref->next;
-			if (prev == NULL)
-			{
-				*env = temp;
-				return (0);
-			}
-			prev->next = temp;
-			return (0);
-		}
-		prev = ref;
-		ref = ref->next;
+		temp = (*fn)->next;
+		free(*fn);
+		*fn = temp;
 	}
-	return (0);
+}
+
+void	free_arr(char **arr)
+{
+	int	i;
+
+	i = 0;
+	while (arr[i])
+	{
+		free(arr[i]);
+		i++;
+	}
+	arr = NULL;
 }

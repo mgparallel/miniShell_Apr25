@@ -189,6 +189,10 @@ void    exec_command(char **cmd_args, t_files *env);
 int     cmd_exit(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status);
 int     cmd_pwd(t_files *env);
 int     cmd_export(char *str, t_files **env);
+char	*dequote_str_export(char *pos);
+bool	if_replace(char *str, t_files **env);
+int declare_env(t_files *env);
+int if_append_var(char *str, char *pos, t_files **env);
 int		declare_env(t_files *env);
 int     cmd_env(t_files *env);
 int     cmd_unset(char *var, t_files **env);
@@ -198,15 +202,20 @@ int     cmd_echo(char **argv);
 int     cmd_cd(char *str, t_files **env);
 
 //04_bonus_wildcard
+void update_result(char *value, t_files **result, int *flag);
 int   expand_wildcard(t_token **lst, t_token **cur_token);
-void fetch_wildcard(t_files **fn);
+void	init_fn_lst(t_files **fn_lst);
 bool if_wildcard(t_token **cur_token);
+char *strmatch(const char *big, const char *little);
 void fn_match_util(char **arr, t_files **fn_lst, t_files **result);
 void fn_match(t_files *fn_lst, char *value, t_files **result);
 char **append_arr(char **arr, char *str);
 char **prepend_arr(char **arr, char *value, char *str);
 void free_arr(char **arr);
+void	free_fn(t_files **fn);
 void indir_lst_addback(t_files **lst, t_files *new);
 void add_wildcard_token(t_token **lst, t_token *curr, t_files *files);
+char	*str_match(const char *big, const char *little);
+void	if_end_to_match(char **arr, int *flag);
 
 # endif

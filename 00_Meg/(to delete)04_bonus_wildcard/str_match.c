@@ -1,41 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_unset.c                                        :+:      :+:    :+:   */
+/*   str_match.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/07 22:34:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 22:34:25 by menwu            ###   ########.fr       */
+/*   Created: 2025/07/07 22:47:39 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/07 22:47:46 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	cmd_unset(char *var, t_files **env)
+char	*str_match(const char *big, const char *little)
 {
-	t_files	*temp;
-	t_files	*prev;
-	t_files	*ref;
+	int	i;
 
-	prev = NULL;
-	ref = *env;
-	while (ref)
+	i = 0;
+	if (*little == '\0')
+		return ((char *)big);
+	while (*big)
 	{
-		if (!ft_strncmp(var, ref->value, ft_strlen(var))
-			&& ref->value[ft_strlen(var)] == '=')
+		i = 0;
+		while (big[i] && little[i] && big[i] == little[i])
 		{
-			temp = ref->next;
-			if (prev == NULL)
+			i++;
+			if (little[i] == '\0')
 			{
-				*env = temp;
-				return (0);
+				while (i--)
+					big++;
+				return ((char *)big);
 			}
-			prev->next = temp;
-			return (0);
 		}
-		prev = ref;
-		ref = ref->next;
+		big++;
 	}
-	return (0);
+	return (NULL);
 }

@@ -1,41 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_unset.c                                        :+:      :+:    :+:   */
+/*   declare_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/07 22:34:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 22:34:25 by menwu            ###   ########.fr       */
+/*   Created: 2025/07/07 22:32:34 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/07 22:32:51 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	cmd_unset(char *var, t_files **env)
+int	declare_env(t_files *env)
 {
 	t_files	*temp;
-	t_files	*prev;
-	t_files	*ref;
 
-	prev = NULL;
-	ref = *env;
-	while (ref)
+	temp = env;
+	if (!temp)
+		return (printf("no ENV data"), 1);
+	while (temp->next)
 	{
-		if (!ft_strncmp(var, ref->value, ft_strlen(var))
-			&& ref->value[ft_strlen(var)] == '=')
-		{
-			temp = ref->next;
-			if (prev == NULL)
-			{
-				*env = temp;
-				return (0);
-			}
-			prev->next = temp;
-			return (0);
-		}
-		prev = ref;
-		ref = ref->next;
+		printf("declare -x ");
+		printf("%s\n", temp->value);
+		temp = temp->next;
 	}
 	return (0);
 }
