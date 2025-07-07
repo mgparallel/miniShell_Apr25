@@ -109,11 +109,13 @@ bool space_special(char ch);
 
 // parsing
 int parsing(t_token **lst, t_files *env);
+
+//if_cmd.c
 void if_cmd(t_token **lst);
+int	if_alnum_underscore_braces(int arg);
 
 //update_token.c
 int update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
-int if_alnum_underscore_braces(int arg);
 
 //parse_var.c
 int parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
@@ -133,6 +135,10 @@ char *get_var_value(char *var, t_files *env);
 
 //expand_var_heredoc.c
 void	expand_var_heredoc(char **line, int exit_status, t_files *env);
+
+//update_var_value.c
+void	update_line(char **line, t_files **lst);
+void	update_var_value(char **var, t_files *env, t_files **lst);
 
 //parse_word.c
 void parse_type_word(t_token **cur_token);
@@ -156,6 +162,13 @@ int    lst_rm_token(t_token **lst, t_token **cur_token);
 void add_node_to_lst(char *str, int *start, int *end, t_files **lst);
 void	add_expanded_var_to_lst(char *value, t_files **lst);
 char *ft_strjoin_free(char *s1, char *s2, size_t len2);
+
+//clear_token.c
+void	clear_token(t_token **token);
+
+//handle_sigint.c
+void	handle_sigint(int sig);
+int	exit_no_input(int *exit_status, t_files **env);
 
 //build_cmds
 int is_connector(t_token_type type);

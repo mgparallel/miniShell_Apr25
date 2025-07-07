@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 00:06:44 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/06 22:48:23 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/07 06:14:00 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	parse_type_arg(t_token **lst, t_token **cur_token)
 	if (*lst == *cur_token)
 		return (0);
 	prev = *lst;
-	while (prev->next != *cur_token)
+	while (prev->next && prev->next != *cur_token)
 		prev = prev->next;
 	if (!(*cur_token)->has_leading_space && prev->type != PIPE
 		&& prev->type != REDIRECT)

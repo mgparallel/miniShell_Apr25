@@ -1,11 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmd_echo.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/07 08:51:56 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/07 08:52:07 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
-//take into account that when echo "" is print out a new line
-//when there are other cmds, it ignores.
 
 int	if_valid_flag(char *str)
 {
-	int i;
-	
+	int	i;
+
 	i = 1;
 	while (str[i])
 	{
@@ -41,18 +51,3 @@ int	cmd_echo(char **argv)
 		printf("\n");
 	return (0);
 }
-
-// int main(void) // echo -nn -n this
-// {
-//     // Simula: echo -n -nnnn hola
-//     char *args[] = {"-n", "-nnn", "hola", "l", NULL};
-//     cmd_echo(args);
-
-//     // printf("\n---\n");
-
-//     // // Simula: echo hola
-//     // char *args2[] = {"hola", NULL};
-//     // cmd_echo(args2);
-
-//     return 0;
-// }

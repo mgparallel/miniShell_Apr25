@@ -1,50 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   1_parsing.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/07 06:17:41 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/07 06:19:04 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-
-int	if_alnum_underscore_braces(int arg)
-{
-	if (!ft_isalnum(arg))
-		return (arg == '_' || arg == '{' || arg == '}');
-	else
-		return (1);
-}
-
-void	if_cmd(t_token **lst)
-{
-	t_token	*cur_token;
-	t_token	*prev;
-	int		cmd_flag;
-
-	cur_token = *lst;
-	cmd_flag = 0;
-	prev = NULL;
-	while (cur_token)
-	{
-		if (prev && prev->type == REDIRECT)
-			cur_token->type = RE_TARGET;
-		else
-		{
-			if (cur_token->type == PIPE || cur_token->type == AND
-				|| cur_token->type == OR)
-				cmd_flag = 0;
-			else if (cur_token->type != REDIRECT && cur_token->type != AND
-				&& cur_token->type != OR)
-			{
-				if (!cmd_flag)
-				{
-					cur_token->type = CMD;
-					cmd_flag = 1;
-				}
-				else
-				{
-					if (cur_token->type != EXIT_CODE)
-						cur_token->type = ARG;
-				}
-			}
-		}
-		prev = cur_token;
-		cur_token = cur_token->next;
-	}
-}
 
 int	merge_exitcode_tokens(t_token **cur_token, t_token **next_node)
 {
@@ -84,6 +50,18 @@ int	join_exitcode_tokens(t_token **lst, t_token **cur_token)
 	return (merge_exitcode_tokens(&prev, cur_token));
 }
 
+int	parsing_util_wildcard_arg(t_token **lst, t_token **cur_token)
+{
+	if ((*cur_token)->type == WILDCARD)
+	{
+		if (expand_wildcard(lst, cur_token) == -1)
+			return (-1);
+	}
+	if (parse_type_arg(lst, cur_token) == -1)
+		return (-1);
+	return (0);
+}
+
 int	parsing_util(t_token **cur_token, t_token **lst, t_files *env)
 {
 	int	flag;
@@ -106,12 +84,7 @@ int	parsing_util(t_token **cur_token, t_token **lst, t_files *env)
 		else if (flag == 1)
 			return (1);
 	}
-	if ((*cur_token)->type == WILDCARD)
-	{
-		if (expand_wildcard(lst, cur_token) == -1)
-			return (-1);
-	}
-	if (parse_type_arg(lst, cur_token) == -1)
+	if (parsing_util_wildcard_arg(lst, cur_token) == -1)
 		return (-1);
 	return (0);
 }

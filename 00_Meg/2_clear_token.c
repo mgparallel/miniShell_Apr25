@@ -1,39 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   2_clear_token.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/07 15:34:48 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 06:02:22 by menwu            ###   ########.fr       */
+/*   Created: 2025/07/07 08:01:16 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/07 08:01:19 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-char	*ft_strdup(const char *s)
+void	clear_token(t_token **token)
 {
-	char			*cpy;
-	unsigned int	len;
+	t_token	*tmp;
 
-	len = ft_strlen(s);
-	cpy = (char *)malloc((len + 1) * sizeof(char));
-	if (!cpy)
-		return (NULL);
-	cpy[len] = '\0';
-	while (len-- > 0)
-		cpy[len] = s[len];
-	return (cpy);
+	while (*token)
+	{
+		tmp = (*token)->next;
+		if (!*token)
+			return ;
+		if ((*token)->value)
+			free((*token)->value);
+		free(*token);
+		*token = tmp;
+	}
 }
-/*
-#include <stdio.h>
-int	main(void)
-{
-	char x[] = "   ";
-
-	printf("%s", ft_strdup(x));
-
-	return (0);
-}
-*/
