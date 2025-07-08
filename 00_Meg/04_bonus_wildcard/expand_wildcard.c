@@ -59,7 +59,7 @@ void    if_end_to_match(char **arr, int *flag)
         prev = *ref;
         ref++;
     }
-    if (!ft_strchr(prev, '*'))
+    if (prev && !ft_strchr(prev, '*'))
         *flag = -1; //flag = -1 when the end has to match leters 100%
 }
 
