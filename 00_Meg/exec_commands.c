@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/03 20:07:59 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/12 14:09:43 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ int	file_heredoc(char *delimiter, t_files *env, int exit_status)
 	fd = open(".heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
 		return (-1);
+	signal(SIGINT, SIG_DFL);
 	while (1)
 	{
 		write(1, "> ", 2);
@@ -103,7 +104,8 @@ int	check_files(t_redir *list)
 			if (fd)
 				return (fd);
 		}
-        close(fd);
+		if (fd)
+        	close(fd);
         list = list->next;
     }
     return (0);
@@ -224,8 +226,6 @@ int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_statu
 		}
 		if (data.pid[data.num_pids] == 0)
 		{
-			signal(SIGINT, SIG_DFL);
-			signal(SIGQUIT, SIG_DFL);
 			if (data.num_pids > 0)
 				if (dup2(data.pipe_fds[(data.num_pids - 1) * 2], 0) == -1)
 					exit_child("dup2:", &data, num_cmds, env);
@@ -239,6 +239,8 @@ int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_statu
 				free_lst(env);
 				exit(*exit_status);
 			}
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			if (is_builtin(cmd))
 				exit(exec_builtin(cmd_list, cmd, env, *exit_status));
 			else
