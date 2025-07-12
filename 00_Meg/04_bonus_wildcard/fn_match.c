@@ -1,17 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fn_match.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/12 00:45:04 by menwu             #+#    #+#             */
+/*   Updated: 2025/07/12 01:26:32 by menwu            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
-
-void	free_arr(char **arr)
-{
-	int	i;
-
-	i = 0;
-	while (arr[i])
-	{
-		free(arr[i]);
-		i++;
-	}
-	arr = NULL;
-}
 
 void	if_flag(int *flag, char *trimmed, char *ptr)
 {
@@ -25,76 +24,71 @@ void	if_flag(int *flag, char *trimmed, char *ptr)
 	}
 }
 
-// char	*initail_match(char **temp, char **arr, t_files **fn_lst, int *flag)
-// {
-//     if_end_to_match(arr, flag);
-// 	temp = arr;
-// 	if (temp[0][0] != '*' && (ft_strncmp((*fn_lst)->value, *temp,
-// 				ft_strlen(*temp))))
-// 	{
-// 		*fn_lst = (*fn_lst)->next;
-// 		return (NULL);
-// 	}
-// 	else
-// 		temp++;
-//     return ((*fn_lst)->value);
-// }
+char	*initail_match(char **temp, t_files **fn_lst)
+{
+	if (temp[0][0] != '*' && (ft_strncmp((*fn_lst)->value, *temp,
+				ft_strlen(*temp))))
+	{
+		*fn_lst = (*fn_lst)->next;
+		return (NULL);
+	}
+	else
+		return ((*fn_lst)->value);
+}
+
+int	check_trimmed(char *trimmed, char **temp, char **arr, int *flag)
+{
+	if (!trimmed)
+	{
+		if (arr[0][0] == '*' && !temp++)
+			*flag = 1;
+		return (0);
+	}
+	else if (*trimmed == '\0' && !temp++)
+		*flag = 1;
+	return (1);
+}
 
 void	fn_match_util(char **arr, t_files **fn_lst, t_files **result)
 {
 	char	*trimmed;
 	char	**temp;
+	int		flag;
 
-	int flag; // mark valid filenames with flag = 1
 	temp = NULL;
 	trimmed = NULL;
 	flag = 0;
-    t_files *cur = *fn_lst;
-	while (cur) // iterate filename by filename calling ->next
+	while (*fn_lst)
 	{
-        // if (!initail_match(temp, arr, &cur, &flag))
-        //     continue ;
 		if_end_to_match(arr, &flag);
 		temp = arr;
-		if (temp[0][0] != '*' && (ft_strncmp((*fn_lst)->value, *temp,
-					ft_strlen(*temp))))
-		{
-			// *fn_lst = (*fn_lst)->next;
-            cur = cur->next;
+		trimmed = initail_match(temp, fn_lst);
+		if (!trimmed)
 			continue ;
-		}
-		else
-			temp++;
-		trimmed = (*fn_lst)->value;
+		temp++;
 		while (*++temp)
-		{
 			trimmed = strmatch(trimmed, *(temp - 1));
-			if (!trimmed)
-			{
-				if (arr[0][0] == '*' && !temp++)
-					flag = 1;
-				break ;
-			}
-			else if (*trimmed == '\0' && !temp++)
-				flag = 1;
-		}
 		if (trimmed && trimmed[0] != '\0')
 			if_flag(&flag, trimmed, *(temp - 1));
-		update_result((cur)->value, result, &flag);
-		// *fn_lst = (*fn_lst)->next;
-        cur = cur->next;
+		update_result((*fn_lst)->value, result, &flag);
+		*fn_lst = (*fn_lst)->next;
 	}
 }
 
 void	fn_match(t_files *fn_lst, char *value, t_files **result)
 {
-	char **arr;
-	char **updated_arr;
+	char	**arr;
+	char	**updated_arr;
 
 	updated_arr = NULL;
-	arr = ft_split(value, '*'); //*
+	arr = ft_split(value, '*');
 	if (!arr)
 		return ;
+	if (!ft_strcmp(value, "*"))
+	{
+		*result = fn_lst;
+		return ;
+	}
 	if (!*arr || *value == '*')
 		updated_arr = prepend_arr(arr, value, "*");
 	else if (value[ft_strlen(value) - 1] == '*')
@@ -108,3 +102,33 @@ void	fn_match(t_files *fn_lst, char *value, t_files **result)
 	}
 	fn_match_util(updated_arr, &fn_lst, result);
 }
+
+// void	fn_match_util(char **arr, t_files **fn_lst, t_files **result)
+// {
+// 	char	*trimmed;
+// 	char	**temp;
+
+// 	int flag; // mark valid filenames with flag = 1
+// 	temp = NULL;
+// 	trimmed = NULL;
+// 	flag = 0;
+// 	while (*fn_lst) // iterate filename by filename calling ->next
+// 	{
+// 		if_end_to_match(arr, &flag);
+// 		temp = arr;
+// 		trimmed = initail_match(temp, fn_lst);
+// 		if (!trimmed)
+// 			continue ;
+// 		temp++;
+// 		while (*++temp)
+// 		{
+// 			trimmed = strmatch(trimmed, *(temp - 1));
+// 			if (!check_trimmed(trimmed, temp, arr, &flag))
+// 				break ;
+// 		}
+// 		if (trimmed && trimmed[0] != '\0')
+// 			if_flag(&flag, trimmed, *(temp - 1));
+// 		update_result((*fn_lst)->value, result, &flag);
+// 		*fn_lst = (*fn_lst)->next;
+// 	}
+// }

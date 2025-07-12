@@ -24,19 +24,19 @@ typedef struct s_files
 
 typedef enum token_type
 {
-    WORD, //general, being replaced after parsing
+    WORD,
     SINGLE_QUOTE,
     DOUBLE_QUOTE,
-    CMD, //echo cat ls
-    ARG, //-n file.c
-    PIPE, //  |
-    REDIRECT, //< > << >>
+    CMD,
+    ARG,
+    PIPE,
+    REDIRECT,
     RE_TARGET,
-    OR, // ||
-    AND, // &&
-    WILDCARD, //*
-    ENV_VAR, //$
-    PID, //$$
+    OR,
+    AND,
+    WILDCARD,
+    ENV_VAR,
+    PID,
 	EXIT_CODE,
 } t_token_type;
 
@@ -62,6 +62,7 @@ typedef struct s_redir
 {
     t_redir_type    type;
     char            *filename;
+    int             in_quote;
     struct s_redir  *next;
 }   t_redir;
 
@@ -177,6 +178,7 @@ void    free_cmd_list(t_cmd *cmd);
 
 //exec_commands
 void    exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status);
+int process_all_heredocs(t_cmd *cmd_list, int *exit_status);
 
 //exec utils
 int exec_builtin(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status);
@@ -215,7 +217,10 @@ void free_arr(char **arr);
 void	free_fn(t_files **fn);
 void indir_lst_addback(t_files **lst, t_files *new);
 void add_wildcard_token(t_token **lst, t_token *curr, t_files *files);
-char	*str_match(const char *big, const char *little);
+
 void	if_end_to_match(char **arr, int *flag);
+void	free_arr(char **arr);
+
+void	execution(t_token **token, t_files **env, int *exit_status);
 
 # endif

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_commands.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/03 20:07:59 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/12 14:17:42 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	file_heredoc(char *delimiter, t_files *env, int exit_status)
+int	file_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 {
 	char	*line;
 	int		fd;
@@ -26,10 +26,10 @@ int	file_heredoc(char *delimiter, t_files *env, int exit_status)
 		line = get_next_line(0);
 		if (!line)
 			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-		else
-			expand_var_heredoc(&line, exit_status, env);
 		if (!line || ft_strcmp(line, delimiter) == 10)
 			break ;
+		if (!in_quote)
+			expand_var_heredoc(&line, exit_status, env);
 		write(fd, line, ft_strlen(line));
 		free(line);
 	}
@@ -122,7 +122,7 @@ int	redirect_io(t_redir *list, t_files *env, int *exit_status)
         else if (list->type == REDIR_APPEND)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
         if (list->type == REDIR_HEREDOC)
-            fd = file_heredoc(list->filename, env, *exit_status);
+            fd = file_heredoc(list->filename, env, *exit_status, list->in_quote);
 		if (fd < 0)
             return (perror("open"), 1);
         if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
