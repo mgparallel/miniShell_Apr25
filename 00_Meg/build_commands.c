@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/06 14:59:54 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 14:20:14 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ int	is_connector(t_token_type type)
 	return (type == PIPE || type == AND || type == OR);
 }
 
-int	add_redir(t_redir **head, t_redir_type type, char *filename)
+int	add_redir(t_redir **head, t_redir_type type, char *filename, int in_quote)
 {
     t_redir *new;
 	t_redir *tmp;
@@ -125,6 +125,7 @@ int	add_redir(t_redir **head, t_redir_type type, char *filename)
     new->filename = ft_strdup(filename);
 	if (!new->filename)
 		return (free(new), 1);
+	new->in_quote = in_quote;
     new->next = NULL;
     if (!*head)
 	{
@@ -161,7 +162,7 @@ int	manage_redirect(t_token **tokens, t_cmd *cmd)
 	if (*tokens && ((*tokens)->type == RE_TARGET || (*tokens)->type == EXIT_CODE))
 	{
 		type = token_to_redir_type(redir_token->value);
-		if (add_redir(&(cmd->redir_list), type, (*tokens)->value))
+		if (add_redir(&(cmd->redir_list), type, (*tokens)->value, (*tokens)->in_quote))
 			return (1);
 	}
 	else

@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 07:23:34 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 08:02:48 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 14:12:12 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ int	main(int argc, char **argv, char **envp)
 		add_history(input);
 		if (prepare_execution(input, &exit_status, env, &token))
 			continue ;
+		if (exit_status == 130)
+    		continue;
 		execution(&token, &env, &exit_status);
 	}
 	free_lst(&env);
