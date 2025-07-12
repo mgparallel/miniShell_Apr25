@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 06:17:41 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 06:19:04 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 16:17:56 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int	parsing_util(t_token **cur_token, t_token **lst, t_files *env)
 	return (0);
 }
 
-int	parsing(t_token **lst, t_files *env)
+int	parsing(t_token **lst, t_files *env, int *exit_status)
 {
 	t_token	*head;
 	int		flag;
@@ -102,15 +102,15 @@ int	parsing(t_token **lst, t_files *env)
 		{
 			parse_type_word(&head);
 			if (var_found(lst, &head) == -1)
-				return (-1);
+				return (1);
 		}
 		flag = parsing_util(&head, lst, env);
 		if (flag == -1)
-			return (-1);
+			return (1);
 		else if (flag == 1)
 			continue ;
 		head = head->next;
 	}
 	if_cmd(lst);
-	return (0);
+	return (*exit_status);
 }

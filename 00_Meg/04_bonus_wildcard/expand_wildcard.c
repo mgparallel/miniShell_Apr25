@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 00:49:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 00:51:02 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 15:28:49 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,11 @@ void	update_result(char *value, t_files **result, int *flag)
 {
 	t_files	*new;
 
+	if (*flag == 0 || *flag == -1)
+		return ;
 	new = malloc(sizeof(t_files));
 	if (!new)
 		return ;
-	if (*flag == 0 || *flag == -1)
-		return (free(new));
 	new->value = ft_strdup(value);
 	if (!new->value)
 		return (free(new));
@@ -88,8 +88,10 @@ int	expand_wildcard(t_token **lst, t_token **cur_token)
 	if (!result)
 	{
 		(*cur_token)->type = WORD;
+		free_lst(&fn_lst);
 		return (0);
 	}
 	add_wildcard_token(lst, *cur_token, result);
+	free_lst(&fn_lst);
 	return (0);
 }

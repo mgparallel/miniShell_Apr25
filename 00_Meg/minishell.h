@@ -92,7 +92,7 @@ void update_env(char *value, t_files **env);
 void free_lst(t_files **lst);
 
 //tokenizer.c
-t_token *tokenizer(char *input, int *exit_status);
+t_token *tokenizer(char *input);
 int	delimiter_found(int *in_token, char **input, char **token_start, t_token **head);
 
 //tokenizer_input.c
@@ -109,7 +109,7 @@ bool ch_is_special(char ch);
 bool space_special(char ch);
 
 // parsing
-int parsing(t_token **lst, t_files *env);
+int parsing(t_token **lst, t_files *env, int *exit_status);
 
 //if_cmd.c
 void if_cmd(t_token **lst);
@@ -211,8 +211,8 @@ bool if_wildcard(t_token **cur_token);
 char *strmatch(const char *big, const char *little);
 void fn_match_util(char **arr, t_files **fn_lst, t_files **result);
 void fn_match(t_files *fn_lst, char *value, t_files **result);
-char **append_arr(char **arr, char *str);
-char **prepend_arr(char **arr, char *value, char *str);
+char **append_arr(char **arr);
+char **prepend_arr(char **arr, char *value);
 void free_arr(char **arr);
 void	free_fn(t_files **fn);
 void indir_lst_addback(t_files **lst, t_files *new);

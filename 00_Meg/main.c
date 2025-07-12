@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 07:23:34 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 14:12:12 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 16:41:35 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,16 @@ void	execution(t_token **token, t_files **env, int *exit_status)
 int	prepare_execution(char *input, int *exit_status, t_files *env,
 		t_token **token)
 {
-	*token = tokenizer(input, exit_status);
+	*token = tokenizer(input);
 	free(input);
-	if (!*exit_status)
-		*exit_status = parsing(token, env);
-	if (!*token || *exit_status == -1 || if_conector((*token)->type, token,
-			exit_status))
+	if (*token)
+		parsing(token, env, exit_status);
+	print_token(*token);
+	if (!*token || if_conector((*token)->type, token, exit_status))
+	{
+		*exit_status = 1;
 		return (1);
+	}
 	return (0);
 }
 
@@ -72,61 +75,9 @@ int	main(int argc, char **argv, char **envp)
 		add_history(input);
 		if (prepare_execution(input, &exit_status, env, &token))
 			continue ;
-		if (exit_status == 130)
-    		continue;
 		execution(&token, &env, &exit_status);
 	}
 	free_lst(&env);
 	rl_clear_history();
 	return (exit_status);
 }
-
-// int	main(int argc, char **argv, char **envp)
-// {
-// 	t_token	*token;
-// 	t_files	*env;
-// 	t_cmd	*cmds;
-// 	char	*input;
-// 	int		exit_status;
-
-// 	(void)argc;
-// 	(void)argv;
-// 	exit_status = 0;
-// 	env = cp_env(envp);
-// 	while (1)
-// 	{
-// 		signal(SIGINT, handle_sigint);
-// 		signal(SIGQUIT, SIG_IGN);
-// 		input = readline("Minishell> ");
-// 		if (!input)
-// 		{
-// 			printf("exit\n");
-// 			exit_status = 0;
-// 			break ;
-// 		}
-// 		add_history(input);
-// 		token = tokenizer(input, &exit_status);
-// 		free(input);
-// 		if (!exit_status)
-// 			exit_status = parsing(&token, env);
-// 		print_token(token);
-// 		if (!token || exit_status)
-// 			continue ;
-// 		if (is_connector(token->type))
-// 		{
-// 			ft_putstr_fd("syntax error near unexpected token '", 2);
-// 			ft_putstr_fd(token->value, 2);
-// 			ft_putstr_fd("'\n", 2);
-// 			exit_status = 1;
-// 			clear_token(&token);
-// 			continue ;
-// 		}
-// 		cmds = build_cmds(token);
-// 		clear_token(&token);
-// 		exec_commands(cmds, &env, &exit_status);
-// 		free_cmd_list(cmds);
-// 	}
-// 	free_lst(&env);
-// 	rl_clear_history();
-// 	return (exit_status);
-// }

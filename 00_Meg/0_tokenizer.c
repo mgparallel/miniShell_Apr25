@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:20:58 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/06 22:41:54 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 16:47:38 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,13 +80,15 @@ int	check_quote_error(char *input)
 			d_q = !d_q;
 		i++;
 	}
+	if (input[i - 1] == '|' || input[i - 1] == '&')
+		return (printf("syntax error near unexpected token"), 1);
 	if (s_q == 0 && d_q == 0)
 		return (0);
 	else
-		return (1);
+		return (printf("Syntax error: Unclosed quotes/symbols"), 1);
 }
 
-t_token	*tokenizer(char *input, int *exit_status)
+t_token	*tokenizer(char *input)
 {
 	int		in_token;
 	char	*token_start;
@@ -95,12 +97,8 @@ t_token	*tokenizer(char *input, int *exit_status)
 	in_token = 0;
 	token_start = NULL;
 	head = NULL;
-	*exit_status = check_quote_error(input);
-	if (*exit_status)
-	{
-		printf("Syntax error: Unclosed quotes/symbols\n");
+	if (check_quote_error(input))
 		return (NULL);
-	}
 	in_token = parse_input(&input, &head, &in_token, &token_start);
 	if (in_token)
 		create_token(&token_start, input, WORD, &head);

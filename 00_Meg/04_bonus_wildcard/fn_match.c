@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 00:45:04 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 01:26:32 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 15:51:11 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,48 +87,19 @@ void	fn_match(t_files *fn_lst, char *value, t_files **result)
 	if (!ft_strcmp(value, "*"))
 	{
 		*result = fn_lst;
+		free_arr(arr);
 		return ;
 	}
 	if (!*arr || *value == '*')
-		updated_arr = prepend_arr(arr, value, "*");
+		updated_arr = prepend_arr(arr, value);
 	else if (value[ft_strlen(value) - 1] == '*')
-		updated_arr = append_arr(arr, "*");
+		updated_arr = append_arr(arr);
 	else
 		updated_arr = arr;
 	if (!updated_arr)
-	{
-		free(arr);
 		return ;
-	}
 	fn_match_util(updated_arr, &fn_lst, result);
+	if (!arr)
+		free_arr(updated_arr);
 }
-
-// void	fn_match_util(char **arr, t_files **fn_lst, t_files **result)
-// {
-// 	char	*trimmed;
-// 	char	**temp;
-
-// 	int flag; // mark valid filenames with flag = 1
-// 	temp = NULL;
-// 	trimmed = NULL;
-// 	flag = 0;
-// 	while (*fn_lst) // iterate filename by filename calling ->next
-// 	{
-// 		if_end_to_match(arr, &flag);
-// 		temp = arr;
-// 		trimmed = initail_match(temp, fn_lst);
-// 		if (!trimmed)
-// 			continue ;
-// 		temp++;
-// 		while (*++temp)
-// 		{
-// 			trimmed = strmatch(trimmed, *(temp - 1));
-// 			if (!check_trimmed(trimmed, temp, arr, &flag))
-// 				break ;
-// 		}
-// 		if (trimmed && trimmed[0] != '\0')
-// 			if_flag(&flag, trimmed, *(temp - 1));
-// 		update_result((*fn_lst)->value, result, &flag);
-// 		*fn_lst = (*fn_lst)->next;
-// 	}
-// }
+	

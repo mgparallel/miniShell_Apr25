@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 00:46:59 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 00:47:12 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 15:41:59 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,6 @@ void	free_arr(char **arr)
 		free(arr[i]);
 		i++;
 	}
+	free(arr);
 	arr = NULL;
 }

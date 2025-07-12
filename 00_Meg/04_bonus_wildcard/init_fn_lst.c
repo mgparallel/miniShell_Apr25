@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 23:55:19 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 23:55:42 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 14:35:58 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	update_fn_lst(struct dirent *dp, t_files **fn_lst)
 		return ;
 	new_token->value = ft_strdup(dp->d_name);
 	if (!new_token->value)
-		return ;
+		return (free(new_token));
 	new_token->next = NULL;
 	indir_lst_addback(fn_lst, new_token);
 }

@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 23:57:05 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 23:58:09 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 15:12:04 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,9 @@ void	new_token(t_token **head, char *str)
 	new = malloc(sizeof(t_token));
 	if (!new)
 		return ;
-	new->value = str;
+	new->value = ft_strdup(str);
+	if (!new->value)
+		return (free(new));
 	new->type = WORD;
 	new->has_leading_space = 1;
 	new->next = NULL;
@@ -59,4 +61,5 @@ void	add_wildcard_token(t_token **lst, t_token *curr, t_files *files)
 	update_wildcard_lst(files, &head);
 	prev->next = head;
 	lstadd_back(lst, temp);
+	free_lst(&files);
 }
