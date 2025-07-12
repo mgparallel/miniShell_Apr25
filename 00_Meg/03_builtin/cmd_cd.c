@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 08:25:45 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 08:47:27 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 18:27:53 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,17 @@ int	cmd_cd(char *str, t_files **env)
 		return (cd_home(env));
 	if (!ft_strcmp(str, "-"))
 	{
+		cur_dir = get_var_value("PWD", *env);
 		str = get_var_value("OLDPWD", *env);
 		if (!str)
 			return (printf("OLDPWD not set\n"), 1);
+		if (chdir(str) != 0)
+			return (printf("No such file or directory\n"), 1);
+		set_env_var("PWD=", str, env);
+		set_env_var("OLDPWD=", cur_dir, env);
 		printf("%s\n", str);
 		free(str);
+		free(cur_dir);
 		return (0);
 	}
 	cur_dir = get_var_value("PWD", *env);

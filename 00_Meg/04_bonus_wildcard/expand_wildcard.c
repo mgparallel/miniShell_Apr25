@@ -6,23 +6,23 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 00:49:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 15:28:49 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 17:58:03 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	free_fn(t_files **fn)
-{
-	t_files	*temp;
+// void	free_fn(t_files **fn)
+// {
+// 	t_files	*temp;
 
-	while (*fn)
-	{
-		temp = (*fn)->next;
-		free(*fn);
-		*fn = temp;
-	}
-}
+// 	while (*fn)
+// 	{
+// 		temp = (*fn)->next;
+// 		free(*fn);
+// 		*fn = temp;
+// 	}
+// }
 
 void	indir_lst_addback(t_files **lst, t_files *new)
 {
