@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   0_tokenizer.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:20:58 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 16:47:38 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 17:38:29 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,11 @@ int	check_quote_error(char *input)
 		i++;
 	}
 	if (input[i - 1] == '|' || input[i - 1] == '&')
-		return (printf("syntax error near unexpected token"), 1);
+		return (printf("syntax error near unexpected token\n"), 1);
 	if (s_q == 0 && d_q == 0)
 		return (0);
 	else
-		return (printf("Syntax error: Unclosed quotes/symbols"), 1);
+		return (printf("Syntax error: Unclosed quotes/symbols\n"), 1);
 }
 
 t_token	*tokenizer(char *input)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   1_parsing.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 06:17:41 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 16:17:56 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 17:36:32 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ int	parsing(t_token **lst, t_files *env, int *exit_status)
 			continue ;
 		head = head->next;
 	}
-	if_cmd(lst);
+	if (if_cmd(lst))
+		return (1);
 	return (*exit_status);
 }

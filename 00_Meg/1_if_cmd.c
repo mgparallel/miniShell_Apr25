@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   1_if_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 06:17:44 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 06:19:42 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 17:36:59 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	if_cmd_util(int *cmd_flag, t_token **cur_token)
 	}
 }
 
-void	if_cmd(t_token **lst)
+int	if_cmd(t_token **lst)
 {
 	t_token	*cur_token;
 	t_token	*prev;
@@ -46,7 +46,13 @@ void	if_cmd(t_token **lst)
 	while (cur_token)
 	{
 		if (prev && prev->type == REDIRECT)
-			cur_token->type = RE_TARGET;
+		{
+			if (cur_token->type != AND && cur_token->type != OR 
+						&& cur_token->type != PIPE && cur_token->type != REDIRECT)
+				cur_token->type = RE_TARGET;
+			else
+				return (printf("syntax error near unexpected token\n"), 1);
+		}
 		else
 		{
 			if (cur_token->type == PIPE || cur_token->type == AND
@@ -59,4 +65,5 @@ void	if_cmd(t_token **lst)
 		prev = cur_token;
 		cur_token = cur_token->next;
 	}
+	return (0);
 }

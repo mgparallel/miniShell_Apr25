@@ -112,7 +112,7 @@ bool space_special(char ch);
 int parsing(t_token **lst, t_files *env, int *exit_status);
 
 //if_cmd.c
-void if_cmd(t_token **lst);
+int if_cmd(t_token **lst);
 int	if_alnum_underscore_braces(int arg);
 
 //update_token.c

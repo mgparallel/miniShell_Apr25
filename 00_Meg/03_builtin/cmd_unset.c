@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_unset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 22:34:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 22:34:25 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/12 17:05:24 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ int	cmd_unset(char *var, t_files **env)
 				return (0);
 			}
 			prev->next = temp;
+			free(ref->value);
+			free(ref);
 			return (0);
 		}
 		prev = ref;

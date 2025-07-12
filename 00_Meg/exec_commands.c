@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/12 14:28:53 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/12 18:26:02 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,8 +201,7 @@ int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_statu
 	num_cmds = count_pipeline_cmds(cmd);
 	if (num_cmds == 1 && is_builtin_without_output(cmd))
 	{
-		*exit_status = check_files(cmd->redir_list);
-		if (!*exit_status && cmd->argv)
+		if (!check_files(cmd->redir_list) && cmd->argv)
 			*exit_status = exec_builtin_without_output(cmd_list, cmd, env, *exit_status);
 		return (*exit_status);
 	}
@@ -341,11 +340,10 @@ void	exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status)
     	*exit_status = execute_pipeline(cmd_list, cmd, env, exit_status);
         while (cmd && cmd->connector == PIPE)
             cmd = cmd->next;
-        if (cmd && ((cmd->connector == AND && *exit_status != 0) ||
-                    (cmd->connector == OR && *exit_status == 0)))
-            while (cmd && cmd->connector == PIPE)
-                cmd = cmd->next;
-        else if (cmd)
+		while (cmd && ((cmd->connector == AND && *exit_status != 0) ||
+				(cmd->connector == OR && *exit_status == 0)))
+			cmd = cmd->next;
+		if (cmd)
             cmd = cmd->next;
     }
 }
