@@ -6,40 +6,54 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/12 18:26:02 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/15 21:18:39 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	file_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
+int	pipe_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 {
 	char	*line;
-	int		fd;
+	int		pipefd[2];
+	pid_t	pid;
+	int		status;
 
-	fd = open(".heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (fd == -1)
-		return (-1);
-	signal(SIGINT, SIG_DFL);
-	while (1)
+	if (pipe(pipefd) == -1)
+		return (perror("pipe"), -1);
+	pid = fork();
+	if (pid == -1)
+		return (perror("fork"), close(pipefd[0]), close(pipefd[1]), -1);
+	if (pid == 0)
 	{
-		write(1, "> ", 2);
-		line = get_next_line(0);
-		if (!line)
-			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-		if (!line || ft_strcmp(line, delimiter) == 10)
-			break ;
-		if (!in_quote)
-			expand_var_heredoc(&line, exit_status, env);
-		write(fd, line, ft_strlen(line));
-		free(line);
+		close(pipefd[0]);
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_IGN);
+		while (1)
+		{
+			line = readline("> ");
+			if (!line)
+				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
+			if (!line || ft_strcmp(line, delimiter) == 0)
+				break ;
+			if (!in_quote)
+				expand_var_heredoc(&line, exit_status, env);
+			write(pipefd[1], line, ft_strlen(line));
+			write(pipefd[1], "\n", 1);
+			free(line);
+		}
+		if (line)
+			free(line);
+		close(pipefd[1]);
+		exit(0);
 	}
-	if (line)
-		free(line);
-	close(fd);
-    fd = open(".heredoc", O_RDONLY);
-	unlink(".heredoc");
-	return (fd);
+	close(pipefd[1]);
+	signal(SIGINT, SIG_IGN);
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status))
+		if (WTERMSIG(status) == SIGINT)
+			return (close(pipefd[0]), write(1, "\n", 1), -130);
+	return (pipefd[0]);
 }
 
 int	fork_heredoc(char *delimiter)
@@ -57,11 +71,10 @@ int	fork_heredoc(char *delimiter)
 		signal(SIGQUIT, SIG_IGN);
 		while (1)
 		{
-			write(1, "> ", 2);
-			line = get_next_line(0);
+			line = readline("> ");
 			if (!line)
 				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 10)
+			if (!line || ft_strcmp(line, delimiter) == 0)
 				break ;
 			free(line);
 		}
@@ -72,16 +85,9 @@ int	fork_heredoc(char *delimiter)
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
-    {
-        status = WTERMSIG(status);
-		if (status == SIGINT)
+		if (WTERMSIG(status) == SIGINT)
 			return (write(1, "\n", 1), 130);
-		if (status == SIGQUIT)
-			return (131);
-    }
-    else if (WIFEXITED(status))
-        status = WEXITSTATUS(status);
-    return (status);
+    return (0);
 }
 
 int	check_files(t_redir *list)
@@ -124,7 +130,7 @@ int	redirect_io(t_redir *list, t_files *env, int *exit_status)
         else if (list->type == REDIR_APPEND)
             fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
         if (list->type == REDIR_HEREDOC)
-            fd = file_heredoc(list->filename, env, *exit_status, list->in_quote);
+            fd = pipe_heredoc(list->filename, env, *exit_status, list->in_quote);
 		if (fd < 0)
             return (perror("open"), 1);
         if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
@@ -240,6 +246,8 @@ int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_statu
 			}
 			signal(SIGINT, SIG_DFL);
 			signal(SIGQUIT, SIG_DFL);
+			if (!cmd->argv)
+				exit(0);
 			if (is_builtin(cmd))
 				exit(exec_builtin(cmd_list, cmd, env, *exit_status));
 			else
@@ -250,83 +258,6 @@ int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_statu
 	close_pipes(&data, num_cmds - 1);
 	signal(SIGINT, SIG_IGN);
 	return (wait_for_children(&data));
-}
-
-char	*expand_exit_code(const char *str, const char *status_str)
-{
-    int		count;
-    int		i;
-    size_t	len_status;
-	char	*new_str;
-	
-	count = 0;
-	i = 0;
-	len_status = ft_strlen(status_str);
-	while (str[i])
-    {
-        if (str[i] == '$' && str[i + 1] == '?')
-        {
-            count++;
-            i += 2;
-        }
-        else
-            i++;
-    }
-    if (count == 0)
-        return (ft_strdup(str));
-    new_str = malloc(ft_strlen(str) + count * (len_status - 2) + 1);
-    if (!new_str)
-        return (NULL);
-    i = 0;
-    while (*str)
-    {
-        if (*str == '$' && *(str + 1) == '?')
-        {
-            ft_memcpy(&new_str[i], status_str, len_status);
-            i += len_status;
-            str += 2;
-        }
-        else
-            new_str[i++] = *str++;
-    }
-    new_str[i] = '\0';
-    return (new_str);
-}
-
-
-void	expand_pipeline_exit_status(t_cmd *cmd, int exit_status)
-{
-    char	*status_str;
-	char	*tmp;
-	t_redir *r;
-	int		i;
-
-	status_str = ft_itoa(exit_status);
-    while (cmd)
-    {
-		i = -1;
-        while (++i < cmd->argc)
-		{
-			tmp = cmd->argv[i];
-            cmd->argv[i] = expand_exit_code(tmp, status_str);
-			free(tmp);
-		}
-        r = cmd->redir_list;
-        while (r)
-        {
-			if (r->type != REDIR_HEREDOC)
-			{
-				tmp = r->filename;
-            	r->filename = expand_exit_code(tmp, status_str);
-				free(tmp);
-			}
-            r = r->next;
-        }
-		if (cmd->connector != PIPE)
-        	break;
-        cmd = cmd->next;
-    }
-    free(status_str);
 }
 
 void	exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status)

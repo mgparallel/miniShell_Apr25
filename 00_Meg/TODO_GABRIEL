@@ -1,2 +1,2 @@
-heredoc
-< ola >> e | cat e
+heredocs primero
+probar redirecciones sin comando
