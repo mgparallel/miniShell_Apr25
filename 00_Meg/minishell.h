@@ -177,6 +177,9 @@ void    free_cmd_list(t_cmd *cmd);
 //expand_exit_status
 void	expand_pipeline_exit_status(t_cmd *cmd, int exit_status);
 
+//expand_exit_code.c
+char	*expand_exit_code(const char *str, const char *status_str);
+
 //exec_commands
 void    exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status);
 int process_all_heredocs(t_cmd *cmd_list, int *exit_status);
