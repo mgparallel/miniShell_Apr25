@@ -1,3 +1,7 @@
 heredocs primero
+<<<<<<< HEAD
 probar redirecciones sin comando
 caso de echo this'$?' -> no expandimos (porque es tipo ARG)
+=======
+probar redirecciones sin comando
+>>>>>>> 317e44fda8a4c914409ec6e1c89aab9956d31a90
