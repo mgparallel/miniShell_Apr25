@@ -18,11 +18,7 @@ void	update_token_util(t_token **current_token, t_token **quote_token,
 	(*current_token)->value = first_value;
 	(*quote_token)->type = type;
 	(*quote_token)->has_leading_space = 0;
-	if ((*current_token)->in_quote)
-		(*quote_token)->in_quote = 2;
-	else
-		(*quote_token)->in_quote = 0;
-	(*current_token)->in_quote = 0;
+	(*quote_token)->in_quote = (*current_token)->in_quote;
 	(*quote_token)->next = (*current_token)->next;
 	(*current_token)->next = *quote_token;
 }

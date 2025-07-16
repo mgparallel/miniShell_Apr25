@@ -53,7 +53,6 @@ int	parse_type_quote(t_token **lst, t_token **cur_token)
 				return (-1);
 		}
 	}
-	if ((*cur_token)->in_quote != 2)
-		remove_inner_quote(cur_token, '\'');
+	remove_inner_quote(cur_token, '\'');
 	return (0);
 }

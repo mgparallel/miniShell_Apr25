@@ -46,5 +46,4 @@ void print_token(t_token *token)
 			printf("\nVALUE: %s, TYPE: %s, SPACE? %d, IN_QUOTE? %d\n", token->value, print_out_type(token->type), token->has_leading_space, token->in_quote);
 		token = token->next;
 	}
-	printf("\n");
 }

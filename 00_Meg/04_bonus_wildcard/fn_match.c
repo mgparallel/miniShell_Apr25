@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 00:45:04 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 17:56:51 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/16 20:16:05 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,47 +68,14 @@ void	fn_match_util(char **arr, t_files **fn_lst, t_files **result)
 		temp++;
 		while (*++temp)
 			trimmed = strmatch(trimmed, *(temp - 1));
+		if (!trimmed)
+			flag = 0;
 		if (trimmed && trimmed[0] != '\0')
 			if_flag(&flag, trimmed, *(temp - 1));
 		update_result((*fn_lst)->value, result, &flag);
 		*fn_lst = (*fn_lst)->next;
 	}
 }
-
-t_files *duplicate_fn_lst(t_files *lst)
-{
-    t_files *new_head = NULL;
-    t_files *new_node = NULL;
-    t_files *tail = NULL;
-
-    while (lst)
-    {
-        new_node = malloc(sizeof(t_files));
-        if (!new_node)
-        {
-            free_fn(&new_head);
-            return NULL;
-        }
-        new_node->value = ft_strdup(lst->value);
-        if (!new_node->value)
-        {
-            free(new_node);
-            free_fn(&new_head);
-            return NULL;
-        }
-        new_node->next = NULL;
-
-        if (!new_head)
-            new_head = new_node;
-        else
-            tail->next = new_node;
-        tail = new_node;
-
-        lst = lst->next;
-    }
-    return new_head;
-}
-
 
 void	fn_match(t_files *fn_lst, char *value, t_files **result)
 {
@@ -133,7 +100,6 @@ void	fn_match(t_files *fn_lst, char *value, t_files **result)
 		updated_arr = arr;
 	fn_match_util(updated_arr, &fn_lst, result);
 	if (updated_arr != arr)
-    	free_arr(updated_arr);
+		free_arr(updated_arr);
 	free_arr(arr);
 }
-	

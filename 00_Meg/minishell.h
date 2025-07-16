@@ -121,7 +121,6 @@ int update_token(t_token **lst, char *str, char *quote_pos, t_token_type type);
 //parse_var.c
 int parse_type_var(t_token **lst, t_token **cur_token, t_files *env);
 void expand_var(t_token **lst, t_token **cur_token, t_files *env);
-char *get_var_value(char *var, t_files *env);
 void if_braces(char **var);
 int parse_type_var_util(char *var, t_files *env, t_token **cur_token, t_token **lst);
 int skip_expansion(t_token **lst, t_token **cur_token);
@@ -130,8 +129,7 @@ int skip_expansion(t_token **lst, t_token **cur_token);
 int if_exit_code(t_token **cur_token);
 void    check_prev_exitcode(t_token **lst, t_token **cur_token);
 
-//expand_var_quotes.c
-void expand_var_quotes(t_token **lst, t_token **cur_token, t_files *env);
+//get_var_value.c
 char *get_var_value(char *var, t_files *env);
 
 //expand_var_heredoc.c
@@ -176,6 +174,9 @@ int is_connector(t_token_type type);
 t_cmd   *build_cmds(t_token *tokens);
 void    free_cmd_list(t_cmd *cmd);
 
+//expand_exit_status
+void	expand_pipeline_exit_status(t_cmd *cmd, int exit_status);
+
 //exec_commands
 void    exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status);
 int process_all_heredocs(t_cmd *cmd_list, int *exit_status);
@@ -217,10 +218,10 @@ void free_arr(char **arr);
 void	free_fn(t_files **fn);
 void indir_lst_addback(t_files **lst, t_files *new);
 void add_wildcard_token(t_token **lst, t_token *curr, t_files *files);
-
+t_files	*duplicate_fn_lst(t_files *lst);
 void	if_end_to_match(char **arr, int *flag);
 void	free_arr(char **arr);
 
 void	execution(t_token **token, t_files **env, int *exit_status);
 
-# endif
+#endif

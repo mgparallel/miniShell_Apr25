@@ -12,18 +12,6 @@
 
 #include "../minishell.h"
 
-// void	free_fn(t_files **fn)
-// {
-// 	t_files	*temp;
-
-// 	while (*fn)
-// 	{
-// 		temp = (*fn)->next;
-// 		free(*fn);
-// 		*fn = temp;
-// 	}
-// }
-
 void	indir_lst_addback(t_files **lst, t_files *new)
 {
 	t_files	*ref;

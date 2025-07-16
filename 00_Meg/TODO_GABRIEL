@@ -1,2 +1,3 @@
-heredoc
-< ola >> e | cat e
+heredocs primero
+probar redirecciones sin comando
+caso de echo this'$?' -> no expandimos (porque es tipo ARG)
