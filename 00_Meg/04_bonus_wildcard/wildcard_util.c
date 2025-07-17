@@ -24,6 +24,7 @@ void	new_token(t_token **head, char *str)
 		return (free(new));
 	new->type = WORD;
 	new->has_leading_space = 1;
+	new->in_quote = 0;
 	new->next = NULL;
 	lstadd_back(head, new);
 }

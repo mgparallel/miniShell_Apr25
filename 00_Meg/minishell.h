@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:28:07 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/17 18:48:34 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/17 19:19:11 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,9 @@ void	free_cmd_list(t_cmd *cmd);
 
 //expand_exit_status
 void	expand_pipeline_exit_status(t_cmd *cmd, int exit_status);
+
+//expand_exit_code.c
+char	*expand_exit_code(const char *str, const char *status_str);
 
 //exec_commands
 void	exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status);

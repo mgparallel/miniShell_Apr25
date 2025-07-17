@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 07:23:34 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 16:41:35 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/16 22:30:58 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,9 @@ int	prepare_execution(char *input, int *exit_status, t_files *env,
 	if (*token)
 		parsing(token, env, exit_status);
 	print_token(*token);
-	if (!*token || if_conector((*token)->type, token, exit_status))
+	if (!*token)
+		return (1);
+	if (if_conector((*token)->type, token, exit_status))
 	{
 		*exit_status = 1;
 		return (1);

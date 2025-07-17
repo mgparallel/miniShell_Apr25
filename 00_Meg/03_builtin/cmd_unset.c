@@ -3,14 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_unset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 22:34:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 17:05:24 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/16 20:22:01 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int	free_node(t_files **ref)
+{
+	free((*ref)->value);
+	free(*ref);
+	return (0);
+}
 
 int	cmd_unset(char *var, t_files **env)
 {
@@ -32,9 +39,7 @@ int	cmd_unset(char *var, t_files **env)
 				return (0);
 			}
 			prev->next = temp;
-			free(ref->value);
-			free(ref);
-			return (0);
+			return (free_node(&ref));
 		}
 		prev = ref;
 		ref = ref->next;

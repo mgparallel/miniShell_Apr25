@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:49:56 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/06/24 14:00:36 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/16 21:26:31 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,33 +70,29 @@ char	*get_command_path(char *cmd, char **envp)
 
 char	**lst_to_envp(t_files *env)
 {
-    int		count;
+	int		count;
 	int		i;
-    t_files	*tmp;
-    char	**envp;
+	t_files	*tmp;
+	char	**envp;
 
 	tmp = env;
 	count = 0;
-    while (tmp && ++count)
-        tmp = tmp->next;
-    envp = malloc(sizeof(char *) * (count + 1));
-    if (!envp)
-        return (NULL);
-    tmp = env;
+	while (tmp && ++count)
+		tmp = tmp->next;
+	envp = malloc(sizeof(char *) * (count + 1));
+	if (!envp)
+		return (NULL);
+	tmp = env;
 	i = -1;
-    while (++i < count)
-    {
-        envp[i] = ft_strdup(tmp->value);
-        if (!envp[i])
-        {
-            while (--i >= 0)
-                free(envp[i]);
-            return (free(envp), NULL);
-        }
-        tmp = tmp->next;
-    }
-    envp[count] = NULL;
-    return (envp);
+	while (++i < count)
+	{
+		envp[i] = ft_strdup(tmp->value);
+		if (!envp[i])
+			return (free_arr(envp), NULL);
+		tmp = tmp->next;
+	}
+	envp[count] = NULL;
+	return (envp);
 }
 
 void	exec_command(char **cmd_args, t_files *env)

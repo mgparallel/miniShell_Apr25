@@ -26,7 +26,7 @@ int	join_token(t_token **prev, t_token **cur_token)
 		if ((*cur_token)->type == EXIT_CODE)
 			(*prev)->type = EXIT_CODE;
 		if ((*cur_token)->in_quote)
-			(*prev)->in_quote = 1;
+			(*prev)->in_quote = (*cur_token)->in_quote;
 		free((*prev)->value);
 		(*prev)->value = new_value;
 		(*prev)->next = next_t;
