@@ -5,84 +5,62 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/12 18:26:39 by gapujol-         ###   ########.fr       */
+/*   Created: 2025/07/16 20:48:47 by gapujol-          #+#    #+#             */
+/*   Updated: 2025/07/16 20:49:23 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	is_builtin_without_output(t_cmd *cmd)
+int	count_pipeline_cmds(t_cmd *cmd)
 {
-	if (!cmd->argv)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "cd") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "export") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "unset") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "exit") == 0)
-		return (1);
-	return (0);
-}
-int	is_builtin(t_cmd *cmd)
-{
-	if (ft_strcmp(cmd->argv[0], "echo") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "cd") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "pwd") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "export") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "unset") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "env") == 0)
-		return (1);
-	if (ft_strcmp(cmd->argv[0], "exit") == 0)
-		return (1);
-	return (0);
+	int	count;
+
+	count = 0;
+	while (cmd && cmd->connector == PIPE)
+	{
+		count++;
+		cmd = cmd->next;
+	}
+	return (count + 1);
 }
 
-int exec_builtin_without_output(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status)
+void	close_pipes(t_exec_data *data, int i)
 {
-    int i;
-    int flag;
-	
-	flag = 0;
-	if (ft_strcmp(cmd->argv[0], "cd") == 0)
-    {
-        if (cmd->argc > 2)
-            return (ft_putstr_fd("cd: too many arguments", 2), 1);
-        return (cmd_cd(cmd->argv[1], env));
-    }
-    i = 0;
-    if (ft_strcmp(cmd->argv[0], "export") == 0)
-    {
-        if (cmd->argc == 1)
-            return (declare_env(*env));
-        while (++i < cmd->argc)
-		{
-            if (cmd_export(cmd->argv[i], env) == 2)
-                flag = 1;
-		}
-    }
-    if (ft_strcmp(cmd->argv[0], "unset") == 0)
-        while (++i < cmd->argc)
-            cmd_unset(cmd->argv[i], env);
-    if (ft_strcmp(cmd->argv[0], "exit") == 0)
-        return (cmd_exit(cmd_list, cmd, env, exit_status));
-    return (flag);
+	while (--i >= 0)
+	{
+		close(data->pipe_fds[i * 2]);
+		close(data->pipe_fds[i * 2 + 1]);
+	}
+	free(data->pipe_fds);
 }
 
-int	exec_builtin(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int exit_status)
+int	wait_for_children(t_exec_data *data)
 {
-	if (ft_strcmp(cmd->argv[0], "pwd") == 0)
-		return (cmd_pwd(*env));
-	if (ft_strcmp(cmd->argv[0], "env") == 0)
-		return (cmd_env(*env));
-	if (ft_strcmp(cmd->argv[0], "echo") == 0)
-		return (cmd_echo(cmd->argv + 1));
-	return (exec_builtin_without_output(cmd_list, cmd, env, exit_status));
+	int	status;
+	int	i;
+
+	status = 0;
+	i = -1;
+	while (++i <= data->num_pids)
+		waitpid(data->pid[i], &status, 0);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+	{
+		status = WTERMSIG(status);
+		if (status == SIGINT)
+			return (write(1, "\n", 1), 130);
+		if (status == SIGQUIT)
+			return (printf("quit (core dumped)\n"), 131);
+	}
+	return (1);
+}
+
+void	exit_child(char *msg, t_exec_data *data, int num_cmds, t_files **env)
+{
+	perror(msg);
+	close_pipes(data, num_cmds - 1);
+	free_lst(env);
+	exit (1);
 }
