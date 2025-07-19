@@ -6,43 +6,54 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/19 17:27:16 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 18:18:21 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+void	child_heredoc(t_hd_data *d, t_files *env, int exit_status, int in_quote)
+{
+	if (d->write)
+		close(d->pipefd[0]);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_IGN);
+	while (1)
+	{
+		write(1, "> ", 2);
+		d->line = get_next_line(0);
+		if (!d->line)
+			ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
+		if (!d->line || ft_strcmp(d->line, d->delimiter) == 10)
+			break ;
+		if (!in_quote)
+			expand_var_heredoc(&d->line, exit_status, env);
+		if (d->write)
+			write(d->pipefd[1], d->line, ft_strlen(d->line));
+		free(d->line);
+	}
+	if (d->line)
+		free(d->line);
+	if (d->write)
+		close(d->pipefd[1]);
+	exit(0);
+}
+
 int	fork_heredoc(char *delimiter)
 {
-	char	*line;
-	int		status;
-	pid_t	pid;
+	t_hd_data	d;
 
-	pid = fork();
-	if (pid == -1)
+	d.delimiter = delimiter;
+	d.write = 0;
+	d.pid = fork();
+	if (d.pid == -1)
 		return (perror("fork"), 1);
-	else if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_IGN);
-		while (1)
-		{
-			write(1, "> ", 2);
-			line = get_next_line(0);
-			if (!line)
-				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 10)
-				break ;
-			free(line);
-		}
-		if (line)
-			free(line);
-		exit(0);
-	}
+	else if (d.pid == 0)
+		child_heredoc(&d, NULL, 0, 0);
 	signal(SIGINT, SIG_IGN);
-	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status))
-		if (WTERMSIG(status) == SIGINT)
+	waitpid(d.pid, &d.status, 0);
+	if (WIFSIGNALED(d.status))
+		if (WTERMSIG(d.status) == SIGINT)
 			return (write(1, "\n", 1), 130);
 	return (0);
 }
@@ -83,46 +94,24 @@ int	check_files(t_redir *list)
 
 int	pipe_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 {
-	char	*line;
-	int		pipefd[2];
-	pid_t	pid;
-	int		status;
+	t_hd_data	d;
 
-	if (pipe(pipefd) == -1)
+	d.delimiter = delimiter;
+	d.write = 1;
+	if (pipe(d.pipefd) == -1)
 		return (perror("pipe"), -1);
-	pid = fork();
-	if (pid == -1)
-		return (perror("fork"), close(pipefd[0]), close(pipefd[1]), -1);
-	if (pid == 0)
-	{
-		close(pipefd[0]);
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_IGN);
-		while (1)
-		{
-			write(1, "> ", 2);
-			line = get_next_line(0);
-			if (!line)
-				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 10)
-				break ;
-			if (!in_quote)
-				expand_var_heredoc(&line, exit_status, env);
-			write(pipefd[1], line, ft_strlen(line));
-			free(line);
-		}
-		if (line)
-			free(line);
-		close(pipefd[1]);
-		exit(0);
-	}
-	close(pipefd[1]);
+	d.pid = fork();
+	if (d.pid == -1)
+		return (perror("fork"), close(d.pipefd[0]), close(d.pipefd[1]), -1);
+	if (d.pid == 0)
+		child_heredoc(&d, env, exit_status, in_quote);
+	close(d.pipefd[1]);
 	signal(SIGINT, SIG_IGN);
-	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status))
-		if (WTERMSIG(status) == SIGINT)
-			return (close(pipefd[0]), write(2, "\n", 1), -130);
-	return (pipefd[0]);
+	waitpid(d.pid, &d.status, 0);
+	if (WIFSIGNALED(d.status))
+		if (WTERMSIG(d.status) == SIGINT)
+			return (close(d.pipefd[0]), write(2, "\n", 1), -130);
+	return (d.pipefd[0]);
 }
 
 int	redirect_io(t_redir *lst, t_files *env, int *exit_status)

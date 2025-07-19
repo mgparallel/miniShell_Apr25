@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:28:07 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/19 17:29:02 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 18:09:29 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,16 @@ typedef struct s_exec_data
 	int		num_pids;
 	pid_t	pid[128];
 }	t_exec_data;
+
+typedef struct s_hd_data
+{
+	char	*line;
+	char	*delimiter;
+	int		pipefd[2];
+	pid_t	pid;
+	int		status;
+	int		write;
+}	t_hd_data;
 
 //main.c
 char	*readline(const char *prompt);
