@@ -6,11 +6,74 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/15 21:18:39 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 14:24:15 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	fork_heredoc(char *delimiter)
+{
+	char	*line;
+    pid_t	pid;
+    int		status;
+
+	pid = fork();
+    if (pid == -1)
+        return (perror("fork"), 1);
+	else if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_IGN);
+		while (1)
+		{
+			write(1, "> ", 2);
+			line = get_next_line(0);
+			if (!line)
+				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
+			if (!line || ft_strcmp(line, delimiter) == 10)
+				break ;
+			free(line);
+		}
+		if (line)
+			free(line);
+		exit(0);
+	}
+	signal(SIGINT, SIG_IGN);
+	waitpid(pid, &status, 0);
+	if (WIFSIGNALED(status))
+		if (WTERMSIG(status) == SIGINT)
+			return (write(1, "\n", 1), 130);
+    return (0);
+}
+
+int	check_files(t_redir *list)
+{
+	int	fd;
+
+	fd = 0;
+	while (list)
+	{
+		if (list->type == REDIR_INPUT)
+			fd = open(list->filename, O_RDONLY);
+		else if (list->type == REDIR_OUTPUT)
+			fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else if (list->type == REDIR_APPEND)
+			fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		if (fd < 0)
+			return (perror("open"), 1);
+        if (list->type == REDIR_HEREDOC)
+		{
+            fd = fork_heredoc(list->filename);
+			if (fd)
+				return (fd);
+		}
+		if (fd)
+			close(fd);
+		list = list->next;
+	}
+	return (0);
+}
 
 int	pipe_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 {
@@ -31,15 +94,15 @@ int	pipe_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 		signal(SIGQUIT, SIG_IGN);
 		while (1)
 		{
-			line = readline("> ");
+			write(1, "> ", 2);
+			line = get_next_line(0);
 			if (!line)
 				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 0)
+			if (!line || ft_strcmp(line, delimiter) == 10)
 				break ;
 			if (!in_quote)
 				expand_var_heredoc(&line, exit_status, env);
 			write(pipefd[1], line, ft_strlen(line));
-			write(pipefd[1], "\n", 1);
 			free(line);
 		}
 		if (line)
@@ -52,163 +115,53 @@ int	pipe_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
 		if (WTERMSIG(status) == SIGINT)
-			return (close(pipefd[0]), write(1, "\n", 1), -130);
+			return (close(pipefd[0]), write(2, "\n", 1), -130);
 	return (pipefd[0]);
-}
-
-int	fork_heredoc(char *delimiter)
-{
-	char	*line;
-    pid_t	pid;
-    int		status;
-
-	pid = fork();
-    if (pid == -1)
-        return (perror("fork"), 1);
-	else if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_IGN);
-		while (1)
-		{
-			line = readline("> ");
-			if (!line)
-				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 0)
-				break ;
-			free(line);
-		}
-		if (line)
-			free(line);
-		exit(0);
-	}
-	signal(SIGINT, SIG_IGN);
-	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status))
-		if (WTERMSIG(status) == SIGINT)
-			return (write(1, "\n", 1), 130);
-    return (0);
-}
-
-int	check_files(t_redir *list)
-{
-	int	fd;
-
-    while (list)
-    {
-        if (list->type == REDIR_INPUT)
-            fd = open(list->filename, O_RDONLY);
-        else if (list->type == REDIR_OUTPUT)
-            fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        else if (list->type == REDIR_APPEND)
-            fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-		if (fd < 0)
-            return (perror("open"), 1);
-        if (list->type == REDIR_HEREDOC)
-		{
-            fd = fork_heredoc(list->filename);
-			if (fd)
-				return (fd);
-		}
-		if (fd)
-        	close(fd);
-        list = list->next;
-    }
-    return (0);
 }
 
 int	redirect_io(t_redir *list, t_files *env, int *exit_status)
 {
-    int	fd;
+	int	fd;
 
-    while (list)
-    {
-        if (list->type == REDIR_INPUT)
-            fd = open(list->filename, O_RDONLY);
-        else if (list->type == REDIR_OUTPUT)
-            fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        else if (list->type == REDIR_APPEND)
-            fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        if (list->type == REDIR_HEREDOC)
-            fd = pipe_heredoc(list->filename, env, *exit_status, list->in_quote);
+	fd = 0;
+	while (list)
+	{
+		if (list->type == REDIR_INPUT)
+			fd = open(list->filename, O_RDONLY);
+		else if (list->type == REDIR_OUTPUT)
+			fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else if (list->type == REDIR_APPEND)
+			fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd < 0)
-            return (perror("open"), 1);
-        if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
-            if (dup2(fd, STDIN_FILENO) == -1)
+			return (perror("open"), 1);
+		if (list->type == REDIR_HEREDOC)
+			fd = pipe_heredoc(list->filename, env, *exit_status, list->in_quote);
+		if (fd < 0)
+			return (fd); 
+		if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
+			if (dup2(fd, STDIN_FILENO) == -1)
 				return (perror("dup2"), 1);
-        if (list->type == REDIR_OUTPUT || list->type == REDIR_APPEND)
-            if (dup2(fd, STDOUT_FILENO) == -1)
+		if (list->type == REDIR_OUTPUT || list->type == REDIR_APPEND)
+			if (dup2(fd, STDOUT_FILENO) == -1)
 				return (perror("dup2"), 1);
-        close(fd);
-        list = list->next;
-    }
-    return (0);
-}
-
-int	count_pipeline_cmds(t_cmd *cmd)
-{
-	int	count;
-
-	count = 0;
-	while (cmd && cmd->connector == PIPE)
-	{
-		count++;
-		cmd = cmd->next;
+		if (fd)
+			close(fd);
+		list = list->next;
 	}
-	return (count + 1);
+	return (0);
 }
 
-void	close_pipes(t_exec_data *data, int i)
-{
-	while (--i >= 0)
-	{
-		close(data->pipe_fds[i * 2]);
-		close(data->pipe_fds[i * 2 + 1]);
-	}
-	free(data->pipe_fds);
-}
-
-int	wait_for_children(t_exec_data *data)
-{
-	int	status;
-	int	i;
-
-	status = 0;
-	i = -1;
-	while (++i <= data->num_pids)
-		waitpid(data->pid[i], &status, 0);
-	if (WIFEXITED(status))
-		return (WEXITSTATUS(status));
-	if (WIFSIGNALED(status))
-	{
-		status = WTERMSIG(status);
-		if (status == SIGINT)
-			return (write(1, "\n", 1), 130);
-		if (status == SIGQUIT)
-			return (printf("quit (core dumped)\n"), 131);
-	}
-	return (1);
-}
-
-void	exit_child(char *msg, t_exec_data *data, int num_cmds, t_files **env)
-{
-	perror(msg);
-	close_pipes(data, num_cmds - 1);
-	free_lst(env);
-	exit (1);
-}
-
-int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_status)
+int	execute_pipeline(t_cmd *cmds, t_cmd *cmd, t_files **env, int *exit_status)
 {
 	t_exec_data	data;
-	int		num_cmds;
-	int		i;
-	
+	int			num_cmds;
+	int			i;
+
 	num_cmds = count_pipeline_cmds(cmd);
 	if (num_cmds == 1 && is_builtin_without_output(cmd))
 	{
 		if (!check_files(cmd->redir_list) && cmd->argv)
-			*exit_status = exec_builtin_without_output(cmd_list, cmd, env, *exit_status);
+			*exit_status = exec_builtin_no_output(cmds, cmd, env, *exit_status);
 		return (*exit_status);
 	}
 	data.pipe_fds = malloc(sizeof(int) * 2 * (num_cmds - 1));
@@ -244,12 +197,12 @@ int	execute_pipeline(t_cmd *cmd_list, t_cmd *cmd, t_files **env, int *exit_statu
 				free_lst(env);
 				exit(*exit_status);
 			}
-			signal(SIGINT, SIG_DFL);
-			signal(SIGQUIT, SIG_DFL);
 			if (!cmd->argv)
 				exit(0);
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			if (is_builtin(cmd))
-				exit(exec_builtin(cmd_list, cmd, env, *exit_status));
+				exit(exec_builtin(cmds, cmd, env, *exit_status));
 			else
 				exec_command(cmd->argv, *env);
 		}
@@ -265,16 +218,16 @@ void	exec_commands(t_cmd *cmd_list, t_files **env, int *exit_status)
 	t_cmd	*cmd;
 
 	cmd = cmd_list;
-    while (cmd)
-    {
-        expand_pipeline_exit_status(cmd, *exit_status);
-    	*exit_status = execute_pipeline(cmd_list, cmd, env, exit_status);
-        while (cmd && cmd->connector == PIPE)
-            cmd = cmd->next;
-		while (cmd && ((cmd->connector == AND && *exit_status != 0) ||
-				(cmd->connector == OR && *exit_status == 0)))
+	while (cmd)
+	{
+		expand_pipeline_exit_status(cmd, *exit_status);
+		*exit_status = execute_pipeline(cmd_list, cmd, env, exit_status);
+		while (cmd && cmd->connector == PIPE)
+			cmd = cmd->next;
+		while (cmd && ((cmd->connector == AND && *exit_status != 0)
+				|| (cmd->connector == OR && *exit_status == 0)))
 			cmd = cmd->next;
 		if (cmd)
-            cmd = cmd->next;
-    }
+			cmd = cmd->next;
+	}
 }
