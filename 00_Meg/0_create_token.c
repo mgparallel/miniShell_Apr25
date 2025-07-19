@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:17:57 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/16 20:29:32 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/19 17:26:43 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,23 @@ void	set_var_in_token(t_token **new_token, t_token_type type, char *str)
 	(*new_token)->type = type;
 	(*new_token)->lst = NULL;
 	(*new_token)->next = NULL;
+}
+
+int		check_if_exit(char *value)
+{
+		int i;
+
+		i = 0;
+		while (value[i])
+		{
+			if (value[i] == '$')
+			{
+				if (value[i + 1] && value[i + 1] == '?')
+					return (1);
+			}
+			i++;
+		}
+		return (0);
 }
 
 void	create_token(char **start, char *end, t_token_type type, t_token **lst)
@@ -38,7 +55,12 @@ void	create_token(char **start, char *end, t_token_type type, t_token **lst)
 	else
 		new_token->has_leading_space = 0;
 	if (type == SINGLE_QUOTE)
-		new_token->in_quote = 1;
+	{
+		if (check_if_exit(new_token->value))
+			new_token->in_quote = 1;
+		else
+			new_token->in_quote = 0;
+	}
 	else if (type == DOUBLE_QUOTE)
 		new_token->in_quote = 2;
 	else

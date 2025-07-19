@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:28:07 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/17 20:17:42 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 16:53:25 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -241,7 +241,6 @@ void	fn_match(t_files *fn_lst, char *value, t_files **result);
 char	**append_arr(char **arr);
 char	**prepend_arr(char **arr, char *value);
 void	free_arr(char **arr);
-void	free_fn(t_files **fn);
 void	indir_lst_addback(t_files **lst, t_files *new);
 void	add_wildcard_token(t_token **lst, t_token *curr, t_files *files);
 t_files	*duplicate_fn_lst(t_files *lst);

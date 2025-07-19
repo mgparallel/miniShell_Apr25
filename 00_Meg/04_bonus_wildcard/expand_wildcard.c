@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 00:49:24 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 17:58:03 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/19 16:53:03 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,13 +73,12 @@ int	expand_wildcard(t_token **lst, t_token **cur_token)
 	if (!fn_lst)
 		return (printf("Failed fetching file names\n"), -1);
 	fn_match(fn_lst, (*cur_token)->value, &result);
+	free_lst(&fn_lst);
 	if (!result)
 	{
 		(*cur_token)->type = WORD;
-		free_lst(&fn_lst);
 		return (0);
 	}
 	add_wildcard_token(lst, *cur_token, result);
-	free_lst(&fn_lst);
 	return (0);
 }
