@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/16 21:39:49 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 14:29:23 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,8 @@ int	exec_builtin_no_output(t_cmd *cmds, t_cmd *cmd, t_files **env, int status)
 		if (cmd->argc == 1)
 			return (declare_env(*env));
 		while (++i < cmd->argc)
-		{
 			if (cmd_export(cmd->argv[i], env) == 2)
 				flag = 1;
-		}
 	}
 	if (ft_strcmp(cmd->argv[0], "unset") == 0)
 		while (++i < cmd->argc)

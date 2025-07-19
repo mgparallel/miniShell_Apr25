@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/19 14:24:15 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:27:16 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,12 @@
 int	fork_heredoc(char *delimiter)
 {
 	char	*line;
-    pid_t	pid;
-    int		status;
+	int		status;
+	pid_t	pid;
 
 	pid = fork();
-    if (pid == -1)
-        return (perror("fork"), 1);
+	if (pid == -1)
+		return (perror("fork"), 1);
 	else if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
@@ -44,7 +44,18 @@ int	fork_heredoc(char *delimiter)
 	if (WIFSIGNALED(status))
 		if (WTERMSIG(status) == SIGINT)
 			return (write(1, "\n", 1), 130);
-    return (0);
+	return (0);
+}
+
+int	open_files(t_redir *lst, int fd)
+{
+	if (lst->type == REDIR_INPUT)
+		fd = open(lst->filename, O_RDONLY);
+	else if (lst->type == REDIR_OUTPUT)
+		fd = open(lst->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else if (lst->type == REDIR_APPEND)
+		fd = open(lst->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	return (fd);
 }
 
 int	check_files(t_redir *list)
@@ -54,17 +65,12 @@ int	check_files(t_redir *list)
 	fd = 0;
 	while (list)
 	{
-		if (list->type == REDIR_INPUT)
-			fd = open(list->filename, O_RDONLY);
-		else if (list->type == REDIR_OUTPUT)
-			fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (list->type == REDIR_APPEND)
-			fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		fd = open_files(list, fd);
 		if (fd < 0)
 			return (perror("open"), 1);
-        if (list->type == REDIR_HEREDOC)
+		if (list->type == REDIR_HEREDOC)
 		{
-            fd = fork_heredoc(list->filename);
+			fd = fork_heredoc(list->filename);
 			if (fd)
 				return (fd);
 		}
@@ -119,34 +125,29 @@ int	pipe_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 	return (pipefd[0]);
 }
 
-int	redirect_io(t_redir *list, t_files *env, int *exit_status)
+int	redirect_io(t_redir *lst, t_files *env, int *exit_status)
 {
 	int	fd;
 
 	fd = 0;
-	while (list)
+	while (lst)
 	{
-		if (list->type == REDIR_INPUT)
-			fd = open(list->filename, O_RDONLY);
-		else if (list->type == REDIR_OUTPUT)
-			fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		else if (list->type == REDIR_APPEND)
-			fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+		fd = open_files(lst, fd);
 		if (fd < 0)
 			return (perror("open"), 1);
-		if (list->type == REDIR_HEREDOC)
-			fd = pipe_heredoc(list->filename, env, *exit_status, list->in_quote);
+		if (lst->type == REDIR_HEREDOC)
+			fd = pipe_heredoc(lst->filename, env, *exit_status, lst->in_quote);
 		if (fd < 0)
-			return (fd); 
-		if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
+			return (fd);
+		if (lst->type == REDIR_INPUT || lst->type == REDIR_HEREDOC)
 			if (dup2(fd, STDIN_FILENO) == -1)
 				return (perror("dup2"), 1);
-		if (list->type == REDIR_OUTPUT || list->type == REDIR_APPEND)
+		if (lst->type == REDIR_OUTPUT || lst->type == REDIR_APPEND)
 			if (dup2(fd, STDOUT_FILENO) == -1)
 				return (perror("dup2"), 1);
-		if (fd)
+		if (fd > 2)
 			close(fd);
-		list = list->next;
+		lst = lst->next;
 	}
 	return (0);
 }

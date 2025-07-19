@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_exit_status.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 21:58:07 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/16 22:15:41 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/19 16:31:04 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	update_cmd_args(t_cmd **cmd, int i, char *status_str)
 {
 	char	*tmp;
 
+	if ((*cmd)->expand[i] == 0)
+		return ;
 	tmp = (*cmd)->argv[i];
 	(*cmd)->argv[i] = expand_exit_code(tmp, status_str);
 	free(tmp);
@@ -25,6 +27,8 @@ void	if_no_redir_hd(t_redir **r, char *status_str)
 {
 	char	*tmp;
 
+	if ((*r)->in_quote == 1)
+		return ;
 	tmp = (*r)->filename;
 	(*r)->filename = expand_exit_code(tmp, status_str);
 	free(tmp);

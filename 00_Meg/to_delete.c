@@ -47,3 +47,65 @@ void print_token(t_token *token)
 		token = token->next;
 	}
 }
+
+const char *redir_type_to_str(t_redir_type type)
+{
+	switch (type)
+	{
+		case REDIR_INPUT:      return "<";
+		case REDIR_OUTPUT:     return ">";
+		case REDIR_APPEND:  return ">>";
+		case REDIR_HEREDOC: return "<<";
+		default:            return "UNKNOWN";
+	}
+}
+
+const char *connector_to_str(t_token_type type)
+{
+	switch (type)
+	{
+		case PIPE:       return "|";
+		case AND:return "&&";
+		case OR: return "||";
+		default:         return "END";
+	}
+}
+
+void print_cmd_list(t_cmd *cmd)
+{
+	int i, cmd_num = 1;
+
+	while (cmd)
+	{
+		printf("Comando %d:\n", cmd_num++);
+
+		// Argumentos
+		printf("  argc: %d\n", cmd->argc);
+		printf("  argv: ");
+		for (i = 0; i < cmd->argc; i++)
+			printf("[%s] ", cmd->argv[i]);
+		printf("\n");
+		
+		// Redirecciones
+		if (cmd->redir_list)
+		{
+			t_redir *r = cmd->redir_list;
+			printf("  Redirecciones:\n");
+			while (r)
+			{
+				printf("    tipo: %s, archivo: %s\n", redir_type_to_str(r->type), r->filename);
+				r = r->next;
+			}
+		}
+		else
+		{
+			printf("  Redirecciones: ninguna\n");
+		}
+
+		// Conector
+		printf("  Conector: %s\n", connector_to_str(cmd->connector));
+		printf("\n");
+
+		cmd = cmd->next;
+	}
+}

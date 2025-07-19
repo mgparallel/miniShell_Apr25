@@ -6,73 +6,13 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/17 21:13:45 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:14:54 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-const char *redir_type_to_str(t_redir_type type)
-{
-	switch (type)
-	{
-		case REDIR_INPUT:      return "<";
-		case REDIR_OUTPUT:     return ">";
-		case REDIR_APPEND:  return ">>";
-		case REDIR_HEREDOC: return "<<";
-		default:            return "UNKNOWN";
-	}
-}
-
-const char *connector_to_str(t_token_type type)
-{
-	switch (type)
-	{
-		case PIPE:       return "|";
-		case AND:return "&&";
-		case OR: return "||";
-		default:         return "END";
-	}
-}
-
-void print_cmd_list(t_cmd *cmd)
-{
-	int i, cmd_num = 1;
-
-	while (cmd)
-	{
-		printf("Comando %d:\n", cmd_num++);
-
-		// Argumentos
-		printf("  argc: %d\n", cmd->argc);
-		printf("  argv: ");
-		for (i = 0; i < cmd->argc; i++)
-			printf("[%s] ", cmd->argv[i]);
-		printf("\n");
-
-		// Redirecciones
-		if (cmd->redir_list)
-		{
-			t_redir *r = cmd->redir_list;
-			printf("  Redirecciones:\n");
-			while (r)
-			{
-				printf("    tipo: %s, archivo: %s\n", redir_type_to_str(r->type), r->filename);
-				r = r->next;
-			}
-		}
-		else
-		{
-			printf("  Redirecciones: ninguna\n");
-		}
-
-		// Conector
-		printf("  Conector: %s\n", connector_to_str(cmd->connector));
-		printf("\n");
-
-		cmd = cmd->next;
-	}
-}
+void	print_cmd_list(t_cmd *cmd);
 
 void	free_cmd(t_cmd *cmd)
 {
@@ -86,6 +26,8 @@ void	free_cmd(t_cmd *cmd)
 			free(cmd->argv[i]);
 		free(cmd->argv);
 	}
+	if (cmd->expand)
+		free(cmd->expand);
 	while (cmd->redir_list)
 	{
 		next = cmd->redir_list->next;
@@ -175,21 +117,22 @@ int	build_arg_array(t_token *t, t_cmd *cmd)
 	int	i;
 
 	cmd->argc++;
-	cmd->argv = malloc(sizeof(char *) * (cmd->argc + 1));
+	cmd->argv = ft_calloc((cmd->argc + 1), sizeof(char *));
 	if (!cmd->argv)
 		return (1);
+	cmd->expand = ft_calloc(cmd->argc + 1, sizeof(int));
+	if (!cmd->expand)
+		return (free(cmd->argv), 1);
 	i = 0;
 	while (i < cmd->argc)
 	{
 		if (t->type == CMD || t->type == ARG || t->type == EXIT_CODE)
 		{
+			if (t->type == EXIT_CODE || (t->type == CMD && t->in_quote != 1))
+				cmd->expand[i] = 1;
 			cmd->argv[i] = ft_strdup(t->value);
 			if (!cmd->argv[i])
-			{
-				while (i-- > 0)
-					free(cmd->argv[i]);
-				return (free(cmd->argv), 1);
-			}
+				return (free_arr(cmd->argv), free(cmd->expand), 1);
 			i++;
 		}
 		t = t->next;
