@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 21:53:41 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 22:33:29 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/19 15:22:37 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ int	remove_plus_sign(char *str, char *pos, int i, t_files **env)
 	if (!new_str)
 		return (free(prev_str), 2);
 	lstadd_start(env, new_str);
+	free(prev_str);
+	free(new_str);
 	return (1);
 }
 

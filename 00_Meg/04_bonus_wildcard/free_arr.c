@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/12 00:46:59 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/16 20:16:00 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/19 16:55:50 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,3 @@ t_files	*duplicate_fn_lst(t_files *lst)
 	}
 	return (new_head);
 }
-// void	free_fn(t_files **fn)
-// {
-// 	t_files	*temp;
-
-// 	while (*fn)
-// 	{
-// 		temp = (*fn)->next;
-// 		if ((*fn)->value)
-// 			free((*fn)->value);
-// 		free(*fn);
-// 		*fn = temp;
-// 	}
-// }

@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 23:57:05 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/12 15:12:04 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/19 17:16:15 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	add_wildcard_token(t_token **lst, t_token *curr, t_files *files)
 	if (!prev->next)
 	{
 		update_wildcard_lst(files, &head);
+		free_lst(&files);
 		*lst = head;
 		return ;
 	}
