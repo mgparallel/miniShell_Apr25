@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 20:48:47 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/16 20:49:23 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:00:52 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,19 @@ int	count_pipeline_cmds(t_cmd *cmd)
 	return (count + 1);
 }
 
-void	close_pipes(t_exec_data *data, int i)
+void	close_pipes(t_exec_data *data)
 {
-	while (--i >= 0)
+	while (--data->num_cmds >= 0)
 	{
-		close(data->pipe_fds[i * 2]);
-		close(data->pipe_fds[i * 2 + 1]);
+		if (data->pipe_fds[data->num_cmds * 2] > 2)
+			close(data->pipe_fds[data->num_cmds * 2]);
+		if (data->pipe_fds[data->num_cmds * 2 + 1] > 2)
+			close(data->pipe_fds[data->num_cmds * 2 + 1]);
 	}
 	free(data->pipe_fds);
 }
 
-int	wait_for_children(t_exec_data *data)
+int	wait_pids(t_exec_data *data)
 {
 	int	status;
 	int	i;
@@ -57,10 +59,10 @@ int	wait_for_children(t_exec_data *data)
 	return (1);
 }
 
-void	exit_child(char *msg, t_exec_data *data, int num_cmds, t_files **env)
+void	exit_child(char *msg, t_exec_data *data, t_files **env)
 {
 	perror(msg);
-	close_pipes(data, num_cmds - 1);
+	close_pipes(data);
 	free_lst(env);
 	exit (1);
 }

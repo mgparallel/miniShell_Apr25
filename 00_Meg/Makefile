@@ -25,7 +25,7 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBS) Makefile
+$(NAME): $(OBJS) $(LIBS) $(HEADER)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBS) $(LDFLAGS) -o $(NAME) -fsanitize=address
 
 %.o: %.c libft/libft.a libft/libft.h

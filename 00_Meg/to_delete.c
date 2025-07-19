@@ -48,7 +48,7 @@ void print_token(t_token *token)
 	}
 }
 
-const char *redir_type_to_str(t_redir_type type)
+const char *redir_type_to_str(t_redir_t type)
 {
 	switch (type)
 	{

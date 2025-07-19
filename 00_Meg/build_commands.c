@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/19 17:14:54 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 20:21:39 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,48 +14,7 @@
 
 void	print_cmd_list(t_cmd *cmd);
 
-void	free_cmd(t_cmd *cmd)
-{
-	int		i;
-	t_redir	*next;
-
-	if (cmd->argv)
-	{
-		i = -1;
-		while (++i < cmd->argc)
-			free(cmd->argv[i]);
-		free(cmd->argv);
-	}
-	if (cmd->expand)
-		free(cmd->expand);
-	while (cmd->redir_list)
-	{
-		next = cmd->redir_list->next;
-		free(cmd->redir_list->filename);
-		free(cmd->redir_list);
-		cmd->redir_list = next;
-	}
-	free(cmd);
-}
-
-void	free_cmd_list(t_cmd *cmd)
-{
-	t_cmd	*next;
-
-	while (cmd)
-	{
-		next = cmd->next;
-		free_cmd(cmd);
-		cmd = next;
-	}
-}
-
-int	is_connector(t_token_type type)
-{
-	return (type == PIPE || type == AND || type == OR);
-}
-
-int	add_redir(t_redir **head, t_redir_type type, char *filename, int in_quote)
+int	add_redir(t_redir **head, t_redir_t type, char *filename, int in_quote)
 {
 	t_redir	*new;
 	t_redir	*tmp;
@@ -81,23 +40,10 @@ int	add_redir(t_redir **head, t_redir_type type, char *filename, int in_quote)
 	return (0);
 }
 
-t_redir_type	token_to_redir_type(const char *op)
-{
-	if (!ft_strcmp(op, "<"))
-		return (REDIR_INPUT);
-	if (!ft_strcmp(op, ">"))
-		return (REDIR_OUTPUT);
-	if (!ft_strcmp(op, ">>"))
-		return (REDIR_APPEND);
-	if (!ft_strcmp(op, "<<"))
-		return (REDIR_HEREDOC);
-	return (-1);
-}
-
 int	manage_redirect(t_token **t, t_cmd *cmd)
 {
 	t_token			*redir_token;
-	t_redir_type	type;
+	t_redir_t	type;
 
 	redir_token = *t;
 	*t = (*t)->next;
