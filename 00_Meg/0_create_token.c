@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:17:57 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/19 17:41:28 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/19 18:08:48 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ void	assign_in_quote(t_token_type type, t_token **new_token)
 	if (type == SINGLE_QUOTE)
 	{
 		if (check_if_exit((*new_token)->value))
-			(*new_token)->in_quote = 1;
-		else
 			(*new_token)->in_quote = 0;
+		else
+			(*new_token)->in_quote = 1;
 	}
 	else if (type == DOUBLE_QUOTE)
 		(*new_token)->in_quote = 2;
