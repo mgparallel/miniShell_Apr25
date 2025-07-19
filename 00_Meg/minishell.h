@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:28:07 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/17 19:19:11 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/17 20:17:42 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,6 +244,7 @@ void	free_arr(char **arr);
 void	free_fn(t_files **fn);
 void	indir_lst_addback(t_files **lst, t_files *new);
 void	add_wildcard_token(t_token **lst, t_token *curr, t_files *files);
+t_files	*duplicate_fn_lst(t_files *lst);
 
 void	if_end_to_match(char **arr, int *flag);
 void	free_arr(char **arr);

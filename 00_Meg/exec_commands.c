@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 20:05:52 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/17 19:15:16 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/19 14:24:15 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@ int	fork_heredoc(char *delimiter)
 		signal(SIGQUIT, SIG_IGN);
 		while (1)
 		{
-			line = readline("> ");
+			write(1, "> ", 2);
+			line = get_next_line(0);
 			if (!line)
 				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 0)
+			if (!line || ft_strcmp(line, delimiter) == 10)
 				break ;
 			free(line);
 		}
@@ -93,15 +94,15 @@ int	pipe_heredoc(char *delimiter, t_files *env, int exit_status, int in_quote)
 		signal(SIGQUIT, SIG_IGN);
 		while (1)
 		{
-			line = readline("> ");
+			write(1, "> ", 2);
+			line = get_next_line(0);
 			if (!line)
 				ft_putstr_fd("warning: heredoc delimited by end-of-file\n", 2);
-			if (!line || ft_strcmp(line, delimiter) == 0)
+			if (!line || ft_strcmp(line, delimiter) == 10)
 				break ;
 			if (!in_quote)
 				expand_var_heredoc(&line, exit_status, env);
 			write(pipefd[1], line, ft_strlen(line));
-			write(pipefd[1], "\n", 1);
 			free(line);
 		}
 		if (line)
@@ -131,11 +132,13 @@ int	redirect_io(t_redir *list, t_files *env, int *exit_status)
 			fd = open(list->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (list->type == REDIR_APPEND)
 			fd = open(list->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
-        if (list->type == REDIR_HEREDOC)
-            fd = pipe_heredoc(list->filename, env, *exit_status, list->in_quote);
 		if (fd < 0)
 			return (perror("open"), 1);
-        if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
+		if (list->type == REDIR_HEREDOC)
+			fd = pipe_heredoc(list->filename, env, *exit_status, list->in_quote);
+		if (fd < 0)
+			return (fd); 
+		if (list->type == REDIR_INPUT || list->type == REDIR_HEREDOC)
 			if (dup2(fd, STDIN_FILENO) == -1)
 				return (perror("dup2"), 1);
 		if (list->type == REDIR_OUTPUT || list->type == REDIR_APPEND)
