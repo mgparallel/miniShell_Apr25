@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 07:23:34 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/16 22:30:58 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/20 11:38:32 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	print_token(t_token *token);
 
 int	if_conector(t_token_type type, t_token **token, int *exit_status)
 {
@@ -45,7 +43,6 @@ int	prepare_execution(char *input, int *exit_status, t_files *env,
 	free(input);
 	if (*token)
 		parsing(token, env, exit_status);
-	print_token(*token);
 	if (!*token)
 		return (1);
 	if (if_conector((*token)->type, token, exit_status))

@@ -6,13 +6,11 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 11:52:10 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/19 20:21:39 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/20 12:07:35 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	print_cmd_list(t_cmd *cmd);
 
 int	add_redir(t_redir **head, t_redir_t type, char *filename, int in_quote)
 {
@@ -42,7 +40,7 @@ int	add_redir(t_redir **head, t_redir_t type, char *filename, int in_quote)
 
 int	manage_redirect(t_token **t, t_cmd *cmd)
 {
-	t_token			*redir_token;
+	t_token		*redir_token;
 	t_redir_t	type;
 
 	redir_token = *t;
@@ -135,6 +133,5 @@ t_cmd	*build_cmds(t_token *tokens)
 		if (tokens && is_connector(tokens->type))
 			tokens = tokens->next;
 	}
-	print_cmd_list(head);
 	return (head);
 }
