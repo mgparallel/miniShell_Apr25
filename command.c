@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:49:56 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/16 21:26:31 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/20 12:56:17 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void	exec_command(char **cmd_args, t_files *env)
 	if (!cmd_path)
 	{
 		ft_putstr_fd(cmd_args[0], 2);
-		ft_putstr_fd(": command not found \n", 2);
+		ft_putstr_fd(": command not found\n", 2);
 		free_arr(envp);
 		exit(127);
 	}
