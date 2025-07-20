@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_util.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 08:25:09 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 08:25:38 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/20 12:57:35 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,4 +47,11 @@ void	lstadd_start(t_files **env, char *str)
 	temp = *env;
 	*env = new;
 	new->next = temp;
+}
+
+void	print_error(char *str)
+{
+	ft_putstr_fd("export: `", 2);
+	ft_putstr_fd(str, 2);
+	ft_putstr_fd("': not a valid identifier\n", 2);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_export.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 08:52:35 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/07 21:53:32 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/20 12:53:02 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,11 @@ int	invalid_var_util(char *str, char *pos)
 				i++;
 				continue ;
 			}
-			printf("export: `%s': not a valid identifier\n", str);
+			print_error(str);
 			return (-1);
 		}
 		if (i == 0 && str[i] >= 48 && str[i] <= 57)
-			return (printf("export: `%s': not a valid identifier\n", str), -1);
+			return (print_error(str), -1);
 		i++;
 	}
 	return (0);
@@ -63,7 +63,7 @@ int	invalid_var(char *str, char *pos)
 		while (if_alnum_underscore_braces(str[i]))
 			i++;
 		if (str[i] != '\0' || all_number(str))
-			return (printf("export: `%s': not a valid identifier\n", str), 1);
+			return (print_error(str), 1);
 		else
 			return (1);
 	}
@@ -105,7 +105,7 @@ int	cmd_export(char *str, t_files **env)
 	if (invalid_var(str, pos) == 1)
 		return (2);
 	if (pos == str)
-		return (printf("export: `%s': not a valid identifier\n", str), 2);
+		return (print_error(str), 2);
 	dequote_str = dequote_str_export(pos);
 	if_append = if_append_var(str, pos, env);
 	if (if_append)

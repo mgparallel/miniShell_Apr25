@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 21:28:07 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/19 20:20:45 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/20 12:53:44 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,6 +255,7 @@ char		*ft_strndup(char *src, int len);
 void		lstadd_start(t_files **env, char *str);
 int			cmd_echo(char **argv);
 int			cmd_cd(char *str, t_files **env);
+void		print_error(char *str);
 
 //04_bonus_wildcard
 void		update_result(char *value, t_files **result, int *flag);

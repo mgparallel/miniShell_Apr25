@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_cd.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
+/*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/07 08:25:45 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/16 20:26:11 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/20 12:58:07 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,17 @@ int	cd_home(t_files **env)
 	cur_dir = NULL;
 	str = get_var_value("HOME", *env);
 	if (!str)
-		return (printf("No $Home set\n"), 1);
+		return (ft_putstr_fd("No $Home set\n", 2), 1);
 	cur_dir = get_var_value("PWD", *env);
 	if (chdir(str) != 0)
-		return (printf("No such file or directory\n"), 1);
+		return (ft_putstr_fd(" No such file or directory\n", 2), 1);
 	if (cur_dir)
 		set_env_var("OLDPWD=", cur_dir, env);
 	else
 		cmd_unset("OLDPWD", env);
 	if (getcwd(new_buf, sizeof(new_buf)) == NULL)
 		return (free(str), free(cur_dir),
-			printf("error after change directory\n"), 1);
+			ft_putstr_fd("error after change directory\n", 2), 1);
 	else
 		set_env_var("PWD=", new_buf, env);
 	return (free(str), free(cur_dir), 0);
@@ -51,7 +51,8 @@ int	cd_home(t_files **env)
 int	set_oldpwd(char *str, char **cur_dir, t_files **env)
 {
 	if (chdir(str) != 0)
-		return (free(*cur_dir), printf("No such file or directory\n"), 1);
+		return (free(*cur_dir),
+			ft_putstr_fd(" No such file or directory\n", 2), 1);
 	if (*cur_dir)
 		set_env_var("OLDPWD=", *cur_dir, env);
 	else
@@ -67,9 +68,9 @@ int	go_prev_path(t_files **env)
 	cur_dir = get_var_value("PWD", *env);
 	str = get_var_value("OLDPWD", *env);
 	if (!str)
-		return (printf("OLDPWD not set\n"), 1);
+		return (ft_putstr_fd("OLDPWD not set\n", 2), 1);
 	if (chdir(str) != 0)
-		return (printf("No such file or directory\n"), 1);
+		return (ft_putstr_fd("No such file or directory\n", 2), 1);
 	set_env_var("PWD=", str, env);
 	set_env_var("OLDPWD=", cur_dir, env);
 	printf("%s\n", str);
@@ -91,7 +92,8 @@ int	cmd_cd(char *str, t_files **env)
 	if (set_oldpwd(str, &cur_dir, env))
 		return (1);
 	if (getcwd(new_buf, sizeof(new_buf)) == NULL)
-		return (free(cur_dir), printf("error after change directory\n"), 1);
+		return (free(cur_dir),
+			ft_putstr_fd("error after change directory\n", 2), 1);
 	else
 		set_env_var("PWD=", new_buf, env);
 	return (free(cur_dir), 0);
