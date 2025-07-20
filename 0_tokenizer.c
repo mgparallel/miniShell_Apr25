@@ -6,7 +6,7 @@
 /*   By: menwu <menwu@student.42barcelona.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 00:20:58 by menwu             #+#    #+#             */
-/*   Updated: 2025/07/16 22:29:27 by menwu            ###   ########.fr       */
+/*   Updated: 2025/07/20 12:55:39 by menwu            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,8 @@ int	check_quote_error(char *input)
 			d_q = !d_q;
 		i++;
 	}
-	if (input[i - 1] == '|' || input[i - 1] == '&')
+	if (input[i - 1] == '|' || input[i - 1] == '&'
+		|| input[i - 1] == '<' || input[i - 1] == '>')
 		return (printf("syntax error near unexpected token\n"), 1);
 	if (s_q == 0 && d_q == 0)
 		return (0);

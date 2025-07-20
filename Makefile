@@ -1,10 +1,7 @@
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
-# LDFLAGS use for MacOS
-LDFLAGS = -Llibft -L/opt/homebrew/opt/readline/lib -lreadline -lncurses
-# LDFLAGS use for Linux
-# LDFLAGS = -Llibft -lreadline
-INCLUDES = -I$(LIBFT_DIR) -I/opt/homebrew/opt/readline/include #last argument for MacOS
+LDFLAGS = -Llibft -lreadline -lncurses
+INCLUDES = -I$(LIBFT_DIR) -I/opt/homebrew/opt/readline/include
 LIBFT_DIR = libft
 LIBFT = libft/libft.a
 HEADER = minishell.h
@@ -25,24 +22,16 @@ redirections.c 03_builtin/builtin_util.c 03_builtin/cmd_cd.c 03_builtin/cmd_echo
 04_bonus_wildcard/free_arr.c 04_bonus_wildcard/if_wildcard.c 04_bonus_wildcard/init_fn_lst.c \
 04_bonus_wildcard/manipulate_arr.c 04_bonus_wildcard/strmatch.c 04_bonus_wildcard/wildcard_util.c
 
-#LIBFT_SRC = libft/ft_isalpha.c libft/ft_isdigit.c libft/ft_tolower.c libft/ft_isalnum.c libft/ft_isascii.c \
+LIBFT_SRC = libft/ft_isalpha.c libft/ft_isdigit.c libft/ft_tolower.c libft/ft_isalnum.c libft/ft_isascii.c \
 libft/ft_strchr.c libft/ft_isprint.c libft/ft_strrchr.c libft/ft_toupper.c libft/ft_calloc.c libft/ft_strcmp.c libft/ft_strdup.c \
 libft/ft_strlen.c libft/ft_strncmp.c libft/ft_memset.c libft/ft_bzero.c libft/ft_memchr.c libft/ft_memcpy.c libft/ft_memcmp.c \
 libft/ft_memmove.c libft/ft_strnstr.c libft/ft_strlcpy.c libft/ft_strlcat.c libft/ft_atoi.c libft/ft_substr.c libft/ft_strjoin.c \
 libft/ft_strtrim.c libft/ft_split.c libft/ft_itoa.c libft/ft_strmapi.c libft/ft_striteri.c libft/ft_putchar_fd.c libft/ft_putstr_fd.c \
 libft/ft_putendl_fd.c libft/ft_putnbr_fd.c libft/get_next_line.c
 
-#LIBFT_HEADER = libft/libft.h
+OBJS = $(SRCS:.c=.o)
 
-#GABRIEL A TRABAJAR
-# cuando avaba con << sin mas - meg
-# makefile relink  
-# msg error salto linea cd
-# export && cd error msg new function
-
-OBJS = $(LIBFT) $(SRCS:.c=.o)
-
-all: libft $(NAME)
+all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
 	$(CC) $(CFLAGS) $(INCLUDES) $(OBJS) $(LIBFT) $(LDFLAGS) -o $(NAME) -fsanitize=address
@@ -51,7 +40,7 @@ $(NAME): $(OBJS) $(LIBFT)
 	@echo "compiling $<"
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(LIBFT):
+$(LIBFT): $(LIBFT_SRC) libft/libft.h
 	make -C $(LIBFT_DIR)
 
 clean:
@@ -64,4 +53,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re libft
