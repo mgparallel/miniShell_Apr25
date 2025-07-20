@@ -6,7 +6,7 @@
 /*   By: gapujol- <gapujol-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/05 21:47:20 by gapujol-          #+#    #+#             */
-/*   Updated: 2025/07/19 14:29:23 by gapujol-         ###   ########.fr       */
+/*   Updated: 2025/07/20 13:00:57 by gapujol-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	exec_builtin_no_output(t_cmd *cmds, t_cmd *cmd, t_files **env, int status)
 	if (ft_strcmp(cmd->argv[0], "cd") == 0)
 	{
 		if (cmd->argc > 2)
-			return (ft_putstr_fd("cd: too many arguments", 2), 1);
+			return (ft_putstr_fd("cd: too many arguments\n", 2), 1);
 		return (cmd_cd(cmd->argv[1], env));
 	}
 	i = 0;
